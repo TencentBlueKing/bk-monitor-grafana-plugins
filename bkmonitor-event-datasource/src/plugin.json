@@ -1,0 +1,33 @@
+{
+  "type": "datasource",
+  "name": "蓝鲸监控-事件插件",
+  "id": "bkmonitor-event-datasource",
+  "version": "0.0.1",
+  "metrics": true,
+  "annotations": false,
+  "queryOptions": {
+    "maxDataPoints": true
+  },
+  "routes": [
+    {
+      "path": "event",
+      "url": "{{.JsonData.baseUrl}}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{ .SecureJsonData.token }}"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "description": "Grafana data source for BlueKing Monitor/Application Insights",
+    "author": {
+      "name": "blueking"
+    },
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    }
+  }
+}
