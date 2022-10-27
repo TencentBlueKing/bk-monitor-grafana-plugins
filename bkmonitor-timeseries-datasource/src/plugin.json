@@ -1,0 +1,22 @@
+{
+  "type": "datasource",
+  "name": "蓝鲸监控-时序数据",
+  "id": "bkmonitor-timeseries-datasource",
+  "version": "3.6.0",
+  "metrics": true,
+  "annotations": false,
+  "queryOptions": {
+    "maxDataPoints": true
+  },
+  "info": {
+    "description": "Grafana data source for BlueKing Monitor/Application Insights",
+    "author": {
+      "name": "blueking"
+    },
+    "version": "3.6.0",
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    }
+  }
+}
