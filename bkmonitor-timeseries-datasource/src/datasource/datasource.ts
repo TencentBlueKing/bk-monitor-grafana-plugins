@@ -1,3 +1,4 @@
+/* eslint-disable codecc/comment-ratio */
 /* eslint-disable max-len */
 /*
  * Tencent is pleased to support the open source community by making
@@ -89,12 +90,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public baseUrl: string;
   public bizId: string | number;
   public useToken: boolean;
-  public url: string
-  public configData: QueryOption
+  public url: string;
+  public configData: QueryOption;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
-    this.url = instanceSettings.url
-    this.configData = instanceSettings?.jsonData
+    this.url = instanceSettings.url;
+    this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
     this.bizId = instanceSettings?.jsonData?.bizId || (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
@@ -133,7 +134,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     queryList.forEach((item: QueryData) => {
       const configList = [];
       // 指标数据请求
-      if (!item?.only_promql) {
+      if (item?.mode !== 'code') {
         item.query_configs?.forEach((config) => {
           const queryConfig = this.handleGetQueryConfig(config, options.scopedVars);
           if (config.display) {
@@ -142,6 +143,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               url: QueryUrl.query,
               data: {
                 down_sample_range,
+                step: item.step || 'auto',
+                format: item.format,
+                type: item.type,
                 start_time: options.range.from.unix(),
                 end_time: options.range.to.unix(),
                 expression: config.refId || '',
@@ -159,6 +163,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 item,
               ))
               .catch((e) => {
+                console.error(e);
                 errorMsg += e.data?.message || 'query error';
                 return [];
               }));
@@ -167,9 +172,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         });
       }
       // 表达式图表数据请求
-      if (item.only_promql
+      if (item.mode === 'code'
         || (item.expressionList?.some(item => item.expression && item.active) && configList.length > 0)) {
-        if (item.only_promql) {
+        if (item.mode === 'code') {
           const params = {
             url: QueryUrl.graph_promql_query,
             data: {
@@ -181,12 +186,15 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 ...this.getRangeScopedVars(options.range),
               }),
               step: item.step || 'auto',
+              format: item.format,
+              type: item.type,
             },
             method: 'POST',
           };
           promiseList.push(this.request(params)
-            .then(data => this.buildFetchSeries(data, options.scopedVars, item.only_promql ? item.promqlAlias || item.alias : item.alias, null, item))
+            .then(data => this.buildFetchSeries(data, options.scopedVars, item.mode === 'code' ? item.promqlAlias || item.alias : item.alias, null, item))
             .catch((e) => {
+              console.error(e);
               errorMsg += e.data?.message || 'query error';
               return [];
             }));
@@ -197,6 +205,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               const p = {
                 url: QueryUrl.query,
                 data: {
+                  step: item.step || 'auto',
+                  format: item.format,
+                  type: item.type,
                   down_sample_range,
                   start_time: options.range.from.unix(),
                   end_time: options.range.to.unix(),
@@ -211,6 +222,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               promiseList.push(this.request(p)
                 .then(data => this.buildFetchSeries(data, options.scopedVars, exp.alias, null, item, true))
                 .catch((e) => {
+                  console.error(e);
                   errorMsg += e.data?.message || 'query error';
                   return [];
                 }));
@@ -326,6 +338,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         object_name: metric?.result_table_label_name,
       };
     }
+    const formatFunc = query.format === 'table' ? this.formatTable : this.formatTimeseries;
+    return formatFunc.call(this, series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+  }
+  formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
     return series.map((serie) => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
@@ -333,38 +349,115 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         aliasData.target_instance = serie.dimensions.bk_inst_name;
       }
       if (!serie.unit || serie.unit === 'none') delete serie.unit;
-      const series = {
+      const target = hasVariateAlias
+        ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
+        : alias || serie.target;
+      const newSerie = {
+        ...serie,
+        target,
+      };
+      const TimeField =  {
+        name: 'Time',
+        type: FieldType.time,
+        config: {
+          // interval: config.interval * 1000,
+        } as any,
+        values: new ArrayVector(newSerie.datapoints.map(v => v[1])),
+      };
+      const ValueField = {
+        name: 'Value',
+        type: FieldType.number,
+        config: {
+          displayName: newSerie.target,
+          unit: newSerie.unit,
+        },
+        values: new ArrayVector(newSerie.datapoints.map(v => v[0])),
+        labels: newSerie.dimensions || {},
+      };
+      let dimisionFields;
+      if (newSerie.dimensions) {
+        dimisionFields = Object.keys(newSerie.dimensions).map(key => ({
+          name: key,
+          config: { filterable: true },
+          type: FieldType.string,
+          values: new ArrayVector(),
+        }));
+        newSerie.datapoints.forEach(() => {
+          dimisionFields.forEach((dimisionFiled) => {
+            dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
+          });
+        });
+      }
+      const data: DataFrame = {
+        refId,
+        fields: [TimeField, ...dimisionFields, ValueField],
+        length: newSerie.datapoints.length,
+      };
+      return data;
+    });
+  }
+  formatTable(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
+    const TimeField =  {
+      name: 'Time',
+      type: FieldType.time,
+      config: {
+      } as any,
+      values: new ArrayVector(),
+    };
+    const ValueField = {
+      name: 'Value',
+      type: FieldType.number,
+      config: {
+      } as any,
+      values: new ArrayVector(),
+    };
+
+    const dimisionFields = [];
+    series.forEach((serie) => {
+      if (serie.dimensions) {
+        Object.keys(serie.dimensions)
+          .filter(key => !dimisionFields.some(item => item.name === key))
+          .forEach((key) => {
+            dimisionFields.push({
+              name: key,
+              config: { filterable: true },
+              type: FieldType.string,
+              values: new ArrayVector(),
+            });
+          });
+      }
+    });
+    series.forEach((serie) => {
+      // 兼容老版本变量设置
+      if (hasVariateAlias) {
+        aliasData.target_ip = serie.dimensions.bk_target_ip;
+        aliasData.target_instance = serie.dimensions.bk_inst_name;
+      }
+      if (!serie.unit || serie.unit === 'none') delete serie.unit;
+      const newSerie = {
         ...serie,
         target: hasVariateAlias
           ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
           : alias || serie.target,
       };
-      const data: DataFrame = {
-        refId: query.refId,
-        fields: [
-          {
-            name: 'Time',
-            type: FieldType.time,
-            config: {
-              // interval: config.interval * 1000,
-            } as any,
-            values: new ArrayVector(series.datapoints.map(v => v[1])),
-          },
-          {
-            name: 'Value',
-            type: FieldType.number,
-            config: {
-              displayName: series.target,
-              unit: series.unit,
-            },
-            values: new ArrayVector(series.datapoints.map(v => v[0])),
-            labels: series.dimensions || {},
-          },
-        ],
-        length: series.datapoints.length,
-      };
-      return data;
+      ValueField.config.unit = newSerie.unit;
+      newSerie.datapoints.forEach((v) => {
+        TimeField.values.add(v[1]);
+        ValueField.values.add(v[0]);
+        dimisionFields?.forEach((dimisionFiled) => {
+          const dimValue = newSerie.dimensions[dimisionFiled.name];
+          if (typeof dimValue !== 'undefined') {
+            dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
+          }
+        });
+      });
     });
+    const data: DataFrame = {
+      refId,
+      fields: [TimeField, ...dimisionFields, ValueField],
+      length: TimeField.values.length,
+    };
+    return [data];
   }
   buildTargets({ host, cluster, module }: ITargetData) {
     if (host?.length) {
@@ -433,14 +526,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     if (!this.baseUrl) {
       return {
         status: 'error',
-        message:'Need Set baseUrl',
-      }
+        message: 'Need Set baseUrl',
+      };
     }
     if (this.useToken && !this.configData?.bizId) {
-       return {
+      return {
         status: 'error',
-        message:'Need Set bizId',
-      }
+        message: 'Need Set bizId',
+      };
     }
     return this.request({
       url: QueryUrl.testAndSaveUrl,
@@ -456,7 +549,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         title: 'Error',
       }));
   }
-  public buildWhereVariables(values: string[] | string, scopedVars: ScopedVars) {
+  public buildWhereVariables(values: string[] | string, scopedVars: ScopedVars | undefined) {
     const valList = [];
     Array.isArray(values)
       && values.forEach((val) => {
@@ -535,7 +628,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           return typeof metric?.[newKey] === 'undefined' ? match : metric[newKey];
         }
       }
-      const variables = this.buildWhereVariables([match], scopedVars);
+      const variables = this.buildWhereVariables([match], undefined);
       // eslint-disable-next-line no-nested-ternary
       return variables.length ? (variables.length === 1 ? variables.join('') : `(${variables.join(',')})`) : match;
     });
@@ -661,7 +754,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    */
   public async queryConfigToPromql(targets: QueryData) {
     const params = {
-      expression: targets.query_configs.length > 1 ? targets.expression : targets.query_configs?.[0]?.refId || 'a',
+      expression: targets.expressionList?.length ? targets.expressionList[0]?.expression || 'a' : targets.query_configs?.[0]?.refId || 'a',
       query_configs: targets.query_configs.map(item => this.handleGetPromqlConfig(item)),
     };
     return await this.request({
@@ -727,7 +820,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       const options: BackendSrvRequest = Object.assign(
         {},
         {
-          url: this.useToken ? `${this.url}/timeseries/${url}`: this.baseUrl + url,
+          url: this.useToken ? `${this.url}/timeseries/${url}` : this.baseUrl + url,
           method,
           showSuccessAlert: false,
           headers: {

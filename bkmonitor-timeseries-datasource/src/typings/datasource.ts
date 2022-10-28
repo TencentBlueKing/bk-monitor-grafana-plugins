@@ -57,8 +57,10 @@ export interface QueryData extends DataQuery {
   host: ITargetItem[];
   module: ITargetItem[];
   cluster: ITargetItem[];
-  only_promql?: boolean;
+  mode: EditMode;
   step?: string;
+  format?: string;
+  type?: string;
   showExpression?: boolean;
   source?: string;
   promqlAlias?: string;
