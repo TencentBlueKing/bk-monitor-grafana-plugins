@@ -936,11 +936,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                           metricList.map((item, index) => (
                             <div className="query-editor" key={index}>
                               <span
-                                  className={`query-editor-label ${!item.display ? 'is-unchecked' : ''}`}
-                                  onClick={() => this.handleMetricChecked(index)}
-                                >
-                                  {item.refId?.toLocaleLowerCase() || 'a'}
-                              </span>         
+                                className={`query-editor-label ${!item.display ? 'is-unchecked' : ''}`}
+                                onClick={() => this.handleMetricChecked(index)}
+                              >
+                                {item.refId?.toLocaleLowerCase() || 'a'}
+                              </span>
                               <Spin
                                 key={`${item.metricMetaId}-${item.refId}`}
                                 spinning={!!item.loading && !!item.metricMetaId}
@@ -954,7 +954,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                             <MetricInput
                                               datasource={this.props.datasource}
                                               metric={item}
-                                              onMetricChange={(a) => this.handleMetricChange(a, index)}
+                                              onMetricChange={a => this.handleMetricChange(a, index)}
                                             />
                                           </EditorForm>
                                           {item?.metric_field && (
@@ -1032,7 +1032,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                           executeQuery={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                                           onBlur={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                                         />
-                                            
+
                                       )
                                   }
                                 </div>

@@ -2,16 +2,39 @@
   "type": "datasource",
   "name": "蓝鲸监控-时序数据",
   "id": "bkmonitor-timeseries-datasource",
-  "version": "3.6.0",
   "metrics": true,
   "annotations": false,
   "queryOptions": {
     "maxDataPoints": true
   },
+  "dependencies": {
+    "grafanaDependency": ">=7.5",
+    "grafanaVersion": "7.5",
+    "plugins": []
+  },
+  "links": [
+    { "name": "GitHub", "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins" },
+    {
+      "name": "License",
+      "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE.txt"
+    }
+  ],
+  "routes": [
+    {
+      "path": "timeseries",
+      "url": "{{.JsonData.baseUrl}}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{ .SecureJsonData.token }}"
+        }
+      ]
+    }
+  ],
   "info": {
     "description": "Grafana data source for BlueKing Monitor/Application Insights",
     "author": {
-      "name": "blueking"
+      "name": "Tencent Blueking"
     },
     "version": "3.6.0",
     "logos": {

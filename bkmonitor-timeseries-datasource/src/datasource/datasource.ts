@@ -88,10 +88,16 @@ export enum QueryUrl {
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
   public bizId: string | number;
+  public useToken: boolean;
+  public url: string
+  public configData: QueryOption
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
+    this.url = instanceSettings.url
+    this.configData = instanceSettings?.jsonData
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
-    this.bizId = process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName;
+    this.useToken = instanceSettings?.jsonData?.useToken || false;
+    this.bizId = instanceSettings?.jsonData?.bizId || (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
   }
   /**
    * @description: panel query api
@@ -425,7 +431,16 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   }
   async testDatasource() {
     if (!this.baseUrl) {
-      return Promise.reject(new Error('Need Set baseUrl'));
+      return {
+        status: 'error',
+        message:'Need Set baseUrl',
+      }
+    }
+    if (this.useToken && !this.configData?.bizId) {
+       return {
+        status: 'error',
+        message:'Need Set bizId',
+      }
     }
     return this.request({
       url: QueryUrl.testAndSaveUrl,
@@ -486,8 +501,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     aliasData: IAliasData,
     dimensions: Record<string, string>,
   ) {
-    const regex = /\$(\w+)|\[\[([\s\S]+?)\]\]/g;
-    const tagRegx = /(\$(tag_|dim_)\$[\w]+)/gm;
+    const regex = /\$([\w.]+)|\[\[([\s\S]+?)\]\]/g;
+    const tagRegx = /(\$(tag_|dim_)\$[\w.]+)/gm;
     let aliasNew = alias;
     aliasNew = alias.replace(tagRegx, (match: any, g1: any, g2: any) => {
       const group = g1 || g2 ;
@@ -712,7 +727,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       const options: BackendSrvRequest = Object.assign(
         {},
         {
-          url: this.baseUrl + url,
+          url: this.useToken ? `${this.url}/timeseries/${url}`: this.baseUrl + url,
           method,
           showSuccessAlert: false,
           headers: {

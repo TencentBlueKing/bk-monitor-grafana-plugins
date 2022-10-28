@@ -1,6 +1,6 @@
 {
   "name": "grafana-timeseries-plugin",
-  "version": "3.6.0",
+  "version": "1.0.0",
   "description": "Blueking Monitor Datasource Plugin For Grafana",
   "homepage": "http://grafana.org",
   "scripts": {

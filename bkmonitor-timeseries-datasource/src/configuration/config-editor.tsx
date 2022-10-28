@@ -25,43 +25,118 @@
  */
 import React from 'react';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { QueryOption } from '../typings/config';
+import { QueryOption, SecureOption } from '../typings/config';
 import { LegacyForms } from '@grafana/ui';
-const { Input, FormField } = LegacyForms;
-export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption>> {
-  handleBaseUrlChange = (e: React.FocusEvent<HTMLInputElement>) => {
+const { Input, FormField, Switch } = LegacyForms;
+export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>, {useToken: boolean}> {
+  constructor(props) {
+    super(props)
+    this.state = {
+      useToken: props.options?.jsonData?.useToken ?? false
+    }
+  }
+  handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
     this.props.onOptionsChange({
       ...this.props.options,
       jsonData: {
         ...this.props.options.jsonData,
-        baseUrl: e.target.value.trim(),
+        [type]: e.target.value.trim(),
       },
     });
   };
+  handleUseTokenChange = (e) => {
+    const useToken = e.target.checked
+    this.setState({useToken})
+    this.props.onOptionsChange({
+      ...this.props.options,
+      jsonData: {
+        ...this.props.options.jsonData,
+        useToken
+      },
+    });
+  }
+  handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
+    this.props.onOptionsChange({
+      ...this.props.options,
+      secureJsonData: {
+        ...this.props.options.secureJsonData,
+        token: e.target.value.trim(),
+      },
+    });
+  }
   render() {
     const { options } = this.props;
     return (
       <>
         <h3 className="page-heading">BlueKing Monitor API Details</h3>
         <div className="gf-form-group">
-          <div className="gf-form-inline">
-            <div className="gf-form" style={{ width: '100%' }}>
-              <FormField
-                label="Base Url"
-                labelWidth={10}
-                inputEl={
-                  <Input
-                    style={{ width: '500px' }}
-                    defaultValue={options.jsonData.baseUrl}
-                    spellCheck={false}
-                    placeholder="15s"
-                    onBlur={this.handleBaseUrlChange}
-                  />
-                }
-                tooltip="蓝鲸监控API路径"
-              />
-            </div>
+          <div className="gf-form" style={{ width: '100%' }}>
+            <FormField
+              label="Base Url"
+              labelWidth={10}
+              inputEl={
+                <Input
+                  style={{ width: '500px' }}
+                  defaultValue={options.jsonData.baseUrl}
+                  spellCheck={false}
+                  placeholder="蓝鲸监控API路径"
+                  onBlur={e => this.handleChange('baseUrl', e)}
+                />
+              }
+              tooltip="蓝鲸监控API路径"
+            />
           </div>
+          <div className="gf-form" style={{ width: '100%' }}>
+            <FormField
+              label="是否启用token"
+              labelWidth={10}
+              inputEl={
+                <Switch
+                  label=""
+                  checked={this.state.useToken}
+                  onChange={this.handleUseTokenChange}
+                />
+              }
+              tooltip="蓝鲸监控业务ID"
+            />
+          </div>
+          {
+            this.state.useToken && <>
+              <div className="gf-form" style={{ width: '100%' }}>
+                <FormField
+                  label="业务ID"
+                  labelWidth={10}
+                  inputEl={
+                    <Input
+                      style={{ width: '500px' }}
+                      defaultValue={options.jsonData.bizId}
+                      spellCheck={false}
+                      placeholder="蓝鲸监控业务ID"
+                      onBlur={e => this.handleChange('bizId', e)}
+                    />
+                  }
+                  tooltip="蓝鲸监控业务ID"
+                />
+              </div>
+              <div className="gf-form" style={{ width: '100%' }}>
+                <FormField
+                  label="Token"
+                  labelWidth={10}
+                  inputEl={
+                    <Input
+                      type='password'
+                      style={{ width: '500px' }}
+                      defaultValue={options.secureJsonData?.token ?? ''}
+                      spellCheck={false}
+                      placeholder={options.secureJsonFields?.token ? '已设置免登入Token' : '蓝鲸监控当前业务免登入Token'}
+                      onBlur={this.handleTokenChange}
+                    />
+                  }
+                  tooltip="蓝鲸监控当前业务免登入Token"
+                />
+              </div>
+            </>
+          }
         </div>
       </>
     );
