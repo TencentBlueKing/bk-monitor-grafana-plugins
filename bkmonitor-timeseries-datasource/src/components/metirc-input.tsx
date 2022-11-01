@@ -43,10 +43,15 @@ import Tooltip from 'antd/es/tooltip';
 import Message from 'antd/es/message';
 
 const { TabPane } = Tabs;
+export enum MetricInputMode {
+  EDIT = 'edit',
+  COPY = 'copy'
+};
 export interface IQueryProps {
-  metric: MetricDetail;
+  metric?: MetricDetail;
   datasource: DashboardDatasource;
-  onMetricChange: (metric: IMetric) => void;
+  mode?: MetricInputMode;
+  onMetricChange?: (metric: IMetric) => void;
 }
 type RightPanelType = 'datasource' | 'scenario';
 interface ITagItem {
@@ -163,6 +168,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
    */
   handleMetricChange = async (e: any, metric: IMetric) => {
     e.stopPropagation();
+    if (this.props.mode === MetricInputMode.COPY) {
+      this.handleCopyMetric(metric, e);
+      this.handleVisibleChange(false);
+      return;
+    }
     this.props.onMetricChange(metric);
     this.handleVisibleChange(false);
   };
@@ -202,7 +212,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       count = 0,
     }: IMetricResponse = await this.props.datasource.getMetricList({
       conditions: [{ key: 'query', value: this.state.keyword }],
-      data_type_label: 'grafana',
+      data_type_label: this.props.mode === MetricInputMode.COPY ? 'time_series' : 'grafana',
       page,
       page_size: pageSize,
       tag: tag?.id || '',
@@ -216,7 +226,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       titleAlias: metric.metric_field === metric.metric_field_name ? '' : metric.metric_field_name,
       subtitle: [
         metric.result_table_label_name,
-        data_source_list.find(item => item.data_source_label === metric.data_source_label 
+        data_source_list.find(item => item.data_source_label === metric.data_source_label
           && item.data_type_label === metric.data_type_label)?.name,
         metric.related_name].filter(Boolean).join(' / '),
     }));
@@ -324,16 +334,16 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
   getSearchNode= (str: string) => {
     if (!str) return str;
     let { keyword } = this.state;
-    const len = keyword.length
+    const len = keyword.length;
     if (!keyword?.trim().length || !str.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())) return str;
     const list = [];
     let lastIndex = -1;
-    keyword = keyword.replace(/([.*/]{1})/gmi, '\\$1')
+    keyword = keyword.replace(/([.*/]{1})/gmi, '\\$1');
     str.replace(new RegExp(`${keyword}`, 'igm'), (key, index) => {
       if (list.length === 0 && index !== 0) {
         list.push(str.slice(0, index));
-      } else if(lastIndex >= 0) {
-        list.push(str.slice(lastIndex + key.length, index))
+      } else if (lastIndex >= 0) {
+        list.push(str.slice(lastIndex + key.length, index));
       }
       list.push(<span className='is-keyword'>{key}</span>);
       lastIndex = index;
@@ -499,16 +509,18 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                   onMouseLeave={() => this.handleHideTool(metric)}>
                   <div className='metric-item-title'>
                     <span style={{ fontSize: 0, opacity: 0 }}
-                      id={metric.metric_id}>{metric.titleName}
+                      id={metric.metric_id}>{metric.titleName.replace(/\./g, ':')}
                     </span>
                     <div className='title-wrap'>
                       <span className='title-name'>{this.getSearchNode(metric.titleName)}</span>{this.getSearchNode(metric.titleAlias)}
                     </div>
-                    <Tooltip title="复制指标名">
-                      <span style={{ visibility: metric.showTool ? 'visible' : 'hidden' }} className='copy-icon' onClick={e => this.handleCopyMetric(metric, e)}>
-                        <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10467" width="200" height="200"><path d="M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z"></path></svg>
-                      </span>
-                    </Tooltip>
+                    {
+                      this.props.mode !== MetricInputMode.COPY && <Tooltip title="复制指标名">
+                        <span style={{ visibility: metric.showTool ? 'visible' : 'hidden' }} className='copy-icon' onClick={e => this.handleCopyMetric(metric, e)}>
+                          <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10467" width="200" height="200"><path d="M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z"></path></svg>
+                        </span>
+                      </Tooltip>
+                    }
                   </div>
                   <div className='metric-item-subtitle'>{metric.subtitle}</div>
                 </div>
@@ -555,7 +567,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     return (
       <LanguageContext.Consumer>
         {({  }) => (
-          <div className="mitric-input">
+          <div className={`mitric-input ${this.props.mode === MetricInputMode.COPY ? 'copy-mode' : ''}`}>
             <Popover
               placement='bottomLeft'
               overlayClassName='mitric-input-popover'
@@ -564,17 +576,24 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               onVisibleChange={this.handleVisibleChange}
               getPopupContainer={() => document.querySelector('.dashboard-settings') || document.body}
               content={this.contentRender()}>
-              <div style={{ flex: 1 }} onClick={this.handShowContent}>
-                <Tooltip placement='right' title={!!this.props.metric?.metric_field
-                  ? <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(this.props.metric) }}/>
-                  : undefined}>
-                  <span
-                    className="mitric-input-name"
-                  >
-                    {needPlaceholder ? '选择指标' : this.displayRender()}
-                  </span>
-                </Tooltip>
-              </div>
+              {
+                this.props.mode === MetricInputMode.COPY
+                  ? <div className='copy-mode-input'>
+                  指标选择
+                    <i className='fa fa-angle-down'/>
+                  </div>
+                  : <div style={{ flex: 1 }} onClick={this.handShowContent}>
+                    <Tooltip placement='right' title={!!this.props.metric?.metric_field
+                      ? <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(this.props.metric) }}/>
+                      : undefined}>
+                      <span
+                        className="mitric-input-name"
+                      >
+                        {needPlaceholder ? '选择指标' : this.displayRender()}
+                      </span>
+                    </Tooltip>
+                  </div>
+              }
             </Popover>
             <CloseCircleFilled
               className="anticon ant-cascader-picker-clear"

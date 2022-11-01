@@ -29,7 +29,7 @@ import { EditorView } from '@codemirror/view';
 export const theme = EditorView.theme({
   '&': {
     '&.cm-focused': {
-      outline: 'none',
+      outline: 'none !important',
       outline_fallback: 'none',
     },
   },

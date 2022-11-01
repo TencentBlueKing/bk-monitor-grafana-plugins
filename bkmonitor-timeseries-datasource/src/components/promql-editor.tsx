@@ -36,7 +36,7 @@ import { commentKeymap } from '@codemirror/comment';
 import { lintKeymap } from '@codemirror/lint';
 import { PromQLExtension } from 'codemirror-promql';
 import { autocompletion, completionKeymap, CompletionContext, CompletionResult } from '@codemirror/autocomplete';
-import { CompleteStrategy, newCompleteStrategy } from 'codemirror-promql/esm/complete';
+import { CompleteStrategy, newCompleteStrategy } from 'codemirror-promql/dist/esm/complete';
 import { theme, promqlHighlighter } from './theme';
 const promqlExtension = new PromQLExtension();
 const dynamicConfigCompartment = new Compartment();
