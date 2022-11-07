@@ -374,23 +374,23 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         values: new ArrayVector(newSerie.datapoints.map(v => v[0])),
         labels: newSerie.dimensions || {},
       };
-      let dimisionFields;
-      if (newSerie.dimensions) {
-        dimisionFields = Object.keys(newSerie.dimensions).map(key => ({
-          name: key,
-          config: { filterable: true },
-          type: FieldType.string,
-          values: new ArrayVector(),
-        }));
-        newSerie.datapoints.forEach(() => {
-          dimisionFields.forEach((dimisionFiled) => {
-            dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
-          });
-        });
-      }
+      // let dimisionFields;
+      // if (newSerie.dimensions) {
+      //   dimisionFields = Object.keys(newSerie.dimensions).map(key => ({
+      //     name: key,
+      //     config: { filterable: true },
+      //     type: FieldType.string,
+      //     values: new ArrayVector(),
+      //   }));
+      //   newSerie.datapoints.forEach(() => {
+      //     dimisionFields.forEach((dimisionFiled) => {
+      //       dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
+      //     });
+      //   });
+      // }
       const data: DataFrame = {
         refId,
-        fields: [TimeField, ...dimisionFields, ValueField],
+        fields: [TimeField, ValueField],
         length: newSerie.datapoints.length,
       };
       return data;

@@ -44,7 +44,7 @@ interface IPromqlEditorProps {
   value: string;
   style?: React.CSSProperties;
   verifiy?: boolean;
-  executeQuery?: (v: string, hasError: boolean) => void;
+  executeQuery?: (v: string, hasError: boolean, immediateQuery?: boolean) => void;
   onChange?: (v: string) => void;
   onBlur?: (v: string, hasError: boolean) => void;
 }
@@ -144,7 +144,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
             ...completionKeymap,
             ...lintKeymap,
           ]),
-          placeholder('Expression (press Shift+Enter for newlines)'),
+          placeholder('Shift + Enter换行，Enter查询'),
           dynamicConfigCompartment.of(dynamicConfig),
           // This keymap is added without precedence so that closing the autocomplete dropdown
           // via Escape works without blurring the editor.
@@ -166,7 +166,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
                 //   const lintFunc = promqlExtension.getLinter().promQL()(v) as Diagnostic[];
                 //   hasError = lintFunc?.length > 0;
                 // }
-                this.props.executeQuery(v.state.doc.toString(), hasError);
+                this.props.executeQuery(v.state.doc.toString(), hasError, true);
                 return true;
               },
             },

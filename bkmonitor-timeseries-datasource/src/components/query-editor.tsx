@@ -731,7 +731,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    * @param {string} v
    * @return {*}
    */
-  handleSourceBlur = async (v: string, hasError = false) => {
+  handleSourceBlur = async (v: string, hasError = false, immediateQuery = false) => {
     this.handleSouceChange(v);
     setTimeout(async () => {
       if (v.length && !this.state.isTranform) {
@@ -740,7 +740,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           if (this.state.mode === 'code') {
             this.setState({
               source: v,
-            }, this.handleQuery);
+            }, () => {
+              this.handleQuery();
+              immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
+            });
           } else {
             const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
               this.setState({ editorStatus: 'error' });
@@ -759,6 +762,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 source: v,
               });
               this.handleQuery(list);
+              immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
             }
           }
           this.setState({ loading: false });
@@ -1008,7 +1012,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         onClick={() => !isLoading && this.props.onRunQuery()}
         className={`search-auto ${isLoading ? 'is-loading' : ''}`}
         type="primary">{btnText}</Button>
-      <span className={`icon-wrap ${isLoading ? 'is-loading' : ''}`} onClick={() => !isLoading && this.handleExchangeMode()}>
+      <span className={`icon-wrap ${isLoading ? 'is-loading' : ''} `} onClick={() => !isLoading && this.handleExchangeMode()}>
         <i className='fa fa-exchange'/>{mode === 'code' ? 'UI' : 'PromQL'}
       </span>
     </div>;
@@ -1224,7 +1228,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       <>
                         <PromqlEditor
                           value={source}
-                          style={{ minHeight: '120px', borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5' }}
+                          style={{ minHeight: '68px', borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5' }}
                           verifiy={true}
                           onBlur={this.handleSourceBlur}
                           executeQuery={this.handleSourceBlur}
