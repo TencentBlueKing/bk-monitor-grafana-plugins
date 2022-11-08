@@ -509,10 +509,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                   onMouseLeave={() => this.handleHideTool(metric)}>
                   <div className='metric-item-title'>
                     <span style={{ fontSize: 0, opacity: 0 }}
-                      id={metric.metric_id}>{metric.titleName.replace(/\./g, ':')}
+                      id={metric.metric_id}>{MetricInputMode.COPY === this.props.mode ?  metric.readable_name.replace(/\./g, ':') : metric.readable_name}
                     </span>
                     <div className='title-wrap'>
-                      <span className='title-name'>{this.getSearchNode(metric.titleName)}</span>{this.getSearchNode(metric.titleAlias)}
+                      <span className='title-name'>{this.getSearchNode(metric.readable_name)}</span>{this.getSearchNode(metric.titleAlias)}
                     </div>
                     {
                       this.props.mode !== MetricInputMode.COPY && <Tooltip title="复制指标名">
