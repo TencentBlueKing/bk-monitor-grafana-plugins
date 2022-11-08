@@ -29,7 +29,7 @@
 /* eslint-disable camelcase */
 import React from 'react';
 import EditorForm from './editor-form';
-import MetricInput from './metirc-input';
+import MetricInput, { MetricInputMode } from './metirc-input';
 import QueryFormula from './query-formula';
 import IntervalInput from './interval-input';
 import DimensionInput from './dimension-input';
@@ -41,7 +41,7 @@ import TargetInput from './target-input';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import PromqlEditor from './promql-editor';
 import Spin from 'antd/es/spin';
-import { QueryEditorProps } from '@grafana/data';
+import { LoadingState, QueryEditorProps } from '@grafana/data';
 import QueryDataSource from '../datasource/datasource';
 import Button from 'antd/es/button';
 import {
@@ -62,9 +62,16 @@ import { IQueryConfig, QueryData } from '../typings/datasource';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
 import { getCookie, getEnByName } from '../utils/utils';
+import AddvanceSetting, { AddvanceSettingKey } from './addvance-setting';
+import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 const refLetters = 'abcdefghijklmnopqrstuvwxyz';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
+export enum SearcState  {
+  'deafult' ='deafult',
+  'auto' = 'auto',
+  'loading' = 'loading'
+}
 interface IQueryEditorState {
   metricList: MetricDetail[];
   cluster: ITargetItem[];
@@ -78,10 +85,13 @@ interface IQueryEditorState {
   source: string;
   isTranform: boolean;
   editorStatus: EditorStatus;
-  onlyPromql: boolean;
+  // onlyPromql: boolean;
   step: string;
   promqlAlias: string;
-  expressionList: IExpresionItem[]
+  format: string;
+  type: string;
+  expressionList: IExpresionItem[];
+  searchState: SearcState
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
@@ -91,7 +101,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     if (query?.data?.metric && query?.data?.monitorObject) {
       query = handleTransformOldQuery(query.data);
     }
-    const { cluster = [], module = [], host = [], expression = '', expressionList = [],  functions = [], source = '', alias = '', display = false, only_promql = false, step = '', promqlAlias = '' } = query;
+    const { cluster = [], module = [], host = [], expression = '', mode = 'ui',  expressionList = [],  functions = [], source = '', alias = '', display = false, only_promql = false, step = '', promqlAlias = '' } = query;
     let expressions: IExpresionItem[] = expressionList;
     // 兼容旧版本
     if (expression?.length) {
@@ -111,14 +121,16 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       loading: true,
       inited: false,
       language: getCookie('blueking_language'),
-      mode: only_promql ? 'code' : 'ui',
+      mode: only_promql || mode === 'code' ? 'code' : 'ui',
       source,
       isTranform: false,
       editorStatus: 'default',
-      onlyPromql: only_promql,
       step,
+      format: query.format ?? 'time_series',
+      type: query.type ?? 'range',
       promqlAlias: promqlAlias || alias,
       expressionList: expressions,
+      searchState: SearcState.deafult,
     };
     this.initState(query);
   }
@@ -167,7 +179,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         refId: (item.refId || '').toLocaleLowerCase(),
         alias: item.alias,
         functions: item?.functions?.length ? this.handleInitFuntions(functionList, item.functions) : [],
-        mode: this.state.onlyPromql ? 'code' : item.mode,
+        mode: 'ui',
         source: item.source,
       };
       return this.props.datasource
@@ -237,13 +249,15 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       key,
       queryType,
       datasource,
-      only_promql: this.state.onlyPromql,
       source: this.state.source,
       step: this.state.step,
+      format: this.state.format,
+      type: this.state.type,
+      mode: this.state.mode || 'ui',
       // showExpression: this.state.showExpression,
       ...query,
     });
-    this.props.onRunQuery();
+    this.state.searchState === SearcState.auto && this.props.onRunQuery();
   };
   handleGetQueryData(metricList: MetricDetail[], expression?: string, display?: boolean) {
     const { host, module, cluster, expressionList, promqlAlias } = this.state;
@@ -717,16 +731,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    * @param {string} v
    * @return {*}
    */
-  handleSourceBlur = async (v: string, hasError = false) => {
+  handleSourceBlur = async (v: string, hasError = false, immediateQuery = false) => {
     this.handleSouceChange(v);
     setTimeout(async () => {
       if (v.length && !this.state.isTranform) {
         if (!hasError) {
           this.setState({ loading: true });
-          if (this.state.onlyPromql) {
+          if (this.state.mode === 'code') {
             this.setState({
               source: v,
-            }, this.handleQuery);
+            }, () => {
+              this.handleQuery();
+              immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
+            });
           } else {
             const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
               this.setState({ editorStatus: 'error' });
@@ -745,6 +762,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 source: v,
               });
               this.handleQuery(list);
+              immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
             }
           }
           this.setState({ loading: false });
@@ -752,7 +770,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           this.setState({ editorStatus: 'error' });
         }
       }
-    });
+    }, 20);
   };
   /**
    * @description: promql editor值变更时触发
@@ -773,7 +791,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    */
   handleSouceChange = async (v: string) => {
     if (v.trim() !== this.state.source) {
-      this.setState({ source: v });
+      this.setState({ source: v,  editorStatus: 'default' });
     }
   };
 
@@ -817,6 +835,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.setState({
       expressionList: list,
     }, this.handleQuery);
+  };
+  handleAddvanceSettingChange = () => {
+
   };
   expressionListComp = (language) =>  {
     const { expressionList, functionList } = this.state;
@@ -902,6 +923,108 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       </div>
     ));
   };
+  handleExchangeMode = () => {
+    setTimeout(async () => {
+      const { editorStatus, mode, source, metricList } = this.state;
+      if (editorStatus === 'error') return;
+      let hasError = false;
+      this.setState({ loading: true });
+      // ui => code
+      if (mode === 'ui') {
+        let source = '';
+        const list = metricList.filter(item => item.metric_field);
+        if (list.length) {
+          const params = this.handleGetQueryData(list);
+          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
+            hasError = true;
+            return '';
+          });
+          source && this.setState({
+            source,
+            mode: 'code',
+            promqlAlias: params.promqlAlias || params.query_configs?.[0]?.alias,
+          }, this.handleQuery);
+        } else {
+          !hasError && this.setState({
+            source,
+            mode: 'code',
+            promqlAlias: '',
+          }, this.handleQuery);
+        }
+      } else { // code => ui
+        let data: any = {};
+        if (source) {
+          data = await this.props.datasource.promqlToqueryConfig(source, 'code').catch(() => {
+            hasError = true;
+            return {};
+          });
+        }
+        if (data?.query_configs?.length) {
+          const metricList = await this.handleInitMetricList(data.query_configs, this.state.functionList);
+          let list = this.state.metricList.slice();
+          metricList.forEach((set, index) => {
+            set.alias = list[index]?.alias || '';
+            set.display = list[index]?.display;
+          });
+          list = this.handleResetMetricDimension(metricList);
+          this.setState({
+            metricList: list,
+            expressionList: data.expression ? [{ expression: data.expression, functions: [], alias: '', active: true }] : [],
+            mode: 'ui',
+          }, this.handleQuery);
+        } else {
+          !hasError && this.setState({
+            metricList: [{ refId: 'a' } as any],
+            expressionList: [],
+            mode: 'ui',
+          }, this.handleQuery);
+        }
+      }
+      this.setState({
+        loading: false,
+        editorStatus: hasError ? 'error' : 'default',
+      });
+    }, 20);
+  };
+  handleSearchStateChange = () => {
+    this.setState({
+      searchState: this.state.searchState === 'auto' ? SearcState.deafult : SearcState.auto,
+    });
+  };
+  transfromModeComp = (state: LoadingState) => {
+    const isLoading = state === LoadingState.Loading;
+    const { searchState, mode } = this.state;
+    let btnText = '查询';
+    if (isLoading) btnText = '查询中...';
+    else if (searchState === SearcState.auto) btnText = '自动查询';
+    return <div className='transform-mode'>
+      { mode === 'code' && <MetricInput mode={MetricInputMode.COPY} datasource={this.props.datasource}/>}
+      <span className='search-play' onClick={() => !isLoading && this.handleSearchStateChange()}>
+        {
+          isLoading
+            ? <LoadingOutlined spin style={{ color: '#3A84FF', cursor: isLoading ? 'not-allowed' : 'pointer' }}/>
+            : <i className={`fa ${searchState === SearcState.deafult ? 'fa-play' : 'fa-pause'}`}/>
+        }
+      </span>
+      <Button
+        size="small"
+        disabled={isLoading}
+        onClick={() => !isLoading && this.props.onRunQuery()}
+        className={`search-auto ${isLoading ? 'is-loading' : ''}`}
+        type="primary">{btnText}</Button>
+      <span className={`icon-wrap ${isLoading ? 'is-loading' : ''} `} onClick={() => !isLoading && this.handleExchangeMode()}>
+        <i className='fa fa-exchange'/>{mode === 'code' ? 'UI' : 'PromQL'}
+      </span>
+    </div>;
+  };
+  addvanceSettingChange = (key: AddvanceSettingKey, v: string) => {
+    this.setState({
+      [key]: v,
+    } as any, () => {
+      this.handleQuery();
+      this.state.searchState !== SearcState.auto && this.props.onRunQuery();
+    });
+  };
   render(): JSX.Element {
     const {
       cluster,
@@ -915,13 +1038,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       language,
       mode,
       source,
-      onlyPromql,
       step,
       promqlAlias,
     } = this.state;
     const targetType = metricList.every(item => item.targetType === TARGET_TYPE.SERVICE_INSTANCE)
       ? TARGET_TYPE.SERVICE_INSTANCE
       : TARGET_TYPE.HOST;
+    const { data } = this.props;
     return (
       <LanguageContext.Provider value={{ language }}>
         <div className="monitor-grafana">
@@ -929,18 +1052,23 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             {inited ? (
               <>
                 {
-                  mode === 'ui'
+                  this.transfromModeComp(data?.state)
+                }
+                {
+                  mode !== 'code'
                     ? (
                       <>
                         {
                           metricList.map((item, index) => (
                             <div className="query-editor" key={index}>
-                              <span
-                                className={`query-editor-label ${!item.display ? 'is-unchecked' : ''}`}
-                                onClick={() => this.handleMetricChecked(index)}
-                              >
-                                {item.refId?.toLocaleLowerCase() || 'a'}
-                              </span>
+                              {
+                                (metricList.length > 1 || !!this.state.expressionList?.length) &&  <span
+                                  className={`query-editor-label ${!item.display ? 'is-unchecked' : ''}`}
+                                  onClick={() => this.handleMetricChecked(index)}
+                                >
+                                  {item.refId?.toLocaleLowerCase() || 'a'}
+                                </span>
+                              }
                               <Spin
                                 key={`${item.metricMetaId}-${item.refId}`}
                                 spinning={!!item.loading && !!item.metricMetaId}
@@ -1033,15 +1161,14 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                           onBlur={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                                         />
 
-                                      )
-                                  }
+                                      )}
                                 </div>
                               </Spin>
                               {
-                                item.metricMetaId && !onlyPromql
+                                item.metricMetaId
                                   ? (
                                     <div className={`query-editor-tools multipe-metric ${metricList.length < 2 ? '' : 'multipe-metric'}`}>
-                                      <svg
+                                      {/* <svg
                                         onClick={() => this.handleTransfromMetricMode(index)}
                                         className="svg-icon source-icon"
                                         viewBox="0 0 1045 1024"
@@ -1053,7 +1180,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         ) : (
                                           <path d="M326.857143 799.428571l-28.571429 28.571429q-5.714286 5.714286-13.142857 5.714286t-13.142857-5.714286L5.714286 561.714286q-5.714286-5.714286-5.714286-13.142857t5.714286-13.142858l266.285714-266.285714q5.714286-5.714286 13.142857-5.714286t13.142857 5.714286l28.571429 28.571429q5.714286 5.714286 5.714286 13.142857t-5.714286 13.142857L102.285714 548.571429l224.571429 224.571428q5.714286 5.714286 5.714286 13.142857t-5.714286 13.142857z m337.714286-609.714285L451.428571 927.428571q-2.285714 7.428571-8.857142 11.142858T429.142857 940l-35.428571-9.714286q-7.428571-2.285714-11.142857-8.857143T381.142857 907.428571l213.142857-737.714285q2.285714-7.428571 8.857143-11.142857t13.428572-1.428572l35.428571 9.714286q7.428571 2.285714 11.142857 8.857143t1.428572 14z m375.428571 372l-266.285714 266.285714q-5.714286 5.714286-13.142857 5.714286t-13.142858-5.714286l-28.571428-28.571429q-5.714286-5.714286-5.714286-13.142857t5.714286-13.142857l224.571428-224.571428-224.571428-224.571429q-5.714286-5.714286-5.714286-13.142857t5.714286-13.142857l28.571428-28.571429q5.714286-5.714286 13.142858-5.714286t13.142857 5.714286l266.285714 266.285714q5.714286 5.714286 5.714286 13.142858t-5.714286 13.142857z" />
                                         )}
-                                      </svg>
+                                      </svg> */}
                                       <svg
                                         width="16"
                                         height="16"
@@ -1101,23 +1228,23 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       <>
                         <PromqlEditor
                           value={source}
-                          style={{ minHeight: '120px', borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5' }}
+                          style={{ minHeight: '68px', borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5' }}
                           verifiy={true}
                           onBlur={this.handleSourceBlur}
                           executeQuery={this.handleSourceBlur}
                         />
-                        <div>
+                        {/* <div>
                           <EditorForm title={getEnByName('别名', language)}>
                             <AliasInput style={{ width: '288px', height: '32px' }} inputProps={{ defaultValue: promqlAlias }} onChange={this.handleAllAliasChange} />
                             <EditorForm title={getEnByName('Step', language)}>
                               <AliasInput style={{ width: '88px' }} inputProps={{ defaultValue: step, placeholder: 'auto' }} onChange={this.handleProStepChange} />
                             </EditorForm>
                           </EditorForm>
-                        </div>
+                        </div> */}
                       </>
                     )
                 }
-                {!onlyPromql && metricList.some(item => item.metricMetaId) ? (
+                {mode !== 'code' && metricList.some(item => item.metricMetaId) ? (
                   <EditorForm
                     title={getEnByName('目标', language)}
                     style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
@@ -1134,17 +1261,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   </EditorForm>
                 ) : undefined}
                 {
-                  !onlyPromql ? (
+                  mode !== 'code' && metricList.some(item => item.metric_field) ? (
                     <>
-                      <Button
-                        className="add-metric"
-                        type="default"
-                        icon={<PlusOutlined />}
-                        style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
-                        onClick={this.handleAddEmptyMetric}
-                      >
-                        {getEnByName('多指标', language)}
-                      </Button>
+                      {
+                        <Button
+                          className="add-metric"
+                          type="default"
+                          icon={<PlusOutlined />}
+                          style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
+                          onClick={this.handleAddEmptyMetric}
+                        >
+                          {getEnByName('多指标', language)}
+                        </Button>
+                      }
                       {
                         <Button
                           className="add-metric"
@@ -1156,16 +1285,27 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                           {getEnByName('表达式', language)}
                         </Button>
                       }
-                      <Button
+                      {/* <Button
                         className="add-metric"
                         type="default"
                         style={{ marginLeft: '10px', display: 'none' }}
                         onClick={this.handleTransformMode}
                       >
                         {getEnByName(mode === 'code' ? 'UI' : 'Source', language)}
-                      </Button>
+                      </Button> */}
                     </>
-                  ) : undefined}
+                  ) : undefined
+                }
+                {
+                  <AddvanceSetting
+                    mode={mode}
+                    step={step}
+                    promqlAlias={promqlAlias}
+                    format={this.state.format}
+                    type={this.state.type}
+                    onChange={this.addvanceSettingChange}
+                  />
+                }
               </>
             ) : (
               <div className="inite-wrapper" />

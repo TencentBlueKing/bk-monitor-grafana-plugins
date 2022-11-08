@@ -237,6 +237,7 @@ export interface IMetric {
   titleAlias: string;
   subtitle: string;
   showTool: boolean;
+  readable_name?: string;
 }
 // 编辑模式
 export type EditMode = 'code' | 'ui';
@@ -284,6 +285,7 @@ export class MetricDetail {
   source = '';
   loading = false;
   status: EditorStatus = 'default';
+  readable_name?: string;
 
   constructor(metricDetail: IMetric | MetricDetail) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));

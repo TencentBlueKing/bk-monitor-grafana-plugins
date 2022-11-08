@@ -68,6 +68,7 @@ export const handleTransformOldQuery = (data: any) => {
         ...queryConfig,
       },
     ],
+    mode: 'ui',
     ...handleTransformOldTarget(data),
   };
   return newQuery;
