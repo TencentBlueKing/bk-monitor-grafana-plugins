@@ -339,9 +339,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       };
     }
     const formatFunc = query.format === 'table' ? this.formatTable : this.formatTimeseries;
-    return formatFunc.call(this, series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+    return formatFunc.call(this, series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId, query.format);
   }
-  formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
+  formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId, format) {
     return series.map((serie) => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
@@ -368,7 +368,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         name: 'Value',
         type: FieldType.number,
         config: {
-          displayName: newSerie.target,
+          displayName: format === 'heatmap' ? 'Value' : newSerie.target,
           unit: newSerie.unit,
         },
         values: new ArrayVector(newSerie.datapoints.map(v => v[0])),
