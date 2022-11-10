@@ -38,6 +38,10 @@ import {
   DataFrame,
   FieldType,
   ArrayVector,
+  Field,
+  TIME_SERIES_TIME_FIELD_NAME,
+  TIME_SERIES_VALUE_FIELD_NAME,
+  getDisplayProcessor,
 } from '@grafana/data';
 import { getBackendSrv, BackendSrvRequest, getTemplateSrv } from '@grafana/runtime';
 import { QueryOption } from '../typings/config';
@@ -338,8 +342,13 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         object_name: metric?.result_table_label_name,
       };
     }
-    const formatFunc = query.format === 'table' ? this.formatTable : this.formatTimeseries;
-    return formatFunc.call(this, series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+    if (query.format === 'heatmap') {
+      return this.formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+    }
+    if (query.format === 'table') {
+      return this.formatTable(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+    }
+    return this.formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
   }
   formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
     return series.map((serie) => {
@@ -458,6 +467,75 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       length: TimeField.values.length,
     };
     return [data];
+  }
+  formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
+    const dataFrame: DataFrame[] = [];
+    series.forEach((serie) => {
+      // 兼容老版本变量设置
+      if (hasVariateAlias) {
+        aliasData.target_ip = serie.dimensions.bk_target_ip;
+        aliasData.target_instance = serie.dimensions.bk_inst_name;
+      }
+      if (!serie.unit || serie.unit === 'none') delete serie.unit;
+      const newSerie = {
+        ...serie,
+        target: hasVariateAlias
+          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
+          : alias || serie.target,
+      };
+      const fields: Field[] = [];
+      fields.push({
+        name: TIME_SERIES_TIME_FIELD_NAME,
+        type: FieldType.time,
+        config: {},
+        values: new ArrayVector<number>(newSerie.datapoints.map(v => v[1])),
+      });
+      fields.push({
+        name: TIME_SERIES_VALUE_FIELD_NAME,
+        type: FieldType.number,
+        display: getDisplayProcessor(),
+        config: {
+          displayNameFromDS: !alias?.length ? undefined : newSerie.target,
+        },
+        labels: serie.dimensions,
+        values: new ArrayVector<number>(newSerie.datapoints.map(v => v[0])),
+      });
+      dataFrame.push({
+        meta: {
+        },
+        refId,
+        length: fields[0].values.length,
+        fields,
+        name: newSerie.target,
+      }) ;
+    });
+    return this.mergeHeatmapFrames(dataFrame);
+  }
+  mergeHeatmapFrames(frames: DataFrame[]): DataFrame[] {
+    if (frames.length === 0) {
+      return [];
+    }
+
+    const timeField = frames[0].fields.find(field => field.type === FieldType.time)!;
+    const countFields = frames.map((frame) => {
+      const field = frame.fields.find(field => field.type === FieldType.number)!;
+
+      return {
+        ...field,
+        name: field.config.displayNameFromDS!,
+      };
+    });
+
+    return [
+      {
+        ...frames[0],
+        meta: {
+          ...frames[0].meta,
+          type: 'heatmap-rows',
+        },
+        fields: [timeField!, ...countFields],
+      },
+    ] as any;
   }
   buildTargets({ host, cluster, module }: ITargetData) {
     if (host?.length) {
