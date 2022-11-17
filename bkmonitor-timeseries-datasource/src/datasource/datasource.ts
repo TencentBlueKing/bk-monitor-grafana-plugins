@@ -131,7 +131,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           }],
         };
       }
-      return item;
+      return {
+        ...item,
+        mode: item.only_promql ? 'code' : item.mode,
+      };
     });
     const promiseList = [];
     let errorMsg = '';
@@ -177,8 +180,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       }
       // 表达式图表数据请求
       if (item.mode === 'code'
+        || item.only_promql
         || (item.expressionList?.some(item => item.expression && item.active) && configList.length > 0)) {
-        if (item.mode === 'code') {
+        if (item.mode === 'code' || item.only_promql) {
           const params = {
             url: QueryUrl.graph_promql_query,
             data: {
