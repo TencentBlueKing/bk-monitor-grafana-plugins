@@ -34,6 +34,7 @@ import Menu from 'antd/es/menu';
 import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
+export const EMPTY_VALUE = '-空-';
 export interface IFunctionInputProps {
   funtion: IFunctionItem;
   onDelete: () => void;
@@ -94,9 +95,9 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
     const getParamList = (param: IFunctionParam) => (param?.shortlist?.length ? (
       <Menu defaultSelectedKeys={[param.value.toString()]}>
         {(param.shortlist as any).map(id => (
-          <Menu.Item key={id.toString()}>
+          <Menu.Item key={id === '' ? EMPTY_VALUE : id.toString()}>
             <div className="funciton-menu-item" onMouseDown={() => this.handleSelectParam(id, param)}>
-              {id}
+              {id === '' ? EMPTY_VALUE : id}
             </div>
           </Menu.Item>
         ))}
@@ -139,7 +140,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                       key={param.id}
                       autoFocus
                       className="param-input"
-                      defaultValue={param.value}
+                      defaultValue={param.value === '' ? '-空-' : param.value}
                       onBlur={e => this.handleParamBlur(e, param)}
                     ></Input>
                   </Dropdown>
@@ -147,7 +148,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
               }
               return (
                 <span key={param.id} onClick={e => this.handleParamClick(e, param)} className="funtion-input-param">
-                  {param.value}
+                  {param.value === '' ? EMPTY_VALUE : param.value}
                 </span>
               );
             })}
