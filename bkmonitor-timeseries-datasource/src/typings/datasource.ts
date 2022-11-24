@@ -64,5 +64,6 @@ export interface QueryData extends DataQuery {
   showExpression?: boolean;
   source?: string;
   promqlAlias?: string;
-  expressionList?: IExpresionItem[]
+  expressionList?: IExpresionItem[];
+  only_promql?: boolean
 }
