@@ -236,9 +236,10 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
     const moduleValue = module.map(item => item.value);
     const hostValue = host.map(item => item.value);
     const handleMaxTagPlaceholder = v => `+${v.length}`;
-    const handleDropdownRender = (originNode: any, type) => (
-      <Spin spinning={loading}>
-        {originNode?.props?.options?.length ? (
+    const handleDropdownRender = (originNode: any, type) => {
+      const needAll = type === 'cluster' ? clusterList.length > 1 : moduleList.length > 1;
+      return  <Spin spinning={loading}>
+        {needAll ? (
           <>
             <div className="target-select-all" onClick={() => this.handleSelectAll(type)}>
               全选
@@ -247,8 +248,8 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
           </>
         ) : undefined}
         <div className="target-dropdown-list">{originNode}</div>
-      </Spin>
-    );
+      </Spin>;
+    };
     const handleHostDropdownRender = (originNode: any, type) => (
       <Spin spinning={loading}>
         {hostList.length ? (
@@ -299,11 +300,11 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               onFocus={this.handleClusterFocus}
               options={clusterList}
             >
-              {clusterList?.map(item => (
+              {/* {clusterList?.map(item => (
                 <Option value={item.value} key={item.value}>
                   {item.label}
                 </Option>
-              ))}
+              ))} */}
             </Select>
             <Select
               mode="multiple"
