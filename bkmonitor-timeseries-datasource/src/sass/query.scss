@@ -727,12 +727,12 @@
 .target-input-cluster-dropdown {
   width: auto !important;
   min-width: 100px !important;
-  .target-dropdown-list:last-child div div {
-    position: static !important; 
-    top: auto !important;
-    left: auto !important;
-    right: auto !important;
-  }
+  // .target-dropdown-list:last-child div div {
+  //   position: static !important; 
+  //   top: auto !important;
+  //   left: auto !important;
+  //   right: auto !important;
+  // }
 }
 // .ant-tooltip-arrow-content {
 //   --antd-arrow-background-color: #3274d9
