@@ -1,6 +1,6 @@
 {
   "type": "datasource",
-  "name": "蓝鲸监控-时序数据",
+  "name": "Blueing Monitor TimeSeries",
   "id": "bkmonitor-timeseries-datasource",
   "metrics": true,
   "annotations": false,
@@ -16,7 +16,7 @@
     { "name": "GitHub", "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins" },
     {
       "name": "License",
-      "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE.txt"
+      "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE"
     }
   ],
   "routes": [

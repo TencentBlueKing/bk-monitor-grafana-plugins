@@ -1,13 +1,24 @@
 {
   "type": "datasource",
-  "name": "蓝鲸监控-事件插件",
+  "name": "Blueing Monitor Event",
   "id": "bkmonitor-event-datasource",
-  "version": "0.0.1",
   "metrics": true,
   "annotations": false,
   "queryOptions": {
     "maxDataPoints": true
   },
+  "dependencies": {
+    "grafanaDependency": ">=7.5",
+    "grafanaVersion": "7.5",
+    "plugins": []
+  },
+  "links": [
+    { "name": "GitHub", "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins" },
+    {
+      "name": "License",
+      "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE"
+    }
+  ],
   "routes": [
     {
       "path": "event",
@@ -25,6 +36,7 @@
     "author": {
       "name": "blueking"
     },
+    "version": "3.6.0",
     "logos": {
       "small": "img/logo.png",
       "large": "img/logo.png"
