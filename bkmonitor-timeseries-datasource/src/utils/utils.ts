@@ -68,6 +68,7 @@ export const createMetricTitleTooltips = (metricData: any) => {
     { val: data.metric_field, label: '指标名' },
     { val: data.metric_field_name, label: '指标别名' },
     { val: data.data_source_label, label: '指标来源' },
+    { val: data.result_table_label_name, label: '监控对象' },
   ];
   const elList = {
     bk_monitor_time_series: [
