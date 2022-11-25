@@ -29,7 +29,8 @@
           "content": "Bearer {{ .SecureJsonData.token }}"
         },
         {
-          "keepCookies": "{{ .JsonData.keepCookies }}"
+          "name": "keepCookies",
+          "content": "{{ .JsonData.keepCookies }}"
         }
       ]
     }
