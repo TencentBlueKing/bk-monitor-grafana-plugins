@@ -422,7 +422,7 @@ export interface ICommonItem {
   id: string;
   name: string;
   is_dimension: boolean;
-  type: string;
+  type?: string;
 }
 // 监控目标列表item
 export interface ITargetItem {

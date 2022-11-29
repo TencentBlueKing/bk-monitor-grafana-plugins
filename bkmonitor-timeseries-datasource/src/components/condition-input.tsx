@@ -207,6 +207,14 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
   handleConditionChange = (v: string, index: number) => {
     this.handleCommonChange(index, 'condition', v);
   };
+  handleConditionKeyDown = (e: any, index: number) => {
+    if (e.key === 'Enter' && e.target.value && !this.props.metric.dimensions
+      .some(item => item.id === e.target.value || item.name ===  e.target.value)) {
+      const dimension = e.target.value;
+      this.props.metric.dimensions.push({ id: dimension, name: dimension, is_dimension: true });
+      this.handleKeyChange(e.target.value, index);
+    }
+  };
   handleAddClick = (index: number) => {
     const { agg_condition } = this.props.metric;
     const list = agg_condition.slice();
@@ -282,6 +290,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                 autoFocus={true}
                 onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                 onChange={(v: string) => this.handleKeyChange(v, index)}
+                onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
                 dropdownRender={(menu): JSX.Element => (item.value ? (
                   <div>
                     {menu}
