@@ -26,14 +26,16 @@
 import React from 'react';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { QueryOption, SecureOption } from '../typings/config';
-import { LegacyForms } from '@grafana/ui';
+import { LegacyForms, TagsInput } from '@grafana/ui';
 const { Input, FormField, Switch } = LegacyForms;
-export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>, {useToken: boolean}> {
+export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption,
+SecureOption>,
+{useToken: boolean}> {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
-      useToken: props.options?.jsonData?.useToken ?? false
-    }
+      useToken: props.options?.jsonData?.useToken ?? false,
+    };
   }
   handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
     this.props.onOptionsChange({
@@ -45,16 +47,16 @@ export default class ConfigEditor extends React.PureComponent<DataSourcePluginOp
     });
   };
   handleUseTokenChange = (e) => {
-    const useToken = e.target.checked
-    this.setState({useToken})
+    const useToken = e.target.checked;
+    this.setState({ useToken });
     this.props.onOptionsChange({
       ...this.props.options,
       jsonData: {
         ...this.props.options.jsonData,
-        useToken
+        useToken,
       },
     });
-  }
+  };
   handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
     this.props.onOptionsChange({
       ...this.props.options,
@@ -63,9 +65,12 @@ export default class ConfigEditor extends React.PureComponent<DataSourcePluginOp
         token: e.target.value.trim(),
       },
     });
-  }
+  };
   render() {
-    const { options } = this.props;
+    const { options, onOptionsChange } = this.props;
+    const tagProps: any = {
+      style: { width: '500px' },
+    };
     return (
       <>
         <h3 className="page-heading">BlueKing Monitor API Details</h3>
@@ -102,6 +107,29 @@ export default class ConfigEditor extends React.PureComponent<DataSourcePluginOp
           </div>
           {
             this.state.useToken && <>
+              <div className="gf-form">
+                <FormField
+                  label="Allowed cookies"
+                  labelWidth={10}
+                  inputEl={
+                    <TagsInput
+                      {...tagProps}
+                      tags={options.jsonData.keepCookies}
+                      width={500}
+                      // style={{ width: '500px' }}
+                      onChange={cookies => onOptionsChange({
+                        ...this.props.options,
+                        jsonData: {
+                          ...this.props.options.jsonData,
+                          keepCookies: cookies,
+                        },
+                      })
+                      }
+                    />
+                  }
+                  tooltip="Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie."
+                />
+              </div>
               <div className="gf-form" style={{ width: '100%' }}>
                 <FormField
                   label="业务ID"

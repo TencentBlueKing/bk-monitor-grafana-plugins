@@ -27,6 +27,10 @@
         {
           "name": "Authorization",
           "content": "Bearer {{ .SecureJsonData.token }}"
+        },
+        {
+          "name": "keepCookies",
+          "content": "{{ .JsonData.keepCookies }}"
         }
       ]
     }
