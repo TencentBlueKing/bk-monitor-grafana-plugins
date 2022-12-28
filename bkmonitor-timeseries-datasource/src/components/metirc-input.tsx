@@ -509,7 +509,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                   onMouseLeave={() => this.handleHideTool(metric)}>
                   <div className='metric-item-title'>
                     <span style={{ fontSize: 0, opacity: 0 }}
-                      id={metric.metric_id}>{metric.metric_id.replace(/\./g, ':')}
+                      id={metric.metric_id}>{metric.metric_id.replace(/\./g, ':').replace('::', ':')}
                     </span>
                     <div className='title-wrap'>
                       <span className='title-name'>{this.getSearchNode(metric.readable_name)}</span>{this.getSearchNode(metric.titleAlias)}
