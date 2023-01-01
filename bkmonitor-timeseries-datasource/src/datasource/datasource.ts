@@ -102,7 +102,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
-    this.bizId = instanceSettings?.jsonData?.bizId || (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
+    this.bizId = instanceSettings?.jsonData?.useToken ? instanceSettings?.jsonData?.bizId : (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
   }
   /**
    * @description: panel query api
@@ -549,6 +549,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           return {
             bk_target_ip: idList[0],
             bk_target_cloud_id: idList[1],
+            bk_host_id: idList[2],
           };
         }
         return {

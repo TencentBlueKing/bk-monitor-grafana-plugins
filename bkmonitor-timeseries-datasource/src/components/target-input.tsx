@@ -142,7 +142,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
       const params = {
         params: {
           label_field: isHost ? 'bk_host_innerip' : 'name',
-          value_field: isHost ? 'bk_host_innerip|bk_cloud_id' : 'service_instance_id',
+          value_field: isHost ? 'bk_host_innerip|bk_cloud_id|bk_host_id' : 'service_instance_id',
           where: [
             { key: 'bk_set_id', method: 'eq', value: this.props.cluster.map(item => item.value) },
             {
@@ -234,7 +234,15 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
     const { cluster, module, host, targetType } = this.props;
     const clusterValue = cluster.map(item => item.value);
     const moduleValue = module.map(item => item.value);
-    const hostValue = host.map(item => item.value);
+    let hostValue = host.map(item => item.value);
+    if (host.length && hostList.length) {
+      hostValue = host.map((item) => {
+        if (item.value.split('|').length < 3) {
+          return hostList.find(set => set.value.includes(item.value))?.value || item.value;
+        }
+        return item.value;
+      });
+    }
     const handleMaxTagPlaceholder = v => `+${v.length}`;
     const handleDropdownRender = (originNode: any, type) => {
       const needAll = type === 'cluster' ? clusterList.length > 1 : moduleList.length > 1;
