@@ -89,6 +89,8 @@ export enum QueryUrl {
   promql_to_query_config = 'promql_to_query_config/',
   graph_promql_query = 'graph_promql_query/',
   get_metric_list = 'get_metric_list/',
+  update_metric_list_by_biz= 'update_metric_list_by_biz/',
+  query_async_task_result= 'query_async_task_result/',
 }
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
@@ -886,6 +888,20 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       url: QueryUrl.get_metric_list,
       data,
     }).catch(() => []);
+  }
+  async updateMetricListByBiz() {
+    return await this.request({
+      method: 'POST',
+      url: QueryUrl.update_metric_list_by_biz,
+      data: {},
+    }).catch(() => '');
+  }
+  async queryAsyncTaskResult(params: {task_id: string}) {
+    return await this.request({
+      method: 'GET',
+      url: QueryUrl.query_async_task_result,
+      params,
+    }).catch(() => ({}));
   }
   request({
     url,

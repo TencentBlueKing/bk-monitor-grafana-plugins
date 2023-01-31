@@ -41,7 +41,8 @@ import Checkbox from 'antd/es/checkbox';
 import DashboardDatasource from 'datasource/datasource';
 import Tooltip from 'antd/es/tooltip';
 import Message from 'antd/es/message';
-
+import SyncOutlined from '@ant-design/icons/SyncOutlined';
+let interval: any = null;
 const { TabPane } = Tabs;
 export enum MetricInputMode {
   EDIT = 'edit',
@@ -88,6 +89,7 @@ interface IQueryState {
   isArrowKeySet: boolean;
   focusIndex: number;
   timer: any
+  refleshMetric: boolean
 }
 
 export default class MonitorQueryEditor extends React.PureComponent<IQueryProps, IQueryState> {
@@ -115,6 +117,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       isArrowKeySet: false,
       focusIndex: -1,
       timer: null,
+      refleshMetric: false,
     };;
   }
   componentDidMount(): void {
@@ -428,6 +431,23 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       isArrowKeySet: false,
     });
   };
+  handleReleshMetric = async () => {
+    if (this.state.refleshMetric) return;
+    this.setState({ refleshMetric: true });
+    const taskId = await this.props.datasource.updateMetricListByBiz().catch(() => '');
+    if (taskId) {
+      interval =  setInterval(async () => {
+        const result: any = await this.props.datasource.queryAsyncTaskResult({ task_id: taskId })
+          .catch(() => ({ is_completed: true }));
+        if (result?.state === 'SUCCESS' || result.is_completed) {
+          clearInterval(interval);
+          this.setState({ loading: true, refleshMetric: false }, this.getMetricList);
+        }
+      }, 2000);
+    } else {
+      this.setState({ refleshMetric: false });
+    }
+  };
   // 右侧checkbox 面版
   contentRightPanel(list: IDataSourceItem[], dataType: RightPanelType) {
     const { datasourceLabel, resultTableLabel } = this.state;
@@ -472,6 +492,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           ref={this.inputRef}
           autoFocus={true}
           allowClear={true}/>
+        <span className={`reflesh-icon ${this.state.refleshMetric ? 'reflesh-pendding' : ''}`} onClick={this.handleReleshMetric}><SyncOutlined /></span>
       </div>
       <div className={`metric-dropdown-tag ${!tagList.length ? 'tab-empty' : ''}`}>
         {
