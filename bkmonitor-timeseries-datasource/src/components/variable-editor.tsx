@@ -32,7 +32,7 @@ import ConditionIput from './condition-input';
 import MetricInput from './metirc-input';
 import DimensionInput from './dimension-input';
 import PromqlEditor from './promql-editor';
-import { VariableQueryType, VariableQuery } from '../typings/variable';
+import { VariableQueryType, VariableQuery, K8sVariableQueryType, ScenarioType } from '../typings/variable';
 import Spin from 'antd/es/spin';
 import { EditorStatus, ICommonItem, IConditionItem, IMetric, MetricDetail } from '../typings/metric';
 import Datasource from '../datasource/datasource';
@@ -46,7 +46,8 @@ interface IVariableEditorProps {
   onChange: (query: VariableQuery, definition?: string) => void;
 }
 interface IVariableEditorState {
-  queryType: VariableQueryType;
+  queryType: VariableQueryType | K8sVariableQueryType;
+  scenario: ScenarioType;
   loading: boolean;
   fieldList: ICommonItem[];
   showField: string | undefined;
@@ -59,6 +60,7 @@ interface IVariableEditorState {
 }
 const language = getCookie('blueking_language');
 export default class VariableQueryEditor extends React.PureComponent<IVariableEditorProps, IVariableEditorState> {
+  // 主机列表
   queryTypes: { value: string; label: string }[] = [
     { value: VariableQueryType.Host, label: getEnByName('主机', language) },
     { value: VariableQueryType.Module, label: getEnByName('模块', language) },
@@ -67,13 +69,27 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     { value: VariableQueryType.Dimension, label: getEnByName('维度', language) },
     { value: VariableQueryType.Promql, label: 'prometheus' },
   ];
+  // k8s列表
+  k8sTypes: { value: string; label: string }[] = [
+    { value: K8sVariableQueryType.Cluster, label: K8sVariableQueryType.Cluster },
+    { value: K8sVariableQueryType.Container, label: K8sVariableQueryType.Container },
+    { value: K8sVariableQueryType.Namespace, label: K8sVariableQueryType.Namespace },
+    { value: K8sVariableQueryType.Node, label: K8sVariableQueryType.Node },
+    { value: K8sVariableQueryType.Pod, label: K8sVariableQueryType.Pod },
+    { value: K8sVariableQueryType.Service, label: K8sVariableQueryType.Service },
+  ];
+  // 场景列表
+  scenarioList: { value: string; label: string }[] = [
+    { value: ScenarioType.OS, label: getEnByName('主机监控', language) },
+    { value: ScenarioType.Kubernetes, label: getEnByName('Kubernetes', language) },
+  ];
   constructor(props) {
     super(props);
     let { query } = props;
     if (query?.conditions || query?.dimensionData) {
       query = handleTransformOldVariableQuery(query);
     }
-    const { queryType = VariableQueryType.Host, where, showField, valueField, promql = '' } = query;
+    const { queryType = VariableQueryType.Host, where, showField, valueField, promql = '', scenario } = query;
     const condition = (where?.length ? where : [{} as any]).slice();
     if (condition[condition.length - 1]?.key) {
       condition.push({} as any);
@@ -85,6 +101,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     this.state = {
       loading: !isPromql,
       queryType: queryType || VariableQueryType.Host,
+      // 场景 默认 os
+      scenario: scenario || ScenarioType.OS,
       showField,
       valueField,
       fieldList: [],
@@ -135,7 +153,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
    * @return {*}
    */
   handleQuery() {
-    const { queryType, showField, valueField, condition, promql } = this.state;
+    const { queryType, showField, valueField, condition, promql, scenario } = this.state;
     const name = this.queryTypes.find(item => item.value === queryType)?.label;
     const definition = `- Blueking Monitor - ${name}`;
     if (queryType !== VariableQueryType.Dimension) {
@@ -147,6 +165,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
         };
       } else if (showField && valueField) {
         data = {
+          scenario,
           queryType,
           showField,
           valueField,
@@ -199,7 +218,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     });
     return Array.from(variables).join(' ');
   }
-  handleQueryTypeChange = async (v: VariableQueryType) => {
+  handleQueryTypeChange = async (v: VariableQueryType | K8sVariableQueryType) => {
     if (v !== VariableQueryType.Dimension) {
       const needLoading = v !== VariableQueryType.Promql;
       this.setState(
@@ -217,6 +236,13 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     } else {
       this.setState({ queryType: v }, this.handleQuery);
     }
+  };
+  handleScenarioChange = async (v: ScenarioType) => {
+    this.setState({ scenario: v }, () => {
+      this.handleQueryTypeChange(v === ScenarioType.Kubernetes
+        ? K8sVariableQueryType.Cluster
+        : VariableQueryType.Host);
+    });
   };
   handleShowFieldChange = async (v: string) => {
     this.setState(
@@ -286,8 +312,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       needQuery ? this.handleQuery : undefined,
     );
   };
-  async handleGetFiledList(v: VariableQueryType) {
-    const data = await this.props.datasource.getVariableField(v);
+  async handleGetFiledList(v: VariableQueryType | K8sVariableQueryType) {
+    const data = await this.props.datasource.getVariableField(v, this.state.scenario);
     const fieldList = data?.map(item => ({ id: item.bk_property_id, name: item.bk_property_name }));
     this.setState({ loading: false, fieldList });
   }
@@ -303,16 +329,25 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     }
   };
   render() {
-    const { queryType, showField, fieldList, valueField, condition, metricDetail, loading,
+    const { queryType, scenario, showField, fieldList, valueField, condition, metricDetail, loading,
       language, promql, editorStatus } = this.state;
     const fakerMetric: any = { dimensions: fieldList, agg_condition: condition };
     return (
       <LanguageContext.Provider value={{ language }}>
         <div className="variable-editor">
           <Spin spinning={loading}>
+            <VariableLine title={getEnByName('场景', language)}>
+              <Select defaultValue={scenario} className="common-select" onChange={this.handleScenarioChange}>
+                {this.scenarioList.map(item => (
+                  <Select.Option key={item.value} value={item.value}>
+                    {item.label}
+                  </Select.Option>
+                ))}
+              </Select>
+            </VariableLine>
             <VariableLine title={getEnByName('类型', language)}>
-              <Select defaultValue={queryType} className="common-select" onChange={this.handleQueryTypeChange}>
-                {this.queryTypes.map(item => (
+              <Select value={queryType} className="common-select" onChange={v => this.handleQueryTypeChange(v)}>
+                { (scenario === ScenarioType.Kubernetes ? this.k8sTypes : this.queryTypes).map(item => (
                   <Select.Option key={item.value} value={item.value}>
                     {item.label}
                   </Select.Option>
