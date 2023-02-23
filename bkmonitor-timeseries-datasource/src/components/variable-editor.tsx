@@ -154,7 +154,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
    */
   handleQuery() {
     const { queryType, showField, valueField, condition, promql, scenario } = this.state;
-    const name = this.queryTypes.find(item => item.value === queryType)?.label;
+    const name = [...this.queryTypes, ...this.k8sTypes].find(item => item.value === queryType)?.label;
     const definition = `- Blueking Monitor - ${name}`;
     if (queryType !== VariableQueryType.Dimension) {
       let data =  {};
