@@ -34,6 +34,18 @@ export enum VariableQueryType {
   Dimension = 'dimension',
   Promql = 'prometheus'
 }
+export enum K8sVariableQueryType {
+  Cluster = 'cluster',
+  Namespace = 'namespace',
+  Pod = 'pod',
+  Container = 'container',
+  Node = 'node',
+  Service = 'service'
+}
+export enum ScenarioType {
+  Kubernetes = 'kubernetes',
+  OS = 'os'
+}
 // 指标类型变量配置
 export interface IMetricConfig {
   data_source_label: string;
@@ -48,6 +60,7 @@ export interface IMetricConfig {
 export interface VariableQuery {
   showField?: string;
   queryType?: VariableQueryType;
+  scenario?: ScenarioType;
   valueField?: string;
   where?: IConditionItem[];
   variables?: string;

@@ -47,7 +47,7 @@ import { getBackendSrv, BackendSrvRequest, getTemplateSrv } from '@grafana/runti
 import { QueryOption } from '../typings/config';
 import { IMetric, ITargetData, EditMode } from '../typings/metric';
 import { IQueryConfig, QueryData } from '../typings/datasource';
-import { VariableQuery, VariableQueryType } from '../typings/variable';
+import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
 import apiCacheInstance from '../utils/api-cache';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
 import { random } from '../utils/utils';
@@ -104,7 +104,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
-    this.bizId = instanceSettings?.jsonData?.bizId || (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
+    this.bizId = this.useToken
+      ? instanceSettings?.jsonData?.bizId
+      : (process.env.NODE_ENV === 'development' ? 2 : (window as any).grafanaBootData.user.orgName);
   }
   /**
    * @description: panel query api
@@ -281,6 +283,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     const data = await this.getVariableValue({
       type: query.queryType,
+      scenario: query.scenario || ScenarioType.OS,
       params: this.buildMetricFindParams(query),
     }).then(data => data.map(item => ({ text: item.label, value: item.value })));
     return data;
@@ -795,11 +798,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     return res;
   }
   // 变量名查询
-  public async getVariableField(type: VariableQueryType) {
+  public async getVariableField(type: VariableQueryType | K8sVariableQueryType, scenario: ScenarioType) {
     const params = {
       url: QueryUrl.queryVariableField,
       params: {
         type,
+        scenario,
       },
     };
     const cacheKey = JSON.stringify(params);
