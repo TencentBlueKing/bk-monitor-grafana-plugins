@@ -230,7 +230,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
           condition: [{} as any],
           promql: '',
         },
-        this.handleQuery,
+        !needLoading ? undefined : this.handleQuery,
       );
       needLoading && this.handleGetFiledList(v);
     } else {
