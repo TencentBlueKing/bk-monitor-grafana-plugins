@@ -95,9 +95,9 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       condition.push({} as any);
     }
     const isPromql = queryType === VariableQueryType.Promql;
-    if (!isPromql) {
-      this.queryTypes = this.queryTypes.filter(item => item.value !== VariableQueryType.Promql);
-    }
+    // if (!isPromql) {
+    //   this.queryTypes = this.queryTypes.filter(item => item.value !== VariableQueryType.Promql);
+    // }
     this.state = {
       loading: !isPromql,
       queryType: queryType || VariableQueryType.Host,
