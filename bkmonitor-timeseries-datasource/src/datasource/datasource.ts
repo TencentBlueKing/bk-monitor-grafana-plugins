@@ -544,12 +544,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   buildTargets({ host, cluster, module }: ITargetData) {
     if (host?.length) {
       return host.map((item) => {
-        const idList = item.value.split('|');
+        const idList = item.value.toString().split('|');
         if (idList.length) {
+          if (idList.length === 3) return {
+            bk_host_id: idList[2],
+          };
           return {
             bk_target_ip: idList[0],
             bk_target_cloud_id: idList[1],
-            bk_host_id: idList[2],
           };
         }
         return {

@@ -141,7 +141,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
       const isHost = this.props.targetType === TARGET_TYPE.HOST;
       const params = {
         params: {
-          label_field: isHost ? 'bk_host_innerip' : 'name',
+          label_field: isHost ? 'display_name' : 'name',
           value_field: isHost ? 'bk_host_innerip|bk_cloud_id|bk_host_id' : 'service_instance_id',
           where: [
             { key: 'bk_set_id', method: 'eq', value: this.props.cluster.map(item => item.value) },
