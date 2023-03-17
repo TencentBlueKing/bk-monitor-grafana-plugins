@@ -30,6 +30,7 @@ import Divider from 'antd/es/divider';
 import Spin from 'antd/es/spin';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
+import Tooltip from 'antd/es/tooltip';
 const { Option } = Select;
 
 const clusterParams = {
@@ -235,7 +236,11 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
     const clusterValue = cluster.map(item => item.value);
     const moduleValue = module.map(item => item.value);
     const hostValue = host.map(item => item.value);
-    const handleMaxTagPlaceholder = v => `+${v.length}`;
+    const handleMaxTagPlaceholder = v => <Tooltip title={
+      v.slice(0, 100)
+        .map(item => item.label)
+        .join(',')}>
+      <span>{`+${v.length}`}</span></Tooltip>;
     const handleDropdownRender = (originNode: any, type) => {
       const needAll = type === 'cluster' ? clusterList.length > 1 : moduleList.length > 1;
       return  <Spin spinning={loading}>
