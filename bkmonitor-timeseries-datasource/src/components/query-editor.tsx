@@ -994,9 +994,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   transfromModeComp = (state: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { searchState, mode } = this.state;
-    let btnText = '查询';
-    if (isLoading) btnText = '查询中...';
-    else if (searchState === SearcState.auto) btnText = '自动查询';
+    let btnText = getEnByName('查询');
+    if (isLoading) btnText = getEnByName('查询中...');
+    else if (searchState === SearcState.auto) btnText = getEnByName('自动查询');
     return <div className='transform-mode'>
       { mode === 'code' && <MetricInput mode={MetricInputMode.COPY} datasource={this.props.datasource}/>}
       <span className='search-play' onClick={() => !isLoading && this.handleSearchStateChange()}>

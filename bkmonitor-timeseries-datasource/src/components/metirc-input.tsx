@@ -31,7 +31,7 @@ import { IMetric, MetricDetail } from '../typings/metric';
 import CloseCircleFilled from '@ant-design/icons/CloseCircleFilled';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import { LanguageContext } from '../utils/context';
-import { createMetricTitleTooltips, random } from '../utils/utils';
+import { createMetricTitleTooltips, getEnByName, random } from '../utils/utils';
 // import Divider from 'antd/es/divider';
 import Popover from 'antd/es/popover';
 import Input from 'antd/es/input';
@@ -372,7 +372,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     selection.removeAllRanges();
     selection.addRange(range);
     Message.success({
-      content: '复制成功',
+      content: getEnByName('复制成功'),
       duration: 3,
     });
     document.execCommand('copy');
@@ -452,7 +452,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
   contentRightPanel(list: IDataSourceItem[], dataType: RightPanelType) {
     const { datasourceLabel, resultTableLabel } = this.state;
     return <>
-      <div className='content-tag-title'>{dataType === 'scenario' ? '监控对象' : '采集来源'}</div>
+      <div className='content-tag-title'>{dataType === 'scenario' ? getEnByName('监控对象') : getEnByName('采集来源')}</div>
       <ul className='content-tag-list'>
         {
           list.map(item => <Checkbox
@@ -488,7 +488,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           value={keyword}
           onChange={this.handleSearch}
           onFocus={this.handInputFocus}
-          placeholder='搜索指标'
+          placeholder={getEnByName('搜索指标')}
           ref={this.inputRef}
           autoFocus={true}
           allowClear={true}/>
@@ -536,7 +536,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                       <span className='title-name'>{this.getSearchNode(metric.readable_name)}</span>{this.getSearchNode(metric.titleAlias)}
                     </div>
                     {
-                      this.props.mode !== MetricInputMode.COPY && <Tooltip title="复制指标名">
+                      this.props.mode !== MetricInputMode.COPY && <Tooltip title={getEnByName('复制指标名')}>
                         <span style={{ visibility: metric.showTool ? 'visible' : 'hidden' }} className='copy-icon' onClick={e => this.handleCopyMetric(metric, e)}>
                           <svg viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10467" width="200" height="200"><path d="M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z"></path></svg>
                         </span>
@@ -561,7 +561,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     </g>
                   </svg>
                 </div>
-                <div className='empty-content-title'>暂无数据</div>
+                <div className='empty-content-title'>{getEnByName('暂无数据')}</div>
                 {/* <div className='empty-content-subtitle'>
                   <div>指标显示是基于实际的数据上报</div>
                   <div>1. 如需接入新的数据，请看 <span className='text-btn'>文档</span></div>
@@ -569,7 +569,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               </div>
             }
             {
-              showAllTotal && <div className='all-data'>已加载全部数据</div>
+              showAllTotal && <div className='all-data'>{getEnByName('已加载全部数据')}</div>
             }
             {
               this.state.moreLoading && <Spin indicator={<LoadingOutlined style={{ fontSize: 20 }} spin />} className='more-loading'></Spin>
@@ -610,7 +610,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                       <span
                         className="mitric-input-name"
                       >
-                        {needPlaceholder ? '选择指标' : this.displayRender()}
+                        {needPlaceholder ? getEnByName('选择指标') : this.displayRender()}
                       </span>
                     </Tooltip>
                   </div>
