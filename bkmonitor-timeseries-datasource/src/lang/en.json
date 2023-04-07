@@ -57,5 +57,11 @@
   "单位": "Unit",
   "采集步长": "Collect Step",
   "主机监控": "Host monitoring",
+  "蓝鲸监控业务ID": "BlueKing Monitoring Bussiness ID",
+  "已设置免登入Token": "Login-free Token has been set",
+  "蓝鲸监控当前业务免登入Token": "BlueKing monitors the current business free login Token",
+  "Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie": "The Grafana proxy deletes the forwarded cookie by default, and specifies the cookie that should be forwarded to the data source by name",
+  "是否启用token": "Whether to enable token",
+  "蓝鲸监控API路径": "BlueKing Monitoring API path",
   "场景": "Scenes"
 }

@@ -27,6 +27,7 @@ import React from 'react';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { QueryOption, SecureOption } from '../typings/config';
 import { LegacyForms, TagsInput } from '@grafana/ui';
+import { getEnByName } from '../utils/utils';
 const { Input, FormField, Switch } = LegacyForms;
 export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption,
 SecureOption>,
@@ -84,16 +85,16 @@ SecureOption>,
                   style={{ width: '500px' }}
                   defaultValue={options.jsonData.baseUrl}
                   spellCheck={false}
-                  placeholder="蓝鲸监控API路径"
+                  placeholder={getEnByName('蓝鲸监控API路径')}
                   onBlur={e => this.handleChange('baseUrl', e)}
                 />
               }
-              tooltip="蓝鲸监控API路径"
+              tooltip={getEnByName('蓝鲸监控API路径')}
             />
           </div>
           <div className="gf-form" style={{ width: '100%' }}>
             <FormField
-              label="是否启用token"
+              label={getEnByName('是否启用token')}
               labelWidth={10}
               inputEl={
                 <Switch
@@ -102,7 +103,7 @@ SecureOption>,
                   onChange={this.handleUseTokenChange}
                 />
               }
-              tooltip="蓝鲸监控业务ID"
+              tooltip={getEnByName('是否启用token')}
             />
           </div>
           {
@@ -127,7 +128,7 @@ SecureOption>,
                       }
                     />
                   }
-                  tooltip="Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie."
+                  tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
                 />
               </div>
               <div className="gf-form" style={{ width: '100%' }}>
@@ -139,11 +140,11 @@ SecureOption>,
                       style={{ width: '500px' }}
                       defaultValue={options.jsonData.bizId}
                       spellCheck={false}
-                      placeholder="蓝鲸监控业务ID"
+                      placeholder={getEnByName('蓝鲸监控业务ID')}
                       onBlur={e => this.handleChange('bizId', e)}
                     />
                   }
-                  tooltip="蓝鲸监控业务ID"
+                  tooltip={getEnByName('蓝鲸监控业务ID')}
                 />
               </div>
               <div className="gf-form" style={{ width: '100%' }}>
@@ -156,11 +157,11 @@ SecureOption>,
                       style={{ width: '500px' }}
                       defaultValue={options.secureJsonData?.token ?? ''}
                       spellCheck={false}
-                      placeholder={options.secureJsonFields?.token ? '已设置免登入Token' : '蓝鲸监控当前业务免登入Token'}
+                      placeholder={options.secureJsonFields?.token ? getEnByName('已设置免登入Token') : getEnByName('蓝鲸监控当前业务免登入Token')}
                       onBlur={this.handleTokenChange}
                     />
                   }
-                  tooltip="蓝鲸监控当前业务免登入Token"
+                  tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
                 />
               </div>
             </>
