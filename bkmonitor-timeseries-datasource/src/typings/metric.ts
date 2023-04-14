@@ -51,7 +51,44 @@ export const METHOD_LIST = [
     name: 'COUNT',
   },
 ];
-
+export const CP_METHOD_LIST = [
+  {
+    id: 'CP50',
+    name: 'P50',
+  },
+  {
+    id: 'CP90',
+    name: 'P90',
+  },
+  {
+    id: 'CP95',
+    name: 'P95',
+  },
+  {
+    id: 'CP99',
+    name: 'P99',
+  },
+  {
+    id: 'sum_without_time',
+    name: 'SUM(PromQL)',
+  },
+  {
+    id: 'max_without_time',
+    name: 'MAX(PromQL)',
+  },
+  {
+    id: 'min_without_time',
+    name: 'MIN(PromQL)',
+  },
+  {
+    id: 'count_without_time',
+    name: 'COUNT(PromQL)',
+  },
+  {
+    id: 'avg_without_time',
+    name: 'AVG(PromQL)',
+  },
+];
 export const NOT_TIME_AGG_METHOD_LIST = [
   {
     id: 'sum_without_time',
@@ -373,7 +410,7 @@ export class MetricDetail {
       return [{ id: 'COUNT', name: 'COUNT' }];
     }
     if (this.canNotTimeAggMethod) {
-      return [].concat(METHOD_LIST, NOT_TIME_AGG_METHOD_LIST);
+      return [].concat(METHOD_LIST, CP_METHOD_LIST);
     }
     return this?.method_list?.length ? this.method_list.map(set => ({ id: set, name: set })) : METHOD_LIST;
   }
