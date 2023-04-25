@@ -265,7 +265,39 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           },
         } : {},
     );
+    if (list.data?.length > 1) {
+      const tableRefId = options.targets.filter(item => item.format === 'table').map(item => item.refId);
+      const tableFrames = list.data.filter(item => tableRefId.includes(item.refId));
+      if (tableFrames.length > 1) {
+        const newList = {
+          ...list,
+          data: list.data.map((item) => {
+            if (tableRefId.includes(item.refId)) {
+              return {
+                ...item,
+                fields: item.fields.map((field) => {
+                  if (field.name === 'Value') {
+                    return {
+                      ...field,
+                      name: `Value #${item.refId}`,
+                    };
+                  }
+                  return field;
+                }),
+              };
+            }
+            return item;
+          }),
+        };
+        console.info(newList, '++++++__________+++++++');
+        return newList;
+      }
+    }
+    console.info(list, '++++++__________+++++++');
     return list;
+  }
+  getValueText(responseLength: number, refId = '') {
+    return responseLength > 1 ? `Value #${refId}` : 'Value';
   }
   /**
    * @description: 变量取值
@@ -504,7 +536,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         type: FieldType.number,
         display: getDisplayProcessor(),
         config: {
-          displayNameFromDS: !alias?.length ? undefined : newSerie.target,
+          displayNameFromDS: newSerie.target,
         },
         labels: serie.dimensions,
         values: new ArrayVector<number>(newSerie.datapoints.map(v => v[0])),
@@ -516,7 +548,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         length: fields[0].values.length,
         fields,
         name: newSerie.target,
-      }) ;
+      });
     });
     return this.mergeHeatmapFrames(dataFrame);
   }
@@ -531,7 +563,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
 
       return {
         ...field,
-        name: field.config.displayNameFromDS!,
+        name: field.config.displayNameFromDS! ?? TIME_SERIES_VALUE_FIELD_NAME,
       };
     });
 
