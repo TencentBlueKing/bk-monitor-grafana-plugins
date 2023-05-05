@@ -323,6 +323,7 @@ export class MetricDetail {
   loading = false;
   status: EditorStatus = 'default';
   readable_name?: string;
+  time_field?: string;
 
   constructor(metricDetail: IMetric | MetricDetail) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));

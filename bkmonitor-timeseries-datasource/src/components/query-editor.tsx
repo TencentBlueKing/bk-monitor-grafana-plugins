@@ -299,7 +299,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             alias: item.alias,
             refId: item.refId,
             display: item.display,
-            time_field: item.extend_fields?.time_field || '',
+            time_field: item.extend_fields?.time_field || item.time_field || '',
             where: item.agg_condition?.filter?.(item => item.key) || [],
             ...logParams,
           };
