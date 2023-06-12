@@ -448,6 +448,28 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       this.setState({ refleshMetric: false });
     }
   };
+  // 新增自定义指标
+  handleAddCustomMetric= async () => {
+    const [resultTableId, metricField] = this.state.keyword.split('.');
+    if (!resultTableId || !metricField || !/^[_a-zA-Z][a-zA-Z0-9_]*$/.test(metricField)) {
+      Message.error({
+        content: getEnByName('自定义指标格式错误'),
+        duration: 3,
+      });
+      return;
+    };
+
+    this.props.datasource.addCustomMetric({
+      result_table_id: resultTableId,
+      metric_field: metricField,
+    }).then((res) => {
+      this.props.onMetricChange(res[0]);
+      this.handleVisibleChange(false);
+    })
+      .catch((e) => {
+        Message.error({ content: e?.data?.message || getEnByName('添加自定义指标失败'), duration: 3 });
+      });
+  };
   // 右侧checkbox 面版
   contentRightPanel(list: IDataSourceItem[], dataType: RightPanelType) {
     const { datasourceLabel, resultTableLabel } = this.state;
@@ -521,7 +543,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                   ? <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(metric) }}/>
                   : undefined}>
                 <div
-                  className={`metric-item ${focusIndex === i ? 'focus-item' : ''} ${isArrowKeySet ? 'is-arrow' : ''}`}
+                  className={`metric-item ${focusIndex === i ? 'focus-item' : ''} ${isArrowKeySet ? 'is-arrow' : ''} ${metric.metric_id === this.props.metric?.metric_id ? 'is-checked' : ''}`}
                   key={`${metric.metric_id}_${i}`}
                   id={`${metric.metric_id}_${i}`}
                   tabIndex={-1}
@@ -561,7 +583,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     </g>
                   </svg>
                 </div>
-                <div className='empty-content-title'>{getEnByName('暂无数据')}</div>
+                <div className='empty-content-title'>
+                  {getEnByName('搜索结果为空')}
+                </div>
+                <div className='empty-content-subtitle'>
+                  {getEnByName('你可以将该搜索内容直接自定义为指标选项')}
+                </div>
+                <span className='text-btn' onClick={this.handleAddCustomMetric}>{getEnByName('生成自定义指标')}</span>
                 {/* <div className='empty-content-subtitle'>
                   <div>指标显示是基于实际的数据上报</div>
                   <div>1. 如需接入新的数据，请看 <span className='text-btn'>文档</span></div>
@@ -600,7 +628,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               {
                 this.props.mode === MetricInputMode.COPY
                   ? <div className='copy-mode-input'>
-                  指标选择
+                    {getEnByName('指标选择')}
                     <i className='fa fa-angle-down'/>
                   </div>
                   : <div style={{ flex: 1 }} onClick={this.handShowContent}>

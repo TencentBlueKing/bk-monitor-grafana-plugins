@@ -63,5 +63,9 @@
   "Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie": "The Grafana proxy deletes the forwarded cookie by default, and specifies the cookie that should be forwarded to the data source by name",
   "是否启用token": "Whether to enable token",
   "蓝鲸监控API路径": "BlueKing Monitoring API path",
-  "场景": "Scenes"
+  "场景": "Scenes",
+  "搜索结果为空": "Search results are empty",
+  "你可以将该搜索内容直接自定义为指标选项": "You can directly customize the search content as a metric option",
+  "生成自定义指标": "Generate custom metrics",
+  "采集来源": "Collect source"
 }

@@ -293,6 +293,7 @@ export class MetricDetail {
   dimensions: ICommonItem[];
   extend_fields: Record<string, any>;
   id: string;
+  metric_id: string;
   metric_field: string;
   metric_field_name: string;
   name: string;

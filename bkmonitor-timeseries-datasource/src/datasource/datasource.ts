@@ -91,6 +91,7 @@ export enum QueryUrl {
   get_metric_list = 'get_metric_list/',
   update_metric_list_by_biz= 'update_metric_list_by_biz/',
   query_async_task_result= 'query_async_task_result/',
+  add_custom_metric= 'add_custom_metric/',
 }
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
@@ -938,6 +939,20 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       url: QueryUrl.query_async_task_result,
       params,
     }).catch(() => ({}));
+  }
+  /**
+   * @description: 添加自定义指标
+   * @return {*}
+   */
+  async addCustomMetric(data: {
+    result_table_id: string;
+    metric_field: string
+  }) {
+    return await this.request({
+      method: 'POST',
+      url: QueryUrl.add_custom_metric,
+      data,
+    });
   }
   request({
     url,

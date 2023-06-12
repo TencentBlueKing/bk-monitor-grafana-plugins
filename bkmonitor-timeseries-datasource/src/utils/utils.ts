@@ -60,7 +60,12 @@ const language = getCookie('blueking_language');
  * @param {string} lang 语言
  * @return {*}
  */
-export const getEnByName = (name: string, lang: string = language): string => (lang === 'en' ? enData[name] || name : name);
+export const getEnByName = (name: string, lang: string = language): string => {
+  if (process.env.NODE_ENV === 'development' && !enData[name]) {
+    console.log(`翻译缺失：${name}`);
+  }
+  return lang === 'en' ? enData[name] || name : name;
+};
 
 export const createMetricTitleTooltips = (metricData: any) => {
   const data = metricData;

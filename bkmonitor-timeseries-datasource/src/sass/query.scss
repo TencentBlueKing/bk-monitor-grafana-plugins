@@ -916,6 +916,9 @@
           background-color: #f5f7fa;
           cursor: none;
         }
+        &.is-checked {
+          background-color: #e1ecff !important;
+        }
         &:not(.is-arrow) {
           &:hover {
             background-color: #e1ecff;
@@ -991,7 +994,7 @@
         align-items: center;
         justify-content: center;
         width: 100%;
-        margin-top: 120px;
+        margin-top: 80px;
       }
       &-title {
         display: flex;
@@ -1006,13 +1009,15 @@
         line-height: 22px;
         flex-direction: column;
         align-items: center;
-        margin-top: 12px;
-        .text-btn {
-          display: inline-flex;
-          margin-left: 6px;
-          color: #3a84ff;
-          cursor: pointer;
-        }
+        color: #979ba5;
+        font-size: 12px;
+        margin: 8px 0;
+      }
+      .text-btn {
+        display: inline-flex;
+        margin-left: 6px;
+        color: #3a84ff;
+        cursor: pointer;
       }
     }
     .is-keyword {
