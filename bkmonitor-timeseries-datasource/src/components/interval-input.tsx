@@ -41,7 +41,16 @@ export interface IIntervalInputProps {
 
 export default class IntervalInput extends React.PureComponent<IIntervalInputProps> {
   handlePeriodBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = typeof e.target.value === 'number' || /^[0-9]+$/.test(e.target.value) ?  +e.target.value || 10 : 'auto';
+    let value: string | number = 10;
+    if (typeof e.target.value === 'number' || /^[0-9]+$/.test(e.target.value)) {
+      value = +e.target.value;
+    } else if (typeof e.target.value === 'string') {
+      if (/^\$/.test(e.target.value)) {
+        value = e.target.value;
+      } else {
+        value =  'auto';
+      }
+    }
     this.props.metric.agg_interval !== value && this.props.onIntervalChange(value);
   };
   render(): JSX.Element {
@@ -53,7 +62,7 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
     const menuList = (
       <Menu selectedKeys={[String(agg_interval)]}>
         {agg_interval_list
-          ?.filter?.(item => item.id === 'auto' || (agg_interval_unit === 's' ? item.id >= 10 : item.id))
+          ?.filter?.(item => typeof item.id === 'string' || (agg_interval_unit === 's' ? item.id >= 10 : item.id))
           ?.map(item => (
             <Item key={item.id} onClick={() => agg_interval !== item.id && onIntervalChange(item.id)}>
               {item.name}

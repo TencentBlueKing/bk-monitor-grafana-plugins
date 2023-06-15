@@ -45,7 +45,7 @@ import {
 } from '@grafana/data';
 import { getBackendSrv, BackendSrvRequest, getTemplateSrv } from '@grafana/runtime';
 import { QueryOption } from '../typings/config';
-import { IMetric, ITargetData, EditMode } from '../typings/metric';
+import { IMetric, ITargetData, EditMode, IntervalType } from '../typings/metric';
 import { IQueryConfig, QueryData } from '../typings/datasource';
 import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
 import apiCacheInstance from '../utils/api-cache';
@@ -621,8 +621,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         config.where
           ?.filter?.(item => item.key && item.value?.length)
           .map(condition => ({ ...condition, value: this.buildWhereVariables(condition.value, scopedVars) })) || [],
-      interval: config.interval,
-      interval_unit: config.interval_unit,
+      interval: this.repalceInterval(config.interval, config.interval_unit),
+      interval_unit: 's',
       time_field: config.time_field || 'time',
       filter_dict: {},
       functions: config.functions?.filter?.(item => item.id)
@@ -851,8 +851,47 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const data = await apiCacheInstance.getCache(cacheKey);
     return data;
   }
+  /**
+   *
+   * @param inter 汇聚周期
+   * @param unit 单位
+   * @returns {number} 转换后的汇聚周期 单位固定 s
+   */
+  repalceInterval(inter: IntervalType, unit: string) {
+    let interval: string | number = inter;
+    if (typeof interval === 'string' && interval !== 'auto') {
+      interval = +getTemplateSrv().replace(interval)
+        .replace(/(\d+)(.*)/, (match: string, p1: string, p2: string) => {
+          let str: string | number = p1 || '10';
+          switch (p2) {
+            case 'm':
+              str = +p1 * 60;
+              break;
+            case 'h':
+              str = +p1 * 60 * 60;
+              break;
+            case 'd':
+              str = +p1 * 60 * 60 * 24;
+              break;
+            case 'w':
+              str = +p1 * 60 * 60 * 24 * 7;
+              break;
+            default:
+              str = (+p1 || 10) * (unit === 'm' ? 60 : 1);
+              break;
+          }
+          return str.toString();
+        });
+    } else if (typeof interval === 'number') {
+      if (unit === 'm') {
+        interval = interval * 60;
+      }
+    }
+    return interval || (unit === 'm' ? 60 : 10);
+  }
   handleGetPromqlConfig(config: IQueryConfig) {
     const logParam = config.data_source_label === 'bk_log_search' ? { index_set_id: config.index_set_id || '' } : {};
+    const interval = this.repalceInterval(config.interval, config.interval_unit);
     return {
       data_source_label: config.data_source_label,
       data_type_label: config.data_type_label,
@@ -860,7 +899,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       alias: config.refId || 'a',
       metric_field: config.metric_field,
       agg_dimension: config.group_by,
-      agg_interval: config.interval !== 'auto' && config.interval_unit === 'm' ? config.interval * 60 : config.interval,
+      agg_interval: interval,
       agg_method: config.method,
       agg_condition: config.where?.filter?.(item => item.key && item.value?.length) || [],
       time_field: config.time_field || 'time',

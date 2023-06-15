@@ -112,7 +112,7 @@ export const NOT_TIME_AGG_METHOD_LIST = [
   },
 ];
 
-export type IntervalType = number | 'auto';
+export type IntervalType = number | 'auto' | string;
 export interface IIntervalItem {
   id: IntervalType;
   name: string | number;
