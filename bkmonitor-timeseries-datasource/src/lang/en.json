@@ -67,5 +67,7 @@
   "搜索结果为空": "Search results are empty",
   "你可以将该搜索内容直接自定义为指标选项": "You can directly customize the search content as a metric option",
   "生成自定义指标": "Generate custom metrics",
-  "采集来源": "Collect source"
+  "采集来源": "Collect source",
+  "自动查询": "Auto query",
+  "指标选择": "Metric selection"
 }
