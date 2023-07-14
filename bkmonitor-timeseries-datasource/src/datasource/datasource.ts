@@ -1013,6 +1013,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           showSuccessAlert: false,
           headers: {
             traceparent: `00-${random(32, 'abcdef0123456789')}-${random(16, 'abcdef0123456789')}-01`,
+            'X-Requested-With': 'XMLHttpRequest',
           },
         },
         method === 'GET'
