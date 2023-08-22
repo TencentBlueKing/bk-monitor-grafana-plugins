@@ -30,6 +30,7 @@ import { ITargetItem, IConditionItem, IFunctionItem, EditMode, IntervalType, IEx
 export interface IQueryConfig {
   data_source_label: string; // 指标来源
   data_type_label: string;  // 指标类型
+  data_label: string;  // 指标二段式使用
   result_table_label: string; // 表名
   filter_dict: {};
   functions: IFunctionItem[];

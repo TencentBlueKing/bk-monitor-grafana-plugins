@@ -611,6 +611,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   handleGetQueryConfig(config: IQueryConfig, scopedVars: ScopedVars) {
     const logParam = config.data_source_label === 'bk_log_search' ? { index_set_id: config.index_set_id || '' } : {};
     return {
+      data_label: config.data_label,
       data_source_label: config.data_source_label,
       data_type_label: config.data_type_label,
       metrics: [{ field: config.metric_field, method: config.method, alias: config.refId || 'a' }],
@@ -797,6 +798,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           result_table_id: options.resultTableId,
           metric_field: options.metricField,
           field: options.field,
+          data_label: options.dataLabel || undefined,
           data_type_label: options.dataTypeLabel,
           data_source_label: options.dataSourceLabel,
           where: [],
@@ -896,6 +898,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       data_source_label: config.data_source_label,
       data_type_label: config.data_type_label,
       result_table_id: config.result_table_id,
+      data_label: config.data_label || undefined,
       alias: config.refId || 'a',
       metric_field: config.metric_field,
       agg_dimension: config.group_by,
@@ -952,6 +955,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           functions: item.functions,
           metric_field: item.metric_field,
           result_table_id: item.result_table_id,
+          data_label: item.data_label,
           display: true,
           mode,
         })) || [],

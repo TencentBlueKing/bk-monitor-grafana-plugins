@@ -190,6 +190,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             data_type_label: item.data_type_label,
             result_table_id: item.result_table_id,
             metric_field: item.metric_field,
+            data_label: item.data_label || undefined,
           },
           flat_format: true,
         })
@@ -286,6 +287,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             data_type_label: item.data_type_label,
             result_table_id: item.result_table_id,
             result_table_label: item.result_table_label,
+            data_label: item.data_label,
             filter_dict: {},
             functions: item.functions?.map?.(({ id, params }) => ({
               id,

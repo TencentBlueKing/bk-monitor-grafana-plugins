@@ -325,6 +325,8 @@ export class MetricDetail {
   status: EditorStatus = 'default';
   readable_name?: string;
   time_field?: string;
+  // 指标二段式使用
+  data_label = '';
 
   constructor(metricDetail: IMetric | MetricDetail) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));

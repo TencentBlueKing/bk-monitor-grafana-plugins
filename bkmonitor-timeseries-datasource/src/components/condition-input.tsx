@@ -96,12 +96,13 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     let list = [];
     if (!v) return {};
     if (this.props.datasource) {
-      const { result_table_id, metric_field, data_source_label, data_type_label } = this.props.metric;
+      const { result_table_id, metric_field, data_source_label, data_type_label, data_label } = this.props.metric;
       list = await this.props.datasource.getNewDimensionValue({
         resultTableId: result_table_id,
         metricField: metric_field,
         dataSourceLabel: data_source_label,
         dataTypeLabel: data_type_label,
+        dataLabel: data_label || undefined,
         field: v,
       });
     }
