@@ -54,6 +54,7 @@ export interface IMetricConfig {
   result_table_id: string;
   group_by: string[];
   metric_field: string;
+  data_label: string;
   where: IConditionItem[];
 }
 // 变量查询参数

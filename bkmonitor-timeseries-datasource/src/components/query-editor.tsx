@@ -188,7 +188,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           conditions: {
             data_source_label: item.data_source_label,
             data_type_label: item.data_type_label,
-            result_table_id: item.result_table_id,
+            result_table_id: item.result_table_id || undefined,
             metric_field: item.metric_field,
             data_label: item.data_label || undefined,
           },
@@ -196,7 +196,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         })
         .then((metricList) => {
           const metric = metricList.find(set => set.metric_field === item.metric_field
-            && set.result_table_id === item.result_table_id);
+            && ((item.data_label && set.data_label === item.data_label) ||  set.result_table_id === item.result_table_id));
           const newMetric: IMetric = {
             ...item,
             ...metric,
@@ -285,9 +285,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return {
             data_source_label: item.data_source_label,
             data_type_label: item.data_type_label,
-            result_table_id: item.result_table_id,
+            result_table_id: item.result_table_id || undefined,
             result_table_label: item.result_table_label,
-            data_label: item.data_label,
+            data_label: item.data_label || undefined,
             filter_dict: {},
             functions: item.functions?.map?.(({ id, params }) => ({
               id,

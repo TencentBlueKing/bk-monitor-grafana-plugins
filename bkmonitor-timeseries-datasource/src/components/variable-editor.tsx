@@ -124,7 +124,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     if (queryType === VariableQueryType.Promql) return;
     if (queryType === VariableQueryType.Dimension && item) {
       const { result_table_label, data_source_label, data_type_label,
-        result_table_id, metric_field, group_by, where } = item;
+        result_table_id, metric_field, group_by, where, data_label } = item;
       const data: IMetric[] = await this.props.datasource
         .getMetricDetailById({
           result_table_label,
@@ -133,12 +133,13 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             data_type_label,
             result_table_id,
             metric_field,
+            data_label,
           },
           flat_format: true,
         })
         .catch(() => []);
       const metric = data.find(metric => metric_field === metric.metric_field
-         && result_table_id === metric.result_table_id);
+         && ((data_label && data_label === metric.data_label) || result_table_id === metric.result_table_id));
       this.setState({
         metricDetail: new MetricDetail({ ...metric, agg_dimension: group_by, agg_condition: where }),
         loading: false,
@@ -186,6 +187,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
         metric_field,
         agg_condition,
         agg_dimension,
+        data_label,
       } = this.state.metricDetail;
       this.props.onChange(
         metric_field && agg_dimension?.length
@@ -193,6 +195,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             queryType,
             variables: this.handleGetVariables(agg_condition),
             metricConfig: {
+              data_label,
               data_source_label,
               data_type_label,
               result_table_id,

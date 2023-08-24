@@ -243,6 +243,7 @@ export interface IMetric {
   data_source_label: string;
   data_source_label_name: string;
   data_type_label: string;
+  data_label: string;
   default_condition: IConditionItem[];
   default_dimensions: string[];
   description: string;

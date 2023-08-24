@@ -490,11 +490,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
   }
   displayRender = (): JSX.Element => {
     const { metric_field_name, metric_field, result_table_id,
-      result_table_label_name, result_table_name } = this.props.metric;
+      result_table_label_name, result_table_name, data_label } = this.props.metric;
     const labels = [result_table_label_name, result_table_name, metric_field_name];
     return metric_field ? (
       <div className="metric-label">
-        { result_table_id ? `${result_table_id}.${metric_field}` : metric_field}
+        { data_label || result_table_id ? `${data_label || result_table_id}.${metric_field}` : metric_field}
         <span className="metric-label-desc">（{labels.join(' / ')}）</span>
       </div>
     ) : null;
