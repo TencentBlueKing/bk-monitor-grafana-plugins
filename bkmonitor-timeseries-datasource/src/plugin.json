@@ -1,6 +1,6 @@
 {
   "type": "datasource",
-  "name": "Blueing Monitor TimeSeries",
+  "name": "BlueKing Monitor TimeSeries",
   "id": "bkmonitor-timeseries-datasource",
   "metrics": true,
   "annotations": false,
@@ -38,7 +38,7 @@
   "info": {
     "description": "Grafana data source for BlueKing Monitor/Application Insights",
     "author": {
-      "name": "Tencent Blueking"
+      "name": "Tencent BlueKing"
     },
     "version": "3.6.0",
     "logos": {
