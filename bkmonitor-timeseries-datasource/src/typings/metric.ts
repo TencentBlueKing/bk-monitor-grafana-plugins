@@ -353,7 +353,7 @@ export class MetricDetail {
   get canSetMulitpeMetric() {
     return (
       ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
-      && !this.result_table_id.match(/^uptimecheck/i)
+      && !this.result_table_id?.match(/^uptimecheck/i)
       && !this.isSpecialCMDBDimension
     );
   }
@@ -405,10 +405,10 @@ export class MetricDetail {
   }
   get isAllFunc() {
     return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
-    && !this.result_table_id.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension;
+    && !this.result_table_id?.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension;
   }
   get canNotTimeAggMethod() {
-    return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) && !(this.result_table_id.match(/^uptimecheck/i) && ['message', 'response_code'].includes(this.metric_field)) && !this.isSpecialCMDBDimension;
+    return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) && !(this.result_table_id?.match(/^uptimecheck/i) && ['message', 'response_code'].includes(this.metric_field)) && !this.isSpecialCMDBDimension;
   }
   get aggMethodList() {
     if (this.onlyCountMethod) {

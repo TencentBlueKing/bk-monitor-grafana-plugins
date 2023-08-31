@@ -196,7 +196,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         })
         .then((metricList) => {
           const metric = metricList.find(set => set.metric_field === item.metric_field
-            && ((item.data_label && set.data_label === item.data_label) ||  set.result_table_id === item.result_table_id));
+            && ((item.data_label && set.data_label === item.data_label) ||  set.result_table_id === (item.result_table_id || '')));
           const newMetric: IMetric = {
             ...item,
             ...metric,
