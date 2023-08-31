@@ -87,7 +87,7 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
     const { step, promqlAlias, format, type, onChange, mode } = this.props;
     const getHeaderContent = () => <div className='header-content'>
       {mode === 'code' && <span className='header-content-item'>Min Step: {step || 'auto'}</span>}
-      {mode === 'code' && <span className='header-content-item'>{getEnByName('别名')}: {promqlAlias || ''}</span>}
+      {mode === 'code' && <span className='header-content-item'>{getEnByName('别名')}: {promqlAlias || '-'}</span>}
       <span className='header-content-item'>{getEnByName('输出模式')}: {formatList.find(item => item.id === format)?.name || 'Time Series'}</span>
       <span className='header-content-item'>{getEnByName('类型')}: {typeList.find(item => item.id === type)?.name || 'Range'}</span>
     </div>;

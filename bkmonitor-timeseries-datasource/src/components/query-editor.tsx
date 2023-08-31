@@ -478,7 +478,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           const metricList = await this.handleInitMetricList(data.query_configs, this.state.functionList);
           metricList.forEach((set, index) => {
             set.alias = list[index]?.alias || '';
-            set.display = list[index]?.display;
+            set.display = list[index]?.display ?? true;
             set.mode = this.state.mode === 'code' ? 'ui' : 'code';
           });
           list = this.handleResetMetricDimension(metricList);
@@ -937,6 +937,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         const list = metricList.filter(item => item.metric_field);
         if (list.length) {
           const params = this.handleGetQueryData(list);
+          let promqlAlias = params?.expressionList?.find(item => item.active)?.expression;
+          if (!promqlAlias) {
+            promqlAlias = params?.query_configs?.find(item => item.alias && (item.display || typeof item.display === undefined))?.alias;
+          }
           source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
             hasError = true;
             return '';
@@ -944,7 +948,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           source && this.setState({
             source,
             mode: 'code',
-            promqlAlias: params.promqlAlias || params.query_configs?.[0]?.alias,
+            promqlAlias: promqlAlias || params.promqlAlias,
           }, this.handleQuery);
         } else {
           !hasError && this.setState({
@@ -966,7 +970,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           let list = this.state.metricList.slice();
           metricList.forEach((set, index) => {
             set.alias = list[index]?.alias || '';
-            set.display = list[index]?.display;
+            set.display = list[index]?.display ?? true;
           });
           list = this.handleResetMetricDimension(metricList);
           this.setState({
@@ -1064,7 +1068,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                           metricList.map((item, index) => (
                             <div className="query-editor" key={index}>
                               {
-                                (metricList.length > 1 || !!this.state.expressionList?.length) &&  <span
+                                (metricList.length > 0 || !!this.state.expressionList?.length) &&  <span
                                   className={`query-editor-label ${!item.display ? 'is-unchecked' : ''}`}
                                   onClick={() => this.handleMetricChecked(index)}
                                 >
