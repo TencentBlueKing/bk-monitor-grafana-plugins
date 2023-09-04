@@ -1027,6 +1027,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       return getBackendSrv()
         .datasourceRequest(options)
         .then((res) => {
+          if (res?.data?.result === false) {
+            return Promise.reject(res.data);
+          }
           if (res.status === 200 && res?.data?.result) {
             return res.data.data;
           }

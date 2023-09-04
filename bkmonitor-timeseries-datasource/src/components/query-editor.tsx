@@ -64,6 +64,7 @@ import { LanguageContext } from '../utils/context';
 import { getCookie, getEnByName } from '../utils/utils';
 import AddvanceSetting, { AddvanceSettingKey } from './addvance-setting';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
+import Message from 'antd/es/message';
 const refLetters = 'abcdefghijklmnopqrstuvwxyz';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
@@ -941,7 +942,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           if (!promqlAlias) {
             promqlAlias = params?.query_configs?.find(item => item.alias && (item.display || typeof item.display === undefined))?.alias;
           }
-          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
+          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch((e) => {
+            Message.error({
+              message: e.message || getEnByName('转换失败', this.state.language),
+              duration: 10,
+            });
             hasError = true;
             return '';
           });
@@ -988,7 +993,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       }
       this.setState({
         loading: false,
-        editorStatus: hasError ? 'error' : 'default',
+        editorStatus: this.state.mode !== 'ui' && hasError ? 'error' : 'default',
       });
     }, 20);
   };
