@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,14 +23,16 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
-import React from 'react';
-import { MetricDetail } from '../typings/metric';
+import CloseOutlined from '@ant-design/icons/CloseOutlined';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
-import CloseOutlined from '@ant-design/icons/CloseOutlined';
+/* eslint-disable camelcase */
+import React from 'react';
+
+import { MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
+
 const { Option } = Select;
 export interface IDimensionInputProps {
   metric: MetricDetail;
@@ -43,27 +44,27 @@ interface IDimensionInputState {
 }
 
 export default class DimensionInput extends React.PureComponent<IDimensionInputProps, IDimensionInputState> {
-  constructor(props) {
+  constructor(props: IDimensionInputProps) {
     super(props);
     this.state = {
-      open: false,
+      open: false
     };
   }
-  onDimensionFocus = (): void => {
-    this.setState({
-      open: true,
-    });
-  };
   onDimensionBlur = (): void => {
     this.setState({
-      open: false,
+      open: false
+    });
+  };
+  onDimensionFocus = (): void => {
+    this.setState({
+      open: true
     });
   };
   render(): JSX.Element {
     const {
-      variableQuery,
       metric: { agg_dimension, dimensions },
       onDimensionChange,
+      variableQuery
     } = this.props;
     const selectProps: any = {};
     !variableQuery && (selectProps.mode = 'tags');
@@ -71,29 +72,38 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
       <LanguageContext.Consumer>
         {({ language }) => (
           <Select
-            className="dimension-input"
-            showArrow={false}
-            showSearch
-            placeholder={getEnByName('维度', language)}
-            open={this.state.open}
             tagRender={(item): JSX.Element => (
-              <Tooltip placement="top" title={item.value}>
-                <span className="ant-select-selection-item">
-                  <span className="ant-select-selection-item-content">{item.label}</span>
-                  <span className="ant-select-selection-item-remove" onClick={item.onClose}>
+              <Tooltip
+                placement='top'
+                title={item.value}
+              >
+                <span className='ant-select-selection-item'>
+                  <span className='ant-select-selection-item-content'>{item.label}</span>
+                  <span
+                    className='ant-select-selection-item-remove'
+                    onClick={item.onClose}
+                  >
                     <CloseOutlined />
                   </span>
                 </span>
               </Tooltip>
             )}
+            className='dimension-input'
+            open={this.state.open}
+            placeholder={getEnByName('维度', language)}
+            showArrow={false}
+            showSearch
             {...selectProps}
-            value={agg_dimension}
-            onFocus={this.onDimensionFocus}
             onBlur={this.onDimensionBlur}
             onChange={onDimensionChange}
+            onFocus={this.onDimensionFocus}
+            value={agg_dimension}
           >
             {dimensions?.map(item => (
-              <Option value={item.id} key={item.id}>
+              <Option
+                key={item.id}
+                value={item.id}
+              >
                 {item.name}
               </Option>
             ))}

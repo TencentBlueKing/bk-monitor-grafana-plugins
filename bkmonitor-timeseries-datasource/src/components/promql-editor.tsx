@@ -23,43 +23,44 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import { EditorView, highlightSpecialChars, keymap, ViewUpdate, placeholder } from '@codemirror/view';
-import { EditorState, Prec, Compartment } from '@codemirror/state';
-import { indentOnInput, syntaxTree } from '@codemirror/language';
-import { history, historyKeymap } from '@codemirror/history';
-import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
-import { bracketMatching } from '@codemirror/matchbrackets';
+import { CompletionContext, CompletionResult, autocompletion, completionKeymap } from '@codemirror/autocomplete';
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
-import { searchKeymap, highlightSelectionMatches } from '@codemirror/search';
+import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
 import { commentKeymap } from '@codemirror/comment';
+import { history, historyKeymap } from '@codemirror/history';
+import { indentOnInput, syntaxTree } from '@codemirror/language';
 import { lintKeymap } from '@codemirror/lint';
+import { bracketMatching } from '@codemirror/matchbrackets';
+import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
+import { Compartment, EditorState, Prec } from '@codemirror/state';
+import { EditorView, ViewUpdate, highlightSpecialChars, keymap, placeholder } from '@codemirror/view';
 import { PromQLExtension } from 'codemirror-promql';
-import { autocompletion, completionKeymap, CompletionContext, CompletionResult } from '@codemirror/autocomplete';
 import { CompleteStrategy, newCompleteStrategy } from 'codemirror-promql/dist/esm/complete';
-import { theme, promqlHighlighter } from './theme';
+import React from 'react';
+
+import { promqlHighlighter, theme } from './theme';
+
 const promqlExtension = new PromQLExtension();
 const dynamicConfigCompartment = new Compartment();
 interface IPromqlEditorProps {
-  value: string;
-  style?: React.CSSProperties;
-  verifiy?: boolean;
   executeQuery?: (v: string, hasError: boolean, immediateQuery?: boolean) => void;
-  onChange?: (v: string) => void;
   onBlur?: (v: string, hasError: boolean) => void;
+  onChange?: (v: string) => void;
+  style?: React.CSSProperties;
+  value: string;
+  verifiy?: boolean;
 }
-
 export class HistoryCompleteStrategy implements CompleteStrategy {
-  private complete: CompleteStrategy;
-  private queryHistory: string[];
+  complete: CompleteStrategy;
+  queryHistory: string[];
+  // eslint-disable-next-line perfectionist/sort-classes
   constructor(complete: CompleteStrategy, queryHistory: string[]) {
     this.complete = complete;
     this.queryHistory = queryHistory;
   }
-
-  promQL(context: CompletionContext): Promise<CompletionResult | null> | CompletionResult | null {
-    return Promise.resolve(this.complete.promQL(context)).then((res) => {
-      const { state, pos } = context;
+  promQL(context: CompletionContext): CompletionResult | Promise<CompletionResult | null> | null {
+    return Promise.resolve(this.complete.promQL(context)).then(res => {
+      const { pos, state } = context;
       const tree = syntaxTree(state).resolve(pos, -1);
       const start = res !== null ? res.from : tree.from;
 
@@ -69,14 +70,14 @@ export class HistoryCompleteStrategy implements CompleteStrategy {
 
       const historyItems: CompletionResult = {
         from: start,
-        to: pos,
         options: this.queryHistory.map(q => ({
-          label: q.length < 80 ? q : q.slice(0, 76).concat('...'),
-          detail: 'past query',
           apply: q,
+          detail: 'past query',
           info: q.length < 80 ? undefined : q,
+          label: q.length < 80 ? q : q.slice(0, 76).concat('...')
         })),
         span: /^[a-zA-Z0-9_:]+$/,
+        to: pos
       };
 
       if (res !== null) {
@@ -89,6 +90,7 @@ export class HistoryCompleteStrategy implements CompleteStrategy {
 export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps> {
   containerRef: any = null;
   viewRef: any = null;
+  // eslint-disable-next-line perfectionist/sort-classes
   constructor(props) {
     super(props);
     this.containerRef = React.createRef();
@@ -113,8 +115,8 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
         //   remote: { url: 'http://demo.robustperception.io:9090' },
         // }),
         newCompleteStrategy(),
-        [],
-      ),
+        []
+      )
     });
     const dynamicConfig = [promqlHighlighter, promqlExtension.asExtension()];
     const view = this.viewRef.current;
@@ -142,7 +144,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
             ...historyKeymap,
             ...commentKeymap,
             ...completionKeymap,
-            ...lintKeymap,
+            ...lintKeymap
           ]),
           placeholder('Shift + Enter换行，Enter查询'),
           dynamicConfigCompartment.of(dynamicConfig),
@@ -154,49 +156,57 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
               run: (v: EditorView): boolean => {
                 v.contentDOM.blur();
                 return false;
-              },
-            },
+              }
+            }
           ]),
-          Prec.override(keymap.of([
-            {
-              key: 'Enter',
-              run: (v: EditorView): boolean => {
-                const hasError = false;
-                // if (this.viewRef.current && this.props.verifiy) {
-                //   const lintFunc = promqlExtension.getLinter().promQL()(v) as Diagnostic[];
-                //   hasError = lintFunc?.length > 0;
-                // }
-                this.props.executeQuery(v.state.doc.toString(), hasError, true);
-                return true;
+          Prec.override(
+            keymap.of([
+              {
+                key: 'Enter',
+                run: (v: EditorView): boolean => {
+                  const hasError = false;
+                  // if (this.viewRef.current && this.props.verifiy) {
+                  //   const lintFunc = promqlExtension.getLinter().promQL()(v) as Diagnostic[];
+                  //   hasError = lintFunc?.length > 0;
+                  // }
+                  this.props.executeQuery(v.state.doc.toString(), hasError, true);
+                  return true;
+                }
               },
-            },
-            {
-              key: 'Shift-Enter',
-              run: insertNewlineAndIndent,
-            },
-          ])),
+              {
+                key: 'Shift-Enter',
+                run: insertNewlineAndIndent
+              }
+            ])
+          ),
           EditorView.updateListener.of((update: ViewUpdate): void => {
             this.props.onChange?.(update.state.doc.toString());
-          }),
-        ],
+          })
+        ]
       });
       const view = new EditorView({
-        state: startState,
         parent: this.containerRef.current,
+        state: startState
       });
       this.viewRef.current = view;
       view.contentDOM.removeEventListener('blur', handleBlur);
       view.contentDOM.addEventListener('blur', handleBlur);
     } else {
-      view.dispatch(view.state.update({
-        effects: dynamicConfigCompartment.reconfigure(dynamicConfig),
-      }));
+      view.dispatch(
+        view.state.update({
+          effects: dynamicConfigCompartment.reconfigure(dynamicConfig)
+        })
+      );
     }
   }
   render() {
     return (
-      <div className="promql-editor">
-        <div className="promql-editor-instance" style={this.props.style} ref={this.containerRef}></div>
+      <div className='promql-editor'>
+        <div
+          className='promql-editor-instance'
+          ref={this.containerRef}
+          style={this.props.style}
+        ></div>
       </div>
     );
   }
