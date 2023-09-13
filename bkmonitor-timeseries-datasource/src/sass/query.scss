@@ -284,6 +284,7 @@
     &-add {
       @include add-icon();
       margin-bottom: 4px;
+      background-color: white;
     }
   }
   .ant-select-selection-search-input {
@@ -1056,9 +1057,6 @@
 body {
   &.theme-dark {
     background-color: #111217 !important;
-    h1, h2, h3, h4, h5, h6 { 
-      color: #63656e;
-    }
   }
   &.theme-light {
     background-color: #f4f5f5 !important;
