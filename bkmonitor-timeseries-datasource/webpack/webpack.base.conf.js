@@ -140,7 +140,7 @@ module.exports = {
               loader: 'less-loader',
               options: {
                 modifyVars: {
-                  hack: 'true; @import "./custom-antd-theme.less";',
+                  hack: 'true; @import "./custom-antd-dark-theme.less";',
                 },
                 javascriptEnabled: true,
               },
