@@ -715,7 +715,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     aliasData: IAliasData,
     dimensions: Record<string, string>,
   ) {
-    const regex = /\$([\w.]+)|\[\[([\s\S]+?)\]\]/g;
+    const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
     const tagRegx = /(\$(tag_|dim_)\$[\w.]+)/gm;
     let aliasNew = alias;
     aliasNew = alias.replace(tagRegx, (match: any, g1: any, g2: any) => {
@@ -746,7 +746,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               newKey = newKey.replace(set, set.replace('_', '').toLocaleUpperCase());
             });
           }
-          return typeof metric?.[newKey] === 'undefined' ? match : metric[newKey];
+          if (typeof metric?.[newKey] === 'undefined') {
+            return metric?.[tag] || match;
+          }
+          return  metric?.[newKey] || match;
         }
       }
       const variables = this.buildWhereVariables([match], undefined);

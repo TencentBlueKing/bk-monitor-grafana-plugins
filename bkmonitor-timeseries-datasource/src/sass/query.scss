@@ -1168,6 +1168,9 @@ body {
     .metric-dropdown-content .content-list .metric-item.is-checked {
       background-color: $monitor-metric-bg-color !important;
     }
+    .cm-content {
+      caret-color: white !important;
+    }
   }
   &.theme-light {
     background-color: #f4f5f5 !important;
