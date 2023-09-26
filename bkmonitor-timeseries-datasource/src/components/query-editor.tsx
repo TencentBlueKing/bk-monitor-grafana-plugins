@@ -184,20 +184,34 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         source: item.source,
       };
       return this.props.datasource
-        .getMetricDetailById({
-          // result_table_label: item.result_table_label,
-          conditions: {
-            data_source_label: item.data_source_label,
-            data_type_label: item.data_type_label,
-            result_table_id: item.result_table_id || undefined,
-            metric_field: item.metric_field,
-            data_label: item.data_label || undefined,
-          },
-          flat_format: true,
+        .getMetricList({
+          conditions: [
+            {
+              key: 'data_source_label',
+              value: item.data_source_label,
+            },
+            {
+              key: 'data_type_label',
+              value: item.data_type_label,
+            },
+            {
+              key: 'data_label',
+              value: item.data_label || undefined,
+            },
+            {
+              key: 'result_table_id',
+              value: item.result_table_id || undefined,
+            },
+            {
+              key: 'metric_field',
+              value: item.metric_field,
+            },
+          ].filter(item => item.value),
+          page: 1,
+          page_size: 1,
         })
-        .then((metricList) => {
-          const metric = metricList.find(set => set.metric_field === item.metric_field
-            && ((item.data_label && set.data_label === item.data_label) ||  set.result_table_id === (item.result_table_id || '')));
+        .then(({ metric_list }) => {
+          const metric = metric_list?.[0] || {};
           const newMetric: IMetric = {
             ...item,
             ...metric,
