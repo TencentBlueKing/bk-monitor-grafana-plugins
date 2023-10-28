@@ -200,13 +200,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             },
             {
               key: 'result_table_id',
-              value: item.result_table_id || undefined,
+              value: item.result_table_id || '',
             },
             {
               key: 'metric_field',
               value: item.metric_field,
             },
-          ].filter(item => item.value),
+          ].filter(item => typeof item.value !== 'undefined'),
           page: 1,
           page_size: 1,
         })
