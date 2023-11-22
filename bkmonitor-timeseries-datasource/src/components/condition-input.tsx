@@ -280,7 +280,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
             ),
             typeof item.key !== 'undefined' ? (
               <Select
-                key={`key-${index}-${item.key}`}
+                key={`key-${JSON.stringify(item || {})}-${item.key}`}
                 showArrow={false}
                 defaultValue={item.key || ''}
                 className="condition-input-key"
@@ -321,7 +321,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
             ),
             item?.key && [
               <Select
-                key={`method-${index}-${item.key}`}
+                key={`method-${JSON.stringify(item || {})}-${item.key}`}
                 showArrow={false}
                 defaultValue={item.method}
                 className="condition-input-method"
@@ -335,7 +335,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                 ))}
               </Select>,
               <Select
-                key={`value-${index}-${item.key}`}
+                key={`value-${JSON.stringify(item || {})}-${item.key}`}
                 showArrow={false}
                 defaultValue={item.value}
                 className="condition-input-value"
