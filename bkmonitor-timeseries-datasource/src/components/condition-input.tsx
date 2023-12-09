@@ -259,7 +259,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     } = this.props;
     const needNUll = (key: string) => {
       const item =  dimensions?.find(item => item.id === key)
-      if(!item) return false
+      if(!item) return true
       return typeof item.type === 'undefined' || item.type === 'string'
     }
     // eslint-disable-next-line max-len
