@@ -69,5 +69,6 @@
   "生成自定义指标": "Generate custom metrics",
   "采集来源": "Collect source",
   "自动查询": "Auto query",
-  "指标选择": "Metric selection"
+  "指标选择": "Metric selection",
+  "- 空 -": "- empty -"
 }

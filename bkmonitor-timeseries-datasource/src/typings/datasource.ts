@@ -68,3 +68,5 @@ export interface QueryData extends DataQuery {
   expressionList?: IExpresionItem[];
   only_promql?: boolean
 }
+
+export const DIM_NULL_ID = '';

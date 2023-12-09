@@ -46,7 +46,7 @@ import {
 import { getBackendSrv, BackendSrvRequest, getTemplateSrv } from '@grafana/runtime';
 import { QueryOption } from '../typings/config';
 import { IMetric, ITargetData, EditMode, IntervalType } from '../typings/metric';
-import { IQueryConfig, QueryData } from '../typings/datasource';
+import { DIM_NULL_ID, IQueryConfig, QueryData } from '../typings/datasource';
 import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
 import apiCacheInstance from '../utils/api-cache';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
@@ -290,11 +290,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             return item;
           }),
         };
-        console.info(newList, '++++++__________+++++++');
         return newList;
       }
     }
-    console.info(list, '++++++__________+++++++');
     return list;
   }
   getValueText(responseLength: number, refId = '') {
@@ -674,7 +672,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const valList = [];
     Array.isArray(values)
       && values.forEach((val) => {
-        if (String(val).match(/^\$/)) {
+        if(val === DIM_NULL_ID) {
+          valList.push('')
+        } else if (String(val).match(/^\$/)) {
           let isArrayVal = false;
           const list = [];
           getTemplateSrv().replace(val, scopedVars, (v) => {

@@ -43,6 +43,7 @@ import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
 import DataSource from '../datasource/datasource';
+import { DIM_NULL_ID } from '../typings/datasource';
 const { Option } = Select;
 export interface IProps {
   metric: MetricDetail; // 指标
@@ -256,6 +257,11 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     const {
       metric: { dimensions, agg_condition },
     } = this.props;
+    const needNUll = (key: string) => {
+      const item =  dimensions?.find(item => item.id === key)
+      if(!item) return false
+      return typeof item.type === 'undefined' || item.type === 'string'
+    }
     // eslint-disable-next-line max-len
     const getMaxWidth = (list: ICommonItem[]) => Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
     return (
@@ -349,6 +355,9 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                 dropdownMatchSelectWidth={false}
                 onChange={v => this.handleValueChange(v, index)}
               >
+                {
+                  needNUll(item.key) && <Option value={DIM_NULL_ID} key={DIM_NULL_ID}>{getEnByName('- 空 -')}</Option>
+                }
                 {dimensionValueMap[item.key]?.map?.(dim => (
                   <Option value={dim.id} key={dim.id}>
                     {dim.name}
