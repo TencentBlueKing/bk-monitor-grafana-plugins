@@ -95,6 +95,10 @@
       align-items: center;
       background-color: #e7e9ef;
       color: #313238;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex-wrap: nowrap;
       .label-tip {
         margin-right: -8px;
         margin-left: 8px;

@@ -125,7 +125,9 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
         </div>
         <div className={`addvance-setting-content ${showContent ? '' : 'is-hidden'}`}>
           {
-            mode === 'code' ? <EditorForm title='Min Step'>
+            mode === 'code' ? <EditorForm title='Min Step' labelStyle={{
+              minWidth: '86px',
+            }}>
               <AliasInput style={{ width: '88px', height: '32px' }}
                 inputProps={{ defaultValue: step, placeholder: 'auto' }}
                 onChange={v => onChange('step', v)} />
