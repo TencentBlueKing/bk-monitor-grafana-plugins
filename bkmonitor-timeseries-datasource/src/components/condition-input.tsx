@@ -258,10 +258,10 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
       metric: { dimensions, agg_condition },
     } = this.props;
     const needNUll = (key: string) => {
-      const item =  dimensions?.find(item => item.id === key)
-      if(!item) return true
-      return typeof item.type === 'undefined' || item.type === 'string'
-    }
+      const item =  dimensions?.find(item => item.id === key);
+      if (!item) return true;
+      return typeof item.type === 'undefined' || item.type === 'string';
+    };
     // eslint-disable-next-line max-len
     const getMaxWidth = (list: ICommonItem[]) => Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
     return (
@@ -352,7 +352,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   width: `${getMaxWidth(dimensionValueMap[item.key])}px`,
                   minWidth: `${getMaxWidth(dimensionValueMap[item.key])}px`,
                 }}
-                dropdownMatchSelectWidth={false}
+                dropdownMatchSelectWidth={true}
                 onChange={v => this.handleValueChange(v, index)}
               >
                 {
