@@ -45,7 +45,7 @@ export const random = (n: number, str = 'abcdefghijklmnopqrstuvwxyz0123456789'):
  * @param {string} name cookie名称
  * @return {*}
  */
-export const getCookie = (name: string): string | null => {
+export const getCookie = (name: string): null | string => {
   const reg = new RegExp(`(^|)${name}=([^;]*)(;|$)`);
   const data = document.cookie.match(reg);
   if (data) {
@@ -60,7 +60,7 @@ const language = getCookie('blueking_language');
  * @param {string} lang 语言
  * @return {*}
  */
-export const getEnByName = (name: string, lang: string = language): string => {
+export const getEnByName = (name: string, lang = language): string => {
   if (process.env.NODE_ENV === 'development' && !enData[name]) {
     console.log(`翻译缺失：${name}`);
   }
@@ -72,53 +72,58 @@ export const createMetricTitleTooltips = (metricData: any) => {
   const curActive = `${data.data_source_label}_${data.data_type_label}`;
   const options = [
     // 公共展示项
-    { val: data.metric_field, label: getEnByName('指标名') },
-    { val: data.metric_field_name, label: getEnByName('指标别名') },
-    { val: data.data_source_label, label: getEnByName('指标来源') },
-    { val: data.result_table_label_name, label: getEnByName('监控对象') },
+    { label: getEnByName('指标名'), val: data.metric_field },
+    { label: getEnByName('指标别名'), val: data.metric_field_name },
+    { label: getEnByName('指标来源'), val: data.data_source_label },
+    { label: getEnByName('监控对象'), val: data.result_table_label_name },
   ];
   const elList = {
-    bk_monitor_time_series: [
-      // 监控采集
+    bk_data_time_series: [
+      // 数据平台
       ...options,
-      { val: data.related_id, label: getEnByName('插件ID') },
-      { val: data.related_name, label: getEnByName('插件名') },
-      { val: data.result_table_id, label: getEnByName('分类ID') },
-      { val: data.result_table_name, label: getEnByName('分类名') },
-      { val: data.description, label: getEnByName('含义') },
+      { label: getEnByName('表名'), val: data.result_table_id },
     ],
     bk_log_search_time_series: [
       // 日志采集
       ...options,
-      { val: data.related_name, label: getEnByName('索引集') },
-      { val: data.result_table_id, label: getEnByName('索引') },
-      { val: data.extend_fields?.scenario_name, label: getEnByName('数据源类别') },
-      { val: data.extend_fields?.storage_cluster_name, label: getEnByName('数据源名') },
+      { label: getEnByName('索引集'), val: data.related_name },
+      { label: getEnByName('索引'), val: data.result_table_id },
+      { label: getEnByName('数据源类别'), val: data.extend_fields?.scenario_name },
+      { label: getEnByName('数据源名'), val: data.extend_fields?.storage_cluster_name },
     ],
-    bk_data_time_series: [
-      // 数据平台
+    bk_monitor_log: [...options],
+    bk_monitor_time_series: [
+      // 监控采集
       ...options,
-      { val: data.result_table_id, label: getEnByName('表名') },
+      { label: getEnByName('插件ID'), val: data.related_id },
+      { label: getEnByName('插件名'), val: data.related_name },
+      { label: getEnByName('分类ID'), val: data.result_table_id },
+      { label: getEnByName('分类名'), val: data.result_table_name },
+      { label: getEnByName('含义'), val: data.description },
     ],
     custom_time_series: [
       // 自定义指标
       ...options,
-      { val: data.extend_fields?.bk_data_id, label: getEnByName('数据ID') },
-      { val: data.result_table_name, label: getEnByName('数据名') },
+      { label: getEnByName('数据ID'), val: data.extend_fields?.bk_data_id },
+      { label: getEnByName('数据名'), val: data.result_table_name },
     ],
-    bk_monitor_log: [...options],
   };
   // 拨测指标融合后不需要显示插件id插件名
   const resultTableLabel = data.result_table_label;
   const relatedId = data.related_id;
   if (resultTableLabel === 'uptimecheck' && !relatedId) {
     const list = elList.bk_monitor_time_series;
-    elList.bk_monitor_time_series = list.filter(item => item.label !== getEnByName('插件ID') && item.label !== getEnByName('插件名'));
+    elList.bk_monitor_time_series = list.filter(
+      item => item.label !== getEnByName('插件ID') && item.label !== getEnByName('插件名'),
+    );
   }
   const curElList = (elList as any)[curActive] || [...options];
-  let content = curActive === 'bk_log_search_time_series'
-    ? `<div class="popover-metric-title">${[data.related_name, data.metric_field].filter(Boolean).join('.')}</div>\n`
-    : `<div class="popover-metric-title">${[data.result_table_id, data.metric_field].filter(Boolean).join('.')}</div>\n`;
+  let content =
+    curActive === 'bk_log_search_time_series'
+      ? `<div class="popover-metric-title">${[data.related_name, data.metric_field].filter(Boolean).join('.')}</div>\n`
+      : `<div class="popover-metric-title">${[data.result_table_id, data.metric_field]
+          .filter(Boolean)
+          .join('.')}</div>\n`;
   if (data.collect_config) {
     const collectorConfig = data.collect_config
       .split(';')
@@ -128,13 +133,15 @@ export const createMetricTitleTooltips = (metricData: any) => {
   }
 
   if (data.metric_field === data.metric_field_name) {
-    const index = curElList.indexOf((item: { label: string; }) => item.label === getEnByName('指标别名'));
+    const index = curElList.indexOf((item: { label: string }) => item.label === getEnByName('指标别名'));
     curElList.splice(index, 1);
   }
-  curElList.forEach((item: { label: any; val: any; }) => {
+  curElList.forEach((item: { label: any; val: any }) => {
     content += `<div class="popover-metric-item"><div>${item.label}：${item.val || '--'}</div></div>\n`;
   });
   content += `<div class="popover-metric-item"><div>${getEnByName('单位')}：${metricData.unit || '--'}</div></div>\n`;
-  content += `<div class="popover-metric-item"><div>${getEnByName('采集步长')}：${metricData.collect_interval || '--'}${metricData.collect_interval ? 'm' : ''}</div></div>\n`;
+  content += `<div class="popover-metric-item"><div>${getEnByName('采集步长')}：${metricData.collect_interval || '--'}${
+    metricData.collect_interval ? 'm' : ''
+  }</div></div>\n`;
   return content;
 };

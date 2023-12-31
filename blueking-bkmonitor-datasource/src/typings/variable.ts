@@ -27,44 +27,44 @@
 import { IConditionItem } from './metric';
 // 变量类型
 export enum VariableQueryType {
+  Dimension = 'dimension',
   Host = 'host',
   Module = 'module',
-  Set = 'set',
+  Promql = 'prometheus',
   ServiceInstance = 'service_instance',
-  Dimension = 'dimension',
-  Promql = 'prometheus'
+  Set = 'set',
 }
 export enum K8sVariableQueryType {
   Cluster = 'cluster',
-  Namespace = 'namespace',
-  Pod = 'pod',
   Container = 'container',
+  Namespace = 'namespace',
   Node = 'node',
-  Service = 'service'
+  Pod = 'pod',
+  Service = 'service',
 }
 export enum ScenarioType {
   Kubernetes = 'kubernetes',
-  OS = 'os'
+  OS = 'os',
 }
 // 指标类型变量配置
 export interface IMetricConfig {
+  data_label: string;
   data_source_label: string;
   data_type_label: string;
-  result_table_label: string;
-  result_table_id: string;
   group_by: string[];
   metric_field: string;
-  data_label: string;
+  result_table_id: string;
+  result_table_label: string;
   where: IConditionItem[];
 }
 // 变量查询参数
 export interface VariableQuery {
-  showField?: string;
-  queryType?: VariableQueryType;
-  scenario?: ScenarioType;
-  valueField?: string;
-  where?: IConditionItem[];
-  variables?: string;
   metricConfig?: IMetricConfig;
   promql?: string;
+  queryType?: VariableQueryType;
+  scenario?: ScenarioType;
+  showField?: string;
+  valueField?: string;
+  variables?: string;
+  where?: IConditionItem[];
 }

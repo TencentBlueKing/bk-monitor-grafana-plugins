@@ -23,9 +23,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import { ICommonItem, MetricDetail } from '../typings/metric';
 import Select from 'antd/es/select';
+import React from 'react';
+
+import { ICommonItem, MetricDetail } from '../typings/metric';
 const { Option } = Select;
 export interface IQueryFormulaProps {
   metric: MetricDetail;
@@ -36,19 +37,25 @@ export default class Formula extends React.PureComponent<IQueryFormulaProps> {
   render(): JSX.Element {
     const { metric, onMethodChange } = this.props;
     // eslint-disable-next-line max-len
-    const getMaxWidth = (list: ICommonItem[]) => Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
+    const getMaxWidth = (list: ICommonItem[]) =>
+      Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
     return (
-      <Select className="query-formula"
+      <Select
+        className='query-formula'
+        defaultValue={metric.agg_method}
+        dropdownMatchSelectWidth={false}
         dropdownStyle={{
           display: metric.aggMethodList?.length < 1 ? 'none' : '',
-          width: `${getMaxWidth(metric.aggMethodList)}px`,
           minWidth: `${getMaxWidth(metric.aggMethodList)}px`,
+          width: `${getMaxWidth(metric.aggMethodList)}px`,
         }}
-        dropdownMatchSelectWidth={false}
-        defaultValue={metric.agg_method}
-        onChange={onMethodChange}>
+        onChange={onMethodChange}
+      >
         {metric.aggMethodList?.map(item => (
-          <Option value={item.id} key={item.id}>
+          <Option
+            key={item.id}
+            value={item.id}
+          >
             {item.name}
           </Option>
         ))}

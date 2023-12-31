@@ -25,48 +25,49 @@
  */
 /* eslint-disable camelcase */
 import { DataQuery } from '@grafana/data';
-import { ITargetItem, IConditionItem, IFunctionItem, EditMode, IntervalType, IExpresionItem } from './metric';
+
+import { EditMode, IConditionItem, IExpresionItem, IFunctionItem, ITargetItem, IntervalType } from './metric';
 // datasource 查询数据
 export interface IQueryConfig {
+  alias: string;
+  data_label: string; // 指标二段式使用
   data_source_label: string; // 指标来源
-  data_type_label: string;  // 指标类型
-  data_label: string;  // 指标二段式使用
-  result_table_label: string; // 表名
+  data_type_label: string; // 指标类型
+  display: boolean;
   filter_dict: {};
   functions: IFunctionItem[];
   group_by: string[];
+  index_set_id?: string;
   interval: IntervalType;
   interval_unit: string;
-  metric_field: string;
   method: string;
-  alias: string;
-  refId: string;
-  display: boolean;
-  result_table_id: string;
-  time_field: string;
-  index_set_id?: string;
-  query_string?: string;
+  metric_field: string;
   mode: EditMode;
+  query_string?: string;
+  refId: string;
+  result_table_id: string;
+  result_table_label: string; // 表名
   source: string;
+  time_field: string;
   where: IConditionItem[];
 }
 export interface QueryData extends DataQuery {
-  expression?: string;
   alias?: string;
-  display?: boolean;
-  query_configs: IQueryConfig[];
-  host: ITargetItem[];
-  module: ITargetItem[];
   cluster: ITargetItem[];
-  mode: EditMode;
-  step?: string;
+  display?: boolean;
+  expression?: string;
+  expressionList?: IExpresionItem[];
   format?: string;
-  type?: string;
+  host: ITargetItem[];
+  mode: EditMode;
+  module: ITargetItem[];
+  only_promql?: boolean;
+  promqlAlias?: string;
+  query_configs: IQueryConfig[];
   showExpression?: boolean;
   source?: string;
-  promqlAlias?: string;
-  expressionList?: IExpresionItem[];
-  only_promql?: boolean
+  step?: string;
+  type?: string;
 }
 
 export const DIM_NULL_ID = '';

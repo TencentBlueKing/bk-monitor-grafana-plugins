@@ -35,40 +35,46 @@ import { VariableQuery } from '../typings/variable';
 export const handleTransformOldQuery = (data: any) => {
   const [dataSourceTypeLabel, index_set_id, resultTableId, metricField] = data?.metric?.id;
   const dataSourceLabel = dataSourceTypeLabel?.replace(/(_|\.)(log|event|time_series)$/, '');
-  const queryConfig: any =  Object.assign({}, {
-    data_source_label: dataSourceLabel,
-    data_type_label: dataSourceTypeLabel?.replace(new RegExp(`^${dataSourceLabel}(_|.)`), ''),
-    result_table_label: data?.monitorObject?.id,
-    result_table_id: resultTableId,
-    metric_field: metricField,
-    filter_dict: {},
-    functions: handleTransformOldFunc(data),
-    group_by: data.dimensions || [],
-    interval: data.period,
-    interval_unit: 's',
-    method: data.method,
-    refId: 'a',
-    alias: data.alias,
-    display: true,
-    time_field: '',
-    mode: 'ui',
-    source: '',
-    where: data.conditions.map(item => item.reduce((pre, cur) => {
-      pre[cur.type] = cur.value;
-      return pre;
-    }, {})),
-  }, dataSourceLabel === 'bk_log_search' ?  { index_set_id } : {});
+  const queryConfig: any = Object.assign(
+    {},
+    {
+      alias: data.alias,
+      data_source_label: dataSourceLabel,
+      data_type_label: dataSourceTypeLabel?.replace(new RegExp(`^${dataSourceLabel}(_|.)`), ''),
+      display: true,
+      filter_dict: {},
+      functions: handleTransformOldFunc(data),
+      group_by: data.dimensions || [],
+      interval: data.period,
+      interval_unit: 's',
+      method: data.method,
+      metric_field: metricField,
+      mode: 'ui',
+      refId: 'a',
+      result_table_id: resultTableId,
+      result_table_label: data?.monitorObject?.id,
+      source: '',
+      time_field: '',
+      where: data.conditions.map(item =>
+        item.reduce((pre, cur) => {
+          pre[cur.type] = cur.value;
+          return pre;
+        }, {}),
+      ),
+    },
+    dataSourceLabel === 'bk_log_search' ? { index_set_id } : {},
+  );
   const newQuery: QueryData = {
     alias: '',
-    expression: '',
     display: false,
-    refId: 'a',
+    expression: '',
+    mode: 'ui',
     query_configs: [
       {
         ...queryConfig,
       },
     ],
-    mode: 'ui',
+    refId: 'a',
     ...handleTransformOldTarget(data),
   };
   return newQuery;
@@ -81,33 +87,37 @@ export const handleTransformOldQuery = (data: any) => {
 export const handleTransformOldVariableQuery = (data: any) => {
   let metricConfig: any = {};
   if (data.dimensionData) {
-    const { metric, conditions, dimensions, monitorObject } = data.dimensionData;
-    const [dataSourceTypeLabel,, resultTableId, metricField] = metric?.id;
+    const { conditions, dimensions, metric, monitorObject } = data.dimensionData;
+    const [dataSourceTypeLabel, , resultTableId, metricField] = metric?.id;
     const dataSourceLabel = dataSourceTypeLabel?.replace(/(_|\.)(log|event|time_series)$/, '') || '';
     metricConfig = {
       data_source_label: dataSourceLabel,
       data_type_label: dataSourceTypeLabel?.replace(new RegExp(`^${dataSourceLabel}(_|.)`), ''),
-      result_table_label: monitorObject?.id,
-      result_table_id: resultTableId,
-      metric_field: metricField,
-      where: conditions?.map(item => item.reduce((pre, cur) => {
-        pre[cur.type] = cur.value;
-        return pre;
-      }, {})),
       group_by: typeof dimensions === 'string' ? [dimensions] : dimensions,
+      metric_field: metricField,
+      result_table_id: resultTableId,
+      result_table_label: monitorObject?.id,
+      where: conditions?.map(item =>
+        item.reduce((pre, cur) => {
+          pre[cur.type] = cur.value;
+          return pre;
+        }, {}),
+      ),
     };
   }
   const newQuery: VariableQuery = {
+    metricConfig,
     queryType: data.queryType,
     showField: data.showField,
     valueField: data.valueField,
-    where:
-      data.conditions?.map?.(item => item.reduce((pre, cur) => {
-        pre[cur.type] = cur.value;
-        return pre;
-      }, {})) || [],
     variables: data.variables,
-    metricConfig,
+    where:
+      data.conditions?.map?.(item =>
+        item.reduce((pre, cur) => {
+          pre[cur.type] = cur.value;
+          return pre;
+        }, {}),
+      ) || [],
   };
   return newQuery;
 };
@@ -120,7 +130,7 @@ export const handleTransformOldTarget = (data: any) => {
   // 最早期版本
   if (data.target) {
     let host = [];
-    host = data.target?.realValues?.map?.((set) => {
+    host = data.target?.realValues?.map?.(set => {
       if (data.monitorObject.groupId === 'hosts') {
         const idList = set.split('-');
         return {
@@ -133,9 +143,9 @@ export const handleTransformOldTarget = (data: any) => {
       };
     });
     return {
+      cluster: [],
       host,
       module: [],
-      cluster: [],
     };
   }
   let host = [];
@@ -151,9 +161,9 @@ export const handleTransformOldTarget = (data: any) => {
     host = data.host?.list || [];
   }
   return {
+    cluster,
     host,
     module,
-    cluster,
   };
 };
 /**
