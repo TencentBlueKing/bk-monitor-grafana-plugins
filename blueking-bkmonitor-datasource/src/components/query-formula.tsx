@@ -46,8 +46,8 @@ export default class Formula extends React.PureComponent<IQueryFormulaProps> {
         dropdownMatchSelectWidth={false}
         dropdownStyle={{
           display: metric.aggMethodList?.length < 1 ? 'none' : '',
-          minWidth: `${getMaxWidth(metric.aggMethodList)}px`,
-          width: `${getMaxWidth(metric.aggMethodList)}px`,
+          minWidth: `${getMaxWidth(metric.aggMethodList as any)}px`,
+          width: `${getMaxWidth(metric.aggMethodList as any)}px`,
         }}
         onChange={onMethodChange}
       >

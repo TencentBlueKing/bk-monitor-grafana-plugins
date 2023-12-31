@@ -110,7 +110,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   expressionListComp = language => {
     const { expressionList, functionList } = this.state;
     return expressionList.map((item, index) => (
-      <div className='query-editor'>
+      <div
+        className='query-editor'
+        key={index}
+      >
         <span
           className={`query-editor-label ${!item.active ? 'is-unchecked' : ''}`}
           onClick={() => this.handleExpressionChecked(index)}
@@ -805,7 +808,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       this.setState({ isTranform: false });
     });
   };
-  transfromModeComp = (state: LoadingState) => {
+  transfromModeComp = (state?: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { mode, searchState } = this.state;
     let btnText = getEnByName('查询');
@@ -1000,14 +1003,14 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const funcList: IFunctionItem[] = functionList.reduce(
       (pre, cur) => (cur?.children?.length ? [...pre, ...cur.children] : pre),
       [],
-    );
+    ) as any;
     return functions.map(func => {
       const funcItem = funcList.find(set => set.id === func.id);
       if (funcItem) {
         return {
           ...funcItem,
-          params: funcItem?.params.map(p => {
-            const curParam = func.params.find(set => set.id);
+          params: funcItem?.params?.map(p => {
+            const curParam = func.params?.find(set => set.id);
             return {
               ...p,
               edit: false,
