@@ -5,8 +5,8 @@ import QueryEditor from './components/query-editor';
 import VariableQueryEditor from './components/variable-editor';
 import { DataSourcePlugin } from '@grafana/data';
 loadPluginCss({
-  dark: 'plugins/bk-monitor-datasource/dark.css',
-  light: 'plugins/bk-monitor-datasource/light.css',
+  dark: 'plugins/blueking-bkmonitor-datasource/dark.css',
+  light: 'plugins/blueking-bkmonitor-datasource/light.css',
 });
   export const plugin = new DataSourcePlugin(Datasource)
   .setConfigEditor(ConfigEditor)

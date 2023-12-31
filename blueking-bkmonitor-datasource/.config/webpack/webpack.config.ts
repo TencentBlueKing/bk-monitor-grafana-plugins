@@ -140,7 +140,7 @@ const config = async (env): Promise<Configuration> => {
               options: {
                 lessOptions: {
                   modifyVars: {
-                    hack: 'true; @import "./custom-antd-theme.less";',
+                    hack: 'true; @import "./custom-antd-dark-theme.less";',
                   },
                   javascriptEnabled: true,
                 }
