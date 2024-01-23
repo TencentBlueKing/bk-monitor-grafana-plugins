@@ -1,0 +1,8 @@
+*.min.css
+
+*.js
+*.ts
+*.tsx
+*.jpg
+*.woff
+dist

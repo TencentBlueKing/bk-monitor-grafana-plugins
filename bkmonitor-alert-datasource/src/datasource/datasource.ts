@@ -49,7 +49,7 @@ import { IMetric, ITargetData, EditMode, IntervalType } from '../typings/metric'
 import { DIM_NULL_ID, IQueryConfig, QueryData } from '../typings/datasource';
 import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
 import apiCacheInstance from '../utils/api-cache';
-import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
+import { handleTransformOldVariableQuery } from '../utils/common';
 import { random } from '../utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
@@ -92,6 +92,9 @@ export enum QueryUrl {
   update_metric_list_by_biz= 'update_metric_list_by_biz/',
   query_async_task_result= 'query_async_task_result/',
   add_custom_metric= 'add_custom_metric/',
+  get_alarm_event_field= 'get_alarm_event_field/', // 告警事件字段查询
+  get_alarm_event_dimension_value= 'get_alarm_event_dimension_value/', // 告警事件维度查询
+  query_alarm_event_graph= 'query_alarm_event_graph/', // 告警事件数据查询
 }
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
@@ -120,129 +123,40 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     if (!targetList?.length) {
       return Promise.resolve({ data: [] });
     }
-
-    // 兼容老版本query数据
-    const queryList: QueryData[] = (targetList as any).map((item) => {
-      if (item?.data?.metric && item?.data?.monitorObject) {
-        return handleTransformOldQuery(item.data);
-      } if ((item as QueryData).expression?.length) {
-        return {
-          ...item,
-          expressionList: [{
-            expression: item.expression || '',
-            active: item.display,
-            functions: [],
-            alias: item.alias || '',
-          }],
-        };
-      }
-      return {
-        ...item,
-        mode: item.only_promql ? 'code' : item.mode,
-      };
-    });
+    const queryList: QueryData[] = (targetList as any);
     const promiseList = [];
     let errorMsg = '';
     queryList.forEach((item: QueryData) => {
-      const configList = [];
       // 指标数据请求
-      if (item?.mode !== 'code') {
-        item.query_configs?.forEach((config) => {
-          const queryConfig = this.handleGetQueryConfig(config, options.scopedVars);
-          if (config.display) {
-            const { host, module, cluster } = item;
-            promiseList.push(this.request({
-              url: QueryUrl.query,
-              data: {
-                down_sample_range,
-                step: item.step || 'auto',
-                format: item.format,
-                type: item.type,
-                start_time: options.range.from.unix(),
-                end_time: options.range.to.unix(),
-                expression: config.refId || '',
-                display: config.display,
-                query_configs: [queryConfig],
-                target: this.buildTargets({ host, module, cluster }),
-              },
-              method: 'POST',
-            })
-              .then((data: QueryFetchData) => this.buildFetchSeries(
-                data,
-                options.scopedVars,
-                config.alias,
-                config,
-                item,
-              ))
-              .catch((e) => {
-                console.error(e);
-                errorMsg += e.data?.message || 'query error';
-                return [];
-              }));
-          }
-          configList.push(queryConfig);
-        });
-      }
-      // 表达式图表数据请求
-      if (item.mode === 'code'
-        || item.only_promql
-        || (item.expressionList?.some(item => item.expression && item.active) && configList.length > 0)) {
-        if (item.mode === 'code' || item.only_promql) {
-          const params = {
-            url: QueryUrl.graph_promql_query,
+      item.query_configs?.forEach((config) => {
+        if (config) {
+          promiseList.push(this.request({
+            url: QueryUrl.query_alarm_event_graph,
             data: {
+              down_sample_range,
+              format: item.format,
               start_time: options.range.from.unix(),
               end_time: options.range.to.unix(),
-              down_sample_range,
-              promql: this.buildPromqlVariables(item.source, {
-                ...options.scopedVars,
-                ...this.getRangeScopedVars(options.range),
-              }),
-              step: item.step || 'auto',
-              format: item.format,
-              type: item.type,
+              expression: config.refId || '',
+              ...this.handleGetQueryConfig(config, options.scopedVars),
+              // query_configs: [this.handleGetQueryConfig(config, options.scopedVars)],
             },
             method: 'POST',
-          };
-          promiseList.push(this.request(params)
-            .then(data => this.buildFetchSeries(data, options.scopedVars, item.mode === 'code' ? item.promqlAlias || item.alias : item.alias, null, item))
+          })
+            .then((data: QueryFetchData) => this.buildFetchSeries(
+              data,
+              options.scopedVars,
+              config.alias,
+              config,
+              item,
+            ))
             .catch((e) => {
               console.error(e);
               errorMsg += e.data?.message || 'query error';
               return [];
             }));
-        } else {
-          const { host, module, cluster, expressionList } = item;
-          expressionList?.forEach((exp) => {
-            if (exp.expression && exp.active) {
-              const p = {
-                url: QueryUrl.query,
-                data: {
-                  step: item.step || 'auto',
-                  format: item.format,
-                  type: item.type,
-                  down_sample_range,
-                  start_time: options.range.from.unix(),
-                  end_time: options.range.to.unix(),
-                  expression: exp.expression,
-                  display: exp.active,
-                  query_configs: configList,
-                  functions: exp.functions?.filter?.(item => item.id),
-                  target: this.buildTargets({ host, module, cluster }),
-                },
-                method: 'POST',
-              };
-              promiseList.push(this.request(p)
-                .then(data => this.buildFetchSeries(data, options.scopedVars, exp.alias, null, item, true))
-                .catch((e) => {
-                  console.error(e);
-                  errorMsg += e.data?.message || 'query error';
-                  return [];
-                }));
-            }
-          });
         }
-      }
+      });
     });
     const needUnit = promiseList.length < 2;
     const data: any = await Promise.all(promiseList)
@@ -607,38 +521,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     return [];
   }
   handleGetQueryConfig(config: IQueryConfig, scopedVars: ScopedVars) {
-    const logParam = config.data_source_label === 'bk_log_search' ? { index_set_id: config.index_set_id || '' } : {};
     return {
-      data_label: config.data_label,
-      data_source_label: config.data_source_label,
-      data_type_label: config.data_type_label,
-      metrics: [{ field: config.metric_field, method: config.method, alias: config.refId || 'a' }],
-      table: config.result_table_id,
       group_by: (config.group_by || []).map(set => getTemplateSrv().replace(set, scopedVars)),
-      display: config.display,
       where:
         config.where
           ?.filter?.(item => item.key && item.value?.length)
           .map(condition => ({ ...condition, value: this.buildWhereVariables(condition.value, scopedVars) })) || [],
-      interval: this.repalceInterval(config.interval, config.interval_unit),
-      interval_unit: 's',
-      time_field: config.time_field || 'time',
-      filter_dict: {},
-      functions: config.functions?.filter?.(item => item.id)
-        .map(func => ({
-          ...func,
-          params: func.params.map(set => ({
-            ...set,
-            value: typeof set.value === 'string'
-              ? getTemplateSrv().replace(set.value, {
-                ...scopedVars,
-                interval: { text: config.interval, value: config.interval },
-                interval_unit: { text: config.interval_unit, value: config.interval_unit },
-              })
-              : set.value,
-          })),
-        })) || [],
-      ...logParam,
+      interval: config.interval === 'auto' || !config.interval ? 'auto' : config.interval,
+      interval_unit: config.interval_unit || 'h',
     };
   }
   async testDatasource() {
@@ -920,7 +810,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    */
   public async queryConfigToPromql(targets: QueryData) {
     const params = {
-      expression: targets.expressionList?.length ? targets.expressionList[0]?.expression || 'a' : targets.query_configs?.[0]?.refId || 'a',
+      expression: targets.query_configs?.[0]?.refId || 'a',
       query_configs: targets.query_configs.map(item => this.handleGetPromqlConfig(item)),
     };
     return await this.request({
@@ -998,6 +888,23 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       method: 'POST',
       url: QueryUrl.add_custom_metric,
       data,
+    });
+  }
+  async getAlarmEventField() {
+    return await this.request({
+      method: 'GET',
+      url: QueryUrl.get_alarm_event_field,
+    });
+  }
+  async getAlarmEventDimensionValue(params: {field: string}) {
+    return await this.request({
+      method: 'GET',
+      params: {
+        start_time: (getTemplateSrv() as any).timeRange.from.unix(),
+        end_time: (getTemplateSrv() as any).timeRange.to.unix(),
+        field: params.field,
+      },
+      url: QueryUrl.get_alarm_event_dimension_value,
     });
   }
   request({
