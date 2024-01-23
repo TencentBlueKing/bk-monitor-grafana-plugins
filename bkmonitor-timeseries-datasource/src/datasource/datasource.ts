@@ -672,8 +672,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const valList = [];
     Array.isArray(values)
       && values.forEach((val) => {
-        if(val === DIM_NULL_ID) {
-          valList.push('')
+        if (val === DIM_NULL_ID) {
+          valList.push('');
         } else if (String(val).match(/^\$/)) {
           let isArrayVal = false;
           const list = [];

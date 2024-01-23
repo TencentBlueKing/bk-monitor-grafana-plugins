@@ -157,6 +157,20 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       searchState: this.state.searchState === 'auto' ? SearcState.deafult : SearcState.auto,
     });
   };
+  handleClickQuery = () => {
+    if (this.props.data?.state === LoadingState.Loading) return;
+    const query: any = this.handleGetQueryData();
+    const { refId, hide, key, queryType, datasource } = this.props.query;
+    this.props.onChange({
+      refId,
+      hide,
+      key,
+      queryType,
+      datasource,
+      ...query,
+    });
+    this.props.onRunQuery();
+  };
   transfromModeComp = (state: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { searchState } = this.state;
@@ -174,7 +188,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       <Button
         size="small"
         disabled={isLoading}
-        onClick={() => !isLoading && this.props.onRunQuery()}
+        onClick={this.handleClickQuery}
         className={`search-auto ${isLoading ? 'is-loading' : ''}`}
         type="primary">{btnText}</Button>
     </div>;

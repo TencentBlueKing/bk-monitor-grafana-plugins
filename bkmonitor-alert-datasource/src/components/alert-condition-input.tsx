@@ -89,7 +89,11 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
         field: v,
       });
     }
-    return { [v]: list || [] };
+    return { [v]: list?.map(item => ({
+      ...item,
+      name: `${item.name}`,
+      id: `${item.id}`,
+    })) || [] };
   };
   /**
    * @description: 监控条件方法列表
