@@ -165,6 +165,21 @@ export const INTERVAL_LIST: IIntervalItem[] = [
   },
 ];
 // 汇聚周期单位
+export const ALERT_INTERVAL_UNIT_LIST = [
+  {
+    id: 'm',
+    name: 'min',
+  },
+  {
+    id: 'h',
+    name: 'h',
+  },
+  {
+    id: 'd',
+    name: 'd',
+  },
+];
+// 汇聚周期单位
 export const INTERVAL_UNIT_LIST = [
   {
     id: 'm',
@@ -200,6 +215,10 @@ export const NUMBER_CONDITION_METHOD_LIST = [
   { id: 'exclude', name: 'exclude' },
   { id: 'reg', name: 'regex' },
   { id: 'nreg', name: 'nregex' },
+];
+export const ALERT_CONDITION_METHOD_LIST = [
+  { id: 'eq', name: '=' },
+  { id: 'neq', name: '!=' },
 ];
 // log 监控条件
 export const LOG_CONDITION_METHOD_LIST = [
