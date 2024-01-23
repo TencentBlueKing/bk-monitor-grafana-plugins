@@ -139,7 +139,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               end_time: options.range.to.unix(),
               expression: config.refId || '',
               ...this.handleGetQueryConfig(config, options.scopedVars),
-              query_configs: [this.handleGetQueryConfig(config, options.scopedVars)],
+              // query_configs: [this.handleGetQueryConfig(config, options.scopedVars)],
             },
             method: 'POST',
           })
@@ -527,8 +527,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         config.where
           ?.filter?.(item => item.key && item.value?.length)
           .map(condition => ({ ...condition, value: this.buildWhereVariables(condition.value, scopedVars) })) || [],
-      interval: this.repalceInterval(config.interval, config.interval_unit),
-      interval_unit: 's',
+      interval: config.interval === 'auto' || !config.interval ? 'auto' : config.interval,
+      interval_unit: config.interval_unit || 'h',
     };
   }
   async testDatasource() {

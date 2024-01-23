@@ -172,11 +172,11 @@ export const ALERT_INTERVAL_UNIT_LIST = [
   },
   {
     id: 'h',
-    name: 'h',
+    name: 'hour',
   },
   {
     id: 'd',
-    name: 'd',
+    name: 'day',
   },
 ];
 // 汇聚周期单位
