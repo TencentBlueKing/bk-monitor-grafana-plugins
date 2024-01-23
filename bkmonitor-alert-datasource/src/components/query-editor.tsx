@@ -77,8 +77,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       agg_method: method || 'COUNT',
       searchState: SearcState.deafult,
       group_by: group_by || [],
-      interval: interval || 60,
-      interval_unit: interval_unit || 's',
+      interval: interval || 'auto',
+      interval_unit: interval_unit || 'h',
       alias: alias || '',
       where: where?.length ? where : [{} as any],
     };

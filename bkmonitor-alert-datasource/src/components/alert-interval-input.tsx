@@ -26,7 +26,7 @@
  */
 /* eslint-disable camelcase */
 import React from 'react';
-import { INTERVAL_LIST, INTERVAL_UNIT_LIST, IntervalType } from '../typings/metric';
+import { INTERVAL_LIST, ALERT_INTERVAL_UNIT_LIST, IntervalType } from '../typings/metric';
 import InputNumber from 'antd/es/input-number';
 import Dropdown from 'antd/es/dropdown';
 import Menu from 'antd/es/menu';
@@ -64,8 +64,7 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
     const menuList = (
       <Menu selectedKeys={[String(agg_interval)]}>
         {INTERVAL_LIST
-          ?.filter?.(item => typeof item.id === 'string' || (agg_interval_unit === 's' ? item.id >= 10 : item.id))
-          ?.map(item => (
+          .map(item => (
             <Item key={item.id} onClick={() => agg_interval !== item.id && onIntervalChange(item.id)}>
               {item.name}
             </Item>
@@ -78,7 +77,7 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
           <div style={{ position: 'relative' }}>
             <InputNumber
               className="interval-select"
-              min={agg_interval_unit === 's' ? 10 : 1}
+              min={1}
               precision={0}
               value={agg_interval as number}
               onBlur={this.handlePeriodBlur}
@@ -93,7 +92,7 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
           onChange={onIntervalUnitChange}
           dropdownMatchSelectWidth={80}
         >
-          {INTERVAL_UNIT_LIST?.map(item => (
+          {ALERT_INTERVAL_UNIT_LIST?.map(item => (
             <Option value={item.id} key={item.id}>
               {item.name}
             </Option>

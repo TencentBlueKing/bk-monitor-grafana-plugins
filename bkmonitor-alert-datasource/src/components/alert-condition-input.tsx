@@ -30,8 +30,7 @@ import {
   ICommonItem,
   IConditionItem,
   CONDITION,
-  NUMBER_CONDITION_METHOD_LIST,
-  STRING_CONDITION_METHOD_LIST,
+  ALERT_CONDITION_METHOD_LIST,
 } from '../typings/metric';
 import Select from 'antd/es/select';
 import Divider from 'antd/es/divider';
@@ -100,15 +99,15 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
    * @param {string} keyVal 维度
    * @return {*}
    */
-  getMethodList = (keyVal: string) => {
-    const dimensionItem = this.props.dimensions?.find?.(item => item.id === keyVal);
-    const type = dimensionItem?.type || '';
-    const list =  [];
-    if (type === 'number') {
-      return [...list, ...NUMBER_CONDITION_METHOD_LIST];
-    }
-    return [...list, ...STRING_CONDITION_METHOD_LIST];
-  };
+  getMethodList = () => ALERT_CONDITION_METHOD_LIST
+  // const dimensionItem = this.props.dimensions?.find?.(item => item.id === keyVal);
+  // const type = dimensionItem?.type || '';
+  // const list =  [];
+  // if (type === 'number') {
+  //   return [...list, ...NUMBER_CONDITION_METHOD_LIST];
+  // }
+  // return [...list, ...STRING_CONDITION_METHOD_LIST];
+  ;
   /**
    * @description: 修改监控条件
    * @param {number} index 索引
@@ -139,7 +138,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
           return {
             ...item,
             key: v,
-            method: this.getMethodList(v)[0].id,
+            method: ALERT_CONDITION_METHOD_LIST[0].id,
             value: [],
             ...(i > 0 ? { condition: 'and' } : {}),
           };
@@ -319,7 +318,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                 dropdownMatchSelectWidth={80}
                 onChange={v => this.handleMethodChange(v, index)}
               >
-                {this.getMethodList(item.key).map(dim => (
+                {ALERT_CONDITION_METHOD_LIST.map(dim => (
                   <Option value={dim.id} key={dim.id}>
                     {dim.name}
                   </Option>
