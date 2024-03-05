@@ -23,49 +23,32 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Tooltip from 'antd/es/tooltip';
 import React from 'react';
-
+import Input, { InputProps } from 'antd/es/input';
 import { LanguageContext } from '../utils/context';
-export interface IEditorFormProps {
-  labelStyle?: React.CSSProperties;
-  renderTitle?: () => Element;
+import { getEnByName } from '../utils/utils';
+export interface IAliasInputProps {
+  alias?: string;
   style?: React.CSSProperties;
-  tips?: string;
-  title?: string;
+  inputProps?: InputProps;
+  onChange: (v: string) => void;
 }
 
-export default class EditorForm extends React.PureComponent<IEditorFormProps> {
+export default class AliasInput extends React.PureComponent<IAliasInputProps> {
+  handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    this.props.onChange(e.target.value.toString().trim());
+  };
   render(): JSX.Element {
-    const { labelStyle, renderTitle, style, tips, title } = this.props;
     return (
       <LanguageContext.Consumer>
         {({ language }) => (
-          <div
-            className='editor-form'
-            style={style}
-          >
-            <span
-              className='editor-form-label'
-              style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
-            >
-              {renderTitle ? renderTitle() : title}
-              {tips && (
-                <Tooltip
-                  mouseEnterDelay={0.2}
-                  overlayClassName='monitor-tooltip'
-                  placement='right'
-                  title={tips}
-                >
-                  <i
-                    className='fa fa-info-circle label-tip'
-                    style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
-                  />
-                </Tooltip>
-              )}
-            </span>
-            <div className='editor-form-content'>{this.props?.children}</div>
-          </div>
+          <Input
+            style={{ minWidth: '100px', ...this.props.style }}
+            placeholder={getEnByName('请输入', language)}
+            defaultValue={ this.props.alias  || this.props.inputProps?.defaultValue}
+            onBlur={this.handleBlur}
+            {...this.props.inputProps}
+          />
         )}
       </LanguageContext.Consumer>
     );

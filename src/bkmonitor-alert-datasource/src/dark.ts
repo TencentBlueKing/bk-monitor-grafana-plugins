@@ -23,18 +23,5 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { DataSourcePlugin } from '@grafana/data';
-import { loadPluginCss } from '@grafana/runtime';
-
-  import QueryEditor from './components/event-editor';
-import VariableQueryEditor from './components/variable-editor';
-import ConfigEditor from './configuration/config-editor';
-import Datasource from './datasource/datasource';
-loadPluginCss({
-  dark: 'plugins/bkmonitor-event-datasource/dark.css',
-  light: 'plugins/bkmonitor-event-datasource/light.css',
-});
-export const plugin = new DataSourcePlugin(Datasource)
-  .setConfigEditor(ConfigEditor)
-  .setQueryEditor(QueryEditor)
-  .setVariableQueryEditor(VariableQueryEditor);
+import './sass/grafana-antd.dark.less';
+import './sass/grafana-monitor.dark.scss';

@@ -23,51 +23,19 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Tooltip from 'antd/es/tooltip';
-import React from 'react';
-
-import { LanguageContext } from '../utils/context';
-export interface IEditorFormProps {
-  labelStyle?: React.CSSProperties;
-  renderTitle?: () => Element;
-  style?: React.CSSProperties;
-  tips?: string;
-  title?: string;
-}
-
-export default class EditorForm extends React.PureComponent<IEditorFormProps> {
-  render(): JSX.Element {
-    const { labelStyle, renderTitle, style, tips, title } = this.props;
-    return (
-      <LanguageContext.Consumer>
-        {({ language }) => (
-          <div
-            className='editor-form'
-            style={style}
-          >
-            <span
-              className='editor-form-label'
-              style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
-            >
-              {renderTitle ? renderTitle() : title}
-              {tips && (
-                <Tooltip
-                  mouseEnterDelay={0.2}
-                  overlayClassName='monitor-tooltip'
-                  placement='right'
-                  title={tips}
-                >
-                  <i
-                    className='fa fa-info-circle label-tip'
-                    style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
-                  />
-                </Tooltip>
-              )}
-            </span>
-            <div className='editor-form-content'>{this.props?.children}</div>
-          </div>
-        )}
-      </LanguageContext.Consumer>
-    );
+class ApiCache {
+  public cacheMap: Map<string, any> = new Map();
+  // 设置api缓存
+  public setCache(key: string, data: any) {
+    this.cacheMap.set(key, data);
+    setTimeout(() => {
+      this.cacheMap.delete(key);
+    }, 20000);
+  }
+  // 获取缓存
+  public getCache(key: string) {
+    return this.cacheMap.get(key);
   }
 }
+
+export default new ApiCache();

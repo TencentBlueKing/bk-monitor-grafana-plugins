@@ -1,8 +1,8 @@
 module.exports = {
-  // extends: ['stylelint-config-recess-order'],
+  extends: ['stylelint-config-recess-order'],
   overrides: [
     {
-      files: ['./src/*.scss'],
+      files: ['./src/**/*.scss'],
       plugins: ['stylelint-scss', 'stylelint-order'],
     },
   ],

@@ -94,6 +94,7 @@ export enum QueryUrl {
   testAndSaveUrl = '',
   update_metric_list_by_biz = 'update_metric_list_by_biz/',
 }
+
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
   public bizId: number | string;

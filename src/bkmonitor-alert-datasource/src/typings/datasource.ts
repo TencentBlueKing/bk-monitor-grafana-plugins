@@ -23,51 +23,40 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Tooltip from 'antd/es/tooltip';
-import React from 'react';
-
-import { LanguageContext } from '../utils/context';
-export interface IEditorFormProps {
-  labelStyle?: React.CSSProperties;
-  renderTitle?: () => Element;
-  style?: React.CSSProperties;
-  tips?: string;
-  title?: string;
+/* eslint-disable camelcase */
+import { DataQuery } from '@grafana/data';
+import { IConditionItem, IFunctionItem, EditMode, IntervalType } from './metric';
+// datasource 查询数据
+export interface IQueryConfig {
+  data_source_label: string; // 指标来源
+  data_type_label: string;  // 指标类型
+  data_label: string;  // 指标二段式使用
+  result_table_label: string; // 表名
+  filter_dict: {};
+  functions: IFunctionItem[];
+  group_by: string[];
+  interval: IntervalType;
+  interval_unit: string;
+  metric_field: string;
+  method: string;
+  alias: string;
+  refId: string;
+  display: boolean;
+  result_table_id: string;
+  time_field: string;
+  index_set_id?: string;
+  query_string?: string;
+  mode: EditMode;
+  source: string;
+  where: IConditionItem[];
+}
+export interface QueryData extends DataQuery {
+  expression?: string;
+  alias?: string;
+  display?: boolean;
+  query_configs: IQueryConfig[];
+  format?: string;
+  expressionList?: string[];
 }
 
-export default class EditorForm extends React.PureComponent<IEditorFormProps> {
-  render(): JSX.Element {
-    const { labelStyle, renderTitle, style, tips, title } = this.props;
-    return (
-      <LanguageContext.Consumer>
-        {({ language }) => (
-          <div
-            className='editor-form'
-            style={style}
-          >
-            <span
-              className='editor-form-label'
-              style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
-            >
-              {renderTitle ? renderTitle() : title}
-              {tips && (
-                <Tooltip
-                  mouseEnterDelay={0.2}
-                  overlayClassName='monitor-tooltip'
-                  placement='right'
-                  title={tips}
-                >
-                  <i
-                    className='fa fa-info-circle label-tip'
-                    style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
-                  />
-                </Tooltip>
-              )}
-            </span>
-            <div className='editor-form-content'>{this.props?.children}</div>
-          </div>
-        )}
-      </LanguageContext.Consumer>
-    );
-  }
-}
+export const DIM_NULL_ID = '';
