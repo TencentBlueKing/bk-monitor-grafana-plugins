@@ -161,42 +161,6 @@ importers:
       '@ant-design/icons':
         specifier: 4.8.1
         version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
-      '@codemirror/autocomplete':
-        specifier: ^0.19.0
-        version: 0.19.15
-      '@codemirror/closebrackets':
-        specifier: ^0.19.0
-        version: 0.19.2
-      '@codemirror/commands':
-        specifier: ^0.19.0
-        version: 0.19.8
-      '@codemirror/comment':
-        specifier: ^0.19.0
-        version: 0.19.1
-      '@codemirror/highlight':
-        specifier: ^0.19.0
-        version: 0.19.8
-      '@codemirror/history':
-        specifier: ^0.19.0
-        version: 0.19.2
-      '@codemirror/language':
-        specifier: ^0.19.0
-        version: 0.19.10
-      '@codemirror/lint':
-        specifier: ^0.19.0
-        version: 0.19.6
-      '@codemirror/matchbrackets':
-        specifier: ^0.19.0
-        version: 0.19.4
-      '@codemirror/search':
-        specifier: ^0.19.0
-        version: 0.19.10
-      '@codemirror/state':
-        specifier: ^0.19.0
-        version: 0.19.9
-      '@codemirror/view':
-        specifier: ^0.19.0
-        version: 0.19.48
       '@emotion/css':
         specifier: 11.10.6
         version: 11.10.6

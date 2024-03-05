@@ -27,14 +27,10 @@ import { DataSourcePlugin } from '@grafana/data';
 import { loadPluginCss } from '@grafana/runtime';
 
 import QueryEditor from './components/query-editor';
-import VariableQueryEditor from './components/variable-editor';
 import ConfigEditor from './configuration/config-editor';
 import Datasource from './datasource/datasource';
 loadPluginCss({
   dark: 'plugins/bkmonitor-alert-datasource/dark.css',
   light: 'plugins/bkmonitor-alert-datasource/light.css',
 });
-export const plugin = new DataSourcePlugin(Datasource)
-  .setConfigEditor(ConfigEditor)
-  .setQueryEditor(QueryEditor)
-  .setVariableQueryEditor(VariableQueryEditor);
+export const plugin = new DataSourcePlugin(Datasource).setConfigEditor(ConfigEditor).setQueryEditor(QueryEditor);
