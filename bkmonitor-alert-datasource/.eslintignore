@@ -1,0 +1,6 @@
+# webpack/*
+dist/*
+node_module/*
+babel.config.js
+.eslintrc.js
+.stylelintrc.js
