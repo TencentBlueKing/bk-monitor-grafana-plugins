@@ -1,3 +1,4 @@
+const path = require('path');
 module.exports = {
   extends: ['stylelint-config-recess-order'],
   overrides: [
