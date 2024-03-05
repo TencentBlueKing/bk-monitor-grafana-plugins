@@ -1,4 +1,10 @@
 /* eslint-disable no-param-reassign */
+import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
+import Divider from 'antd/es/divider';
+import Dropdown from 'antd/es/dropdown';
+import Input from 'antd/es/input';
+import Menu from 'antd/es/menu';
+import Popover from 'antd/es/popover';
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -25,13 +31,8 @@
  * IN THE SOFTWARE.
  */
 import React from 'react';
+
 import { IFunctionItem, IFunctionParam } from '../typings/metric';
-import Popover from 'antd/es/popover';
-import Divider from 'antd/es/divider';
-import Input from 'antd/es/input';
-import Dropdown from 'antd/es/dropdown';
-import Menu from 'antd/es/menu';
-import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
 export const EMPTY_VALUE = '-空-';
@@ -45,23 +46,11 @@ interface IFunctionInputState {
 }
 
 export default class FunctionInput extends React.PureComponent<IFunctionInputProps, IFunctionInputState> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isSelect: false,
-    };
-  }
   handleDelete = () => {
     this.props.onDelete();
     setTimeout(() => {
       document.body.click();
     }, 20);
-  };
-  handleParamClick = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, item: IFunctionParam) => {
-    e.preventDefault();
-    e.stopPropagation();
-    item.edit = true;
-    this.props.onEdit(this.props.funtion, false);
   };
   handleParamBlur = (e: React.FocusEvent<HTMLInputElement>, item: IFunctionParam) => {
     e.persist();
@@ -81,6 +70,12 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
       }
     }, 20);
   };
+  handleParamClick = async (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, item: IFunctionParam) => {
+    e.preventDefault();
+    e.stopPropagation();
+    item.edit = true;
+    this.props.onEdit(this.props.funtion, false);
+  };
   handleSelectParam = async (key, param: IFunctionParam) => {
     this.setState({
       isSelect: true,
@@ -90,69 +85,86 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
       this.props.onEdit(this.props.funtion);
     }
   };
+  constructor(props) {
+    super(props);
+    this.state = {
+      isSelect: false,
+    };
+  }
   render(): JSX.Element {
     const { funtion } = this.props;
-    const getParamList = (param: IFunctionParam) => (param?.shortlist?.length ? (
-      <Menu defaultSelectedKeys={[param.value.toString()]}>
-        {(param.shortlist as any).map(id => (
-          <Menu.Item key={id === '' ? EMPTY_VALUE : id.toString()}>
-            <div className="funciton-menu-item" onMouseDown={() => this.handleSelectParam(id, param)}>
-              {id === '' ? EMPTY_VALUE : id}
-            </div>
-          </Menu.Item>
-        ))}
-      </Menu>
-    ) : undefined);
+    const getParamList = (param: IFunctionParam) =>
+      param?.shortlist?.length ? (
+        <Menu defaultSelectedKeys={[param.value.toString()]}>
+          {(param.shortlist as any).map(id => (
+            <Menu.Item key={id === '' ? EMPTY_VALUE : id.toString()}>
+              <div
+                className='funciton-menu-item'
+                onMouseDown={() => this.handleSelectParam(id, param)}
+              >
+                {id === '' ? EMPTY_VALUE : id}
+              </div>
+            </Menu.Item>
+          ))}
+        </Menu>
+      ) : undefined;
     return (
-      <div className="funtion-input">
+      <div className='funtion-input'>
         <LanguageContext.Consumer>
           {({ language }) => (
             <Popover
-              trigger="click"
               content={
                 <div style={{ margin: '-12px -16px' }}>
                   <Divider style={{ margin: '0' }} />
-                  <div className="key-del" onClick={this.handleDelete}>
+                  <div
+                    className='key-del'
+                    onClick={this.handleDelete}
+                  >
                     <CloseCircleOutlined style={{ marginRight: '5px' }} />
                     {getEnByName('删除', language)}
                   </div>
                 </div>
               }
+              trigger='click'
             >
-              <span className="funtion-input-name">{funtion.name}</span>
+              <span className='funtion-input-name'>{funtion.name}</span>
             </Popover>
           )}
         </LanguageContext.Consumer>
         {funtion?.params?.length ? (
           <>
-            <span className="funtion-input-label">&nbsp;(&nbsp;</span>
-            {funtion.params.map((param) => {
+            <span className='funtion-input-label'>&nbsp;(&nbsp;</span>
+            {funtion.params.map(param => {
               if (param.edit) {
                 return (
                   <Dropdown
                     key={param.id}
-                    overlayClassName="funciton-menu-list"
                     overlay={getParamList(param)}
+                    overlayClassName='funciton-menu-list'
                     trigger={['click']}
                     visible={param.edit && param.shortlist?.length > 0}
                   >
                     <Input
-                      key={param.id}
                       autoFocus
-                      className="param-input"
+                      className='param-input'
                       defaultValue={param.value === '' ? '-空-' : param.value}
+                      key={param.id}
                       onBlur={e => this.handleParamBlur(e, param)}
                     ></Input>
                   </Dropdown>
                 );
               }
               return (
-                <span key={param.id} onClick={e => this.handleParamClick(e, param)} className="funtion-input-param">
+                <span
+                  className='funtion-input-param'
+                  key={param.id}
+                  onClick={e => this.handleParamClick(e, param)}
+                >
                   {param.value === '' ? EMPTY_VALUE : param.value}
                 </span>
               );
             })}
-            <span className="funtion-input-label">&nbsp;)&nbsp;</span>
+            <span className='funtion-input-label'>&nbsp;)&nbsp;</span>
           </>
         ) : undefined}
       </div>

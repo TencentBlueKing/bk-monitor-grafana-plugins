@@ -135,7 +135,7 @@
       .copy-mode-input {
         display: flex;
         align-items: center;
-        background-color: #F0F1F5;
+        background-color: #f0f1f5;
         border-radius: 2px;
         width: 88px;
         height: 26px;
@@ -144,7 +144,7 @@
         cursor: pointer;
         .fa-angle-down {
           margin-left: auto;
-          color: #979BA5;
+          color: #979ba5;
           font-size: 12px;
           width: 12px;
           height: 12px;
@@ -169,13 +169,15 @@
       width: 12px;
       height: 12px;
       margin-top: -6px;
-      color: rgba(0,0,0,.25);
+      color: rgba(0, 0, 0, 0.25);
       font-size: 12px;
       line-height: 12px;
       background: #fff;
       cursor: pointer;
       opacity: 0;
-      transition: color .3s ease,opacity .15s ease;
+      transition:
+        color 0.3s ease,
+        opacity 0.15s ease;
     }
     .metric-label {
       color: #63656e;
@@ -439,7 +441,7 @@
     display: flex;
     width: 100%;
     align-items: center;
-    color: #3A84FF;
+    color: #3a84ff;
     margin: 12px 0;
     .search-play {
       display: flex;
@@ -447,10 +449,10 @@
       justify-content: center;
       height: 26px;
       width: 26px;
-      border: 1px solid #C4C6CC;
+      border: 1px solid #c4c6cc;
       border-radius: 2px;
       background-color: white;
-      color: #979BA5;
+      color: #979ba5;
       margin-left: auto;
       cursor: pointer;
       font-size: 12px;
@@ -470,7 +472,7 @@
       margin-left: 2px;
       cursor: pointer;
       &.is-loading {
-        background: #A3C5FD;
+        background: #a3c5fd;
         color: white;
         cursor: not-allowed;
         border: none;
@@ -486,7 +488,7 @@
         margin-right: 3px;
       }
       &.is-loading {
-        color: #C4C6CC;
+        color: #c4c6cc;
         cursor: not-allowed;
       }
     }
@@ -507,7 +509,7 @@
         align-items: center;
         justify-content: center;
         transform: rotate(-90deg);
-        transition: all ease-in-out .3s;
+        transition: all ease-in-out 0.3s;
         &.is-open {
           transform: rotate(0deg);
         }
@@ -515,7 +517,7 @@
       .header-content {
         display: flex;
         align-items: center;
-        color: #979BA5;
+        color: #979ba5;
         &-item {
           margin-left: 24px;
         }
@@ -574,7 +576,6 @@
 
       /* stylelint-disable-next-line declaration-no-important */
       background-color: white !important;
-
     }
   }
 }
@@ -671,14 +672,14 @@
 .select-list {
   display: flex;
   flex-direction: column;
-  max-height: 256px; 
-  overflow-y: auto; 
+  max-height: 256px;
+  overflow-y: auto;
   overflow-anchor: none;
   &-item {
     display: flex;
     flex: 0 0 32px;
     height: 32px;
-    color: rgba(0,0,0,.65);
+    color: rgba(0, 0, 0, 0.65);
     align-items: center;
     padding: 0 12px;
     &:hover {
@@ -686,7 +687,7 @@
       background-color: #f5f5f5;
     }
     &.active {
-      color: rgba(0,0,0,.65);
+      color: rgba(0, 0, 0, 0.65);
       font-weight: 600;
       background-color: #f0f8ff;
     }
@@ -733,7 +734,7 @@
   width: auto !important;
   min-width: 100px !important;
   // .target-dropdown-list:last-child div div {
-  //   position: static !important; 
+  //   position: static !important;
   //   top: auto !important;
   //   left: auto !important;
   //   right: auto !important;
@@ -777,7 +778,7 @@
       justify-content: center;
       margin-left: 10px;
       font-size: 14px;
-      transition: all .3s;
+      transition: all 0.3s;
       &.reflesh-pendding {
         animation: 1s rowup linear infinite normal;
       }
@@ -814,7 +815,7 @@
       color: #63656e;
       height: 22px;
       &:hover {
-        border-color: rgba(58,132,255,.30);
+        border-color: rgba(58, 132, 255, 0.3);
         background-color: #edf4ff;
         color: #3a84ff;
         cursor: pointer;
@@ -826,11 +827,11 @@
     .ant-tabs-tab {
       padding: 8px 0 12px 0;
     }
-    .ant-tabs-tab+.ant-tabs-tab {
+    .ant-tabs-tab + .ant-tabs-tab {
       margin: 0 0 0 6px;
     }
     .ant-tabs-tab.ant-tabs-tab-active .tab-tag {
-      border-color: rgba(58,132,255,.30);
+      border-color: rgba(58, 132, 255, 0.3);
       background-color: #edf4ff;
       color: #3a84ff;
     }
@@ -870,7 +871,6 @@
           align-items: center;
           max-width: 100%;
           font-size: 12px;
-          height: 22px;
           position: relative;
           .title-wrap {
             height: 22px;
@@ -984,7 +984,7 @@
         }
         .ant-checkbox-input,
         .ant-checkbox-inner {
-          top: -3px !important
+          top: -3px !important;
         }
       }
     }
@@ -1060,40 +1060,40 @@
 }
 body {
   &.theme-dark {
-   $monitor-font-color: #ccccdc;
-   $monitor-bg-color: #111217;
-   $monitor-border-color: #2C2D36;
-   $monitor-label-bg-color: #22252b;
-   $monitor-metric-bg-color: #282b31;
+    $monitor-font-color: #ccccdc;
+    $monitor-bg-color: #111217;
+    $monitor-border-color: #2c2d36;
+    $monitor-label-bg-color: #22252b;
+    $monitor-metric-bg-color: #282b31;
     .variable-editor,
     .monitor-grafana {
-      color:$monitor-font-color !important;
+      color: $monitor-font-color !important;
       background-color: $monitor-bg-color !important;
       .variable-line-label {
-        color:$monitor-font-color !important;
+        color: $monitor-font-color !important;
         background: $monitor-label-bg-color !important;
       }
       .function-menu-anchor,
       .condition-input-add,
       .search-play {
-        color: #63656E !important;
-        background: #191B1F !important;
+        color: #63656e !important;
+        background: #191b1f !important;
         border-color: $monitor-border-color !important;
       }
       .query-editor-label {
-        background-color: #1D417E !important;
+        background-color: #1d417e !important;
       }
       .editor-form-label {
         background-color: $monitor-label-bg-color !important;
-        color:$monitor-font-color !important;
+        color: $monitor-font-color !important;
       }
-      .mitric-input  {
+      .mitric-input {
         background-color: $monitor-bg-color !important;
         &-name {
           border-color: $monitor-border-color !important;
         }
         .metric-label {
-          color:$monitor-font-color !important;
+          color: $monitor-font-color !important;
         }
       }
       .promql-editor-instance {
@@ -1102,12 +1102,12 @@ body {
       }
       .copy-mode-input {
         background-color: $monitor-bg-color !important;
-        color: #EAEBF0;
+        color: #eaebf0;
         border: 1px solid $monitor-border-color !important;
       }
       .query-editor-tools {
-        background-color: #35383D !important;
-        color: #EAEBF0 !important; 
+        background-color: #35383d !important;
+        color: #eaebf0 !important;
         border: 1px solid $monitor-border-color !important;
       }
       .mitric-input .ant-cascader-picker-clear {
@@ -1121,7 +1121,7 @@ body {
     }
     .metric-dropdown-tag .tab-tag {
       background-color: $monitor-metric-bg-color !important;
-      color: #EAEBF0 !important; 
+      color: #eaebf0 !important;
       border: 1px solid $monitor-metric-bg-color !important;
     }
     .ant-popover-inner-content {
@@ -1140,14 +1140,14 @@ body {
     }
     .function-menu-panel {
       background-color: $monitor-bg-color !important;
-      color: #EAEBF0 !important; 
+      color: #eaebf0 !important;
       border: 1px solid $monitor-border-color !important;
       .list-item {
         &.item-active,
         &:hover {
           background-color: $monitor-metric-bg-color !important;
           color: #3a84ff !important;
-          cursor: pointer !important; 
+          cursor: pointer !important;
         }
       }
       .panel-item {
@@ -1166,7 +1166,7 @@ body {
     .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
       background-color: $monitor-bg-color !important;
       border: 1px solid $monitor-border-color !important;
-      color: #EAEBF0 !important;
+      color: #eaebf0 !important;
     }
     .metric-dropdown-content .content-list .metric-item:not(.is-arrow):hover,
     .metric-dropdown-content .content-list .metric-item.is-checked {

@@ -23,67 +23,46 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import Popover from 'antd/es/popover';
-import Input from 'antd/es/input';
-import SearchOutlined from '@ant-design/icons/SearchOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
-import { MetricDetail, IFunctionItem } from '../typings/metric';
+import SearchOutlined from '@ant-design/icons/SearchOutlined';
+import Input from 'antd/es/input';
+import Popover from 'antd/es/popover';
+import React from 'react';
+
+import { IFunctionItem, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
 export interface IFunctionMenuProps {
-  metric?: MetricDetail;
   datasource: any;
   functionList: IFunctionItem[];
   functions?: IFunctionItem[];
   isExpressionFunc?: boolean;
+  metric?: MetricDetail;
   onFunctionSeleted: (v: IFunctionItem) => void;
 }
 
 interface IFunctionMenuState {
-  keyword: string;
-  activeFuncType: string;
   activeFuncId: string;
+  activeFuncType: string;
   activeItem: IFunctionItem;
+  keyword: string;
   show: boolean;
 }
 
 export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps, IFunctionMenuState> {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      keyword: '',
-      activeFuncType: '',
+  handleFuncMouseenter = (item: IFunctionItem) => {
+    this.setState({
+      activeFuncId: item?.id || '',
+      activeItem: item,
+    });
+  };
+  handleFuncTypeMouseenter = (item: IFunctionItem) => {
+    this.setState({
       activeFuncId: '',
-      activeItem: null,
-      show: false,
-    };
-  }
-  get filterFucList() {
-    if (this.props.isExpressionFunc) {
-      return this.props.functionList.filter(item => item.children.some(set => set.support_expression));
-    }
-    if (this.props.metric?.isAllFunc) return this.props.functionList;
-    return this.props.functionList.filter(item => ['sort', 'time_shift'].includes(item.id));
-  }
-  get filterList() {
-    if (!this.state.keyword) return this.filterFucList;
-    return this.filterFucList
-      .filter(func => func?.children
-        ?.some(item => item.name.toLocaleLowerCase()
-          .includes(this.state.keyword.toLocaleLowerCase())));
-  }
-  get activeFuncList() {
-    const list = this.filterList.find(item => item.id === this.state.activeFuncType)?.children || [];
-    return this.props.isExpressionFunc ? list.filter(item => item.support_expression) : list;
-  }
-  get activeFunc() {
-    return this.activeFuncList.find(item => item.id === this.state.activeFuncId);
-  }
-  get activeFuncTypeDesc() {
-    return this.filterFucList.find(item => item.id === this.state.activeFuncType)?.description || '';
-  }
-
+      activeFuncType: item?.id || '',
+      activeItem: item,
+    });
+  };
   handleKeywordChange = (e: any) => {
     this.setState(
       {
@@ -100,19 +79,6 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
     });
     this.props.onFunctionSeleted(item);
   };
-  handleFuncTypeMouseenter = (item: IFunctionItem) => {
-    this.setState({
-      activeFuncType: item?.id || '',
-      activeFuncId: '',
-      activeItem: item,
-    });
-  };
-  handleFuncMouseenter = (item: IFunctionItem) => {
-    this.setState({
-      activeFuncId: item?.id || '',
-      activeItem: item,
-    });
-  };
   handleVisibleChange = (show: boolean) => {
     const { activeFuncId, activeFuncType } = this.state;
     if (show && !activeFuncType && !activeFuncId && this.filterFucList.length) {
@@ -125,29 +91,37 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
       show,
     });
   };
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      activeFuncId: '',
+      activeFuncType: '',
+      activeItem: null,
+      keyword: '',
+      show: false,
+    };
+  }
+
   render(): JSX.Element {
-    const { keyword, activeFuncType, activeFuncId, activeItem, show } = this.state;
+    const { activeFuncId, activeFuncType, activeItem, keyword, show } = this.state;
     const functions = this.props.isExpressionFunc ? this.props.functions : this.props.metric.functions;
     return (
-      <div className="function-menu">
+      <div className='function-menu'>
         <LanguageContext.Consumer>
           {({ language }) => (
             <Popover
-              trigger="click"
-              visible={show}
-              onVisibleChange={this.handleVisibleChange}
               content={
-                <div className="function-menu-panel">
+                <div className='function-menu-panel'>
                   <Input
-                    className="panel-search"
-                    suffix={<SearchOutlined style={{ fontSize: '16px', color: '#c4c6cc' }} />}
-                    placeholder={getEnByName('搜索函数', language)}
-                    value={keyword}
+                    className='panel-search'
                     onChange={this.handleKeywordChange}
+                    placeholder={getEnByName('搜索函数', language)}
+                    suffix={<SearchOutlined style={{ color: '#c4c6cc', fontSize: '16px' }} />}
+                    value={keyword}
                   ></Input>
-                  <div className="panel-list">
+                  <div className='panel-list'>
                     {this.filterList?.length > 0 && (
-                      <ul className="panel-item">
+                      <ul className='panel-item'>
                         {this.filterList.map((item: IFunctionItem) => (
                           <li
                             className={`list-item ${item.id === activeFuncType ? 'item-active' : ''}`}
@@ -155,60 +129,89 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                             onMouseEnter={() => this.handleFuncTypeMouseenter(item)}
                           >
                             {item.name}
-                            <i className="icon-monitor icon-arrow-right arrow-icon"></i>
+                            <i className='icon-monitor icon-arrow-right arrow-icon'></i>
                           </li>
                         ))}
                       </ul>
                     )}
                     {this.activeFuncList?.length > 0 && (
-                      <ul className="panel-item">
-                        {this.activeFuncList.map((item: IFunctionItem) => item.id.toLocaleLowerCase()
-                          .includes(keyword.toLocaleLowerCase()) && (
-                          <li
-                            className={`list-item ${item.id === activeFuncId ? 'item-active' : ''}`}
-                            key={item.id}
-                            onClick={() => this.handleSelectFunc(item)}
-                            onMouseEnter={() => this.handleFuncMouseenter(item)}
-                          >
-                            {item.name.slice(0, item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()))}
-                            <span style={{ color: '#FF9C00' }}>
-                              {item.name.slice(
-                                item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()),
-                                item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
-                              )}
-                            </span>
-                            {item.name.slice(
-                              item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
-                              item.name.length,
-                            )}
-                          </li>
-                        ))}
+                      <ul className='panel-item'>
+                        {this.activeFuncList.map(
+                          (item: IFunctionItem) =>
+                            item.id.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()) && (
+                              <li
+                                className={`list-item ${item.id === activeFuncId ? 'item-active' : ''}`}
+                                key={item.id}
+                                onClick={() => this.handleSelectFunc(item)}
+                                onMouseEnter={() => this.handleFuncMouseenter(item)}
+                              >
+                                {item.name.slice(0, item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()))}
+                                <span style={{ color: '#FF9C00' }}>
+                                  {item.name.slice(
+                                    item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()),
+                                    item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
+                                  )}
+                                </span>
+                                {item.name.slice(
+                                  item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
+                                  item.name.length,
+                                )}
+                              </li>
+                            ),
+                        )}
                       </ul>
                     )}
                     {(activeFuncId || activeFuncType) && (
-                      <div className="panel-desc">
-                        <div className="desc-title">{activeItem.name}</div>
-                        <div className="desc-content">{activeItem.description}</div>
+                      <div className='panel-desc'>
+                        <div className='desc-title'>{activeItem.name}</div>
+                        <div className='desc-content'>{activeItem.description}</div>
                       </div>
                     )}
                     {(!this.filterList?.length || !this.activeFuncList?.length) && (
-                      <div className="panel-desc">{getEnByName('暂无数据', language)}</div>
+                      <div className='panel-desc'>{getEnByName('暂无数据', language)}</div>
                     )}
                   </div>
                 </div>
               }
+              onVisibleChange={this.handleVisibleChange}
+              trigger='click'
+              visible={show}
             >
               {functions?.length ? (
-                <span className="menu-add">
-                  <PlusOutlined className="add-icon" />
+                <span className='menu-add'>
+                  <PlusOutlined className='add-icon' />
                 </span>
               ) : (
-                <span className="function-menu-anchor">{getEnByName('请选择', language)}</span>
+                <span className='function-menu-anchor'>{getEnByName('请选择', language)}</span>
               )}
             </Popover>
           )}
         </LanguageContext.Consumer>
       </div>
+    );
+  }
+  get activeFunc() {
+    return this.activeFuncList.find(item => item.id === this.state.activeFuncId);
+  }
+  get activeFuncList() {
+    const list = this.filterList.find(item => item.id === this.state.activeFuncType)?.children || [];
+    return this.props.isExpressionFunc ? list.filter(item => item.support_expression) : list;
+  }
+  get activeFuncTypeDesc() {
+    return this.filterFucList.find(item => item.id === this.state.activeFuncType)?.description || '';
+  }
+  get filterFucList() {
+    if (this.props.isExpressionFunc) {
+      return this.props.functionList.filter(item => item.children.some(set => set.support_expression));
+    }
+    if (this.props.metric?.isAllFunc) return this.props.functionList;
+    return this.props.functionList.filter(item => ['sort', 'time_shift'].includes(item.id));
+  }
+  get filterList() {
+    if (!this.state.keyword) return this.filterFucList;
+    return this.filterFucList.filter(
+      func =>
+        func?.children?.some(item => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
     );
   }
 }

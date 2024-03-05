@@ -29,10 +29,10 @@ import { DataSourceJsonData } from '@grafana/data';
 export interface QueryOption extends DataSourceJsonData {
   baseUrl: string; // api base url
   bizId: string;
-  useToken: boolean;
   keepCookies?: string[];
+  useToken: boolean;
 }
 
 export interface SecureOption {
-  token?: string
+  token?: string;
 }

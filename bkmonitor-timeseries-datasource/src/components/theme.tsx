@@ -33,178 +33,177 @@ export const theme = EditorView.theme({
       outline_fallback: 'none',
     },
   },
-  '.cm-scroller': {
-    overflow: 'hidden',
-    fontFamily: '"DejaVu Sans Mono", monospace',
-  },
-  '.cm-placeholder': {
-    fontFamily:
-      // eslint-disable-next-line max-len
-      '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
-  },
-
-  '.cm-matchingBracket': {
-    color: '#000',
-    backgroundColor: '#dedede',
-    fontWeight: 'bold',
-    outline: '1px dashed transparent',
-  },
-  '.cm-nonmatchingBracket': { borderColor: 'red' },
-
-  '.cm-tooltip': {
-    backgroundColor: '#f8f8f8',
-    borderColor: 'rgba(52, 79, 113, 0.2)',
-  },
-
-  '.cm-tooltip.cm-tooltip-autocomplete': {
-    '& > ul': {
-      maxHeight: '350px',
-      fontFamily: '"DejaVu Sans Mono", monospace',
-      maxWidth: 'unset',
-    },
-    '& > ul > li': {
-      padding: '2px 1em 2px 3px',
-    },
-    '& li:hover': {
-      backgroundColor: '#ddd',
-    },
-    '& > ul > li[aria-selected]': {
-      backgroundColor: '#d6ebff',
-      color: 'unset',
-    },
-    minWidth: '30%',
-  },
-
   '.cm-completionDetail': {
-    float: 'right',
     color: '#999',
+    float: 'right',
+  },
+  '.cm-completionIcon': {
+    '&:after': { content: "'\\ea88'" },
+    boxSizing: 'content-box',
+    color: '#007acc',
+    fontFamily: 'codicon',
+    fontSize: '16px',
+    lineHeight: '1',
+    marginRight: '10px',
+    opacity: '1',
+    paddingRight: '0',
+    verticalAlign: 'top',
+  },
+  '.cm-completionIcon-class': {
+    '&:after': { content: "'○'" },
+  },
+  '.cm-completionIcon-constant': {
+    '&:after': { content: "'c'" },
+    color: '#007acc',
   },
 
-  '.cm-tooltip.cm-completionInfo': {
-    marginTop: '-11px',
-    padding: '10px',
-    fontFamily: '\'Open Sans\', \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif;',
-    border: 'none',
-    backgroundColor: '#d6ebff',
-    minWidth: '250px',
-    maxWidth: 'min-content',
+  '.cm-completionIcon-enum': {
+    '&:after': { content: "'∪'" },
   },
 
-  '.cm-completionInfo.cm-completionInfo-right': {
-    '&:before': {
-      content: '\' \'',
-      height: '0',
-      position: 'absolute',
-      width: '0',
-      left: '-20px',
-      border: '10px solid transparent',
-      borderRightColor: '#d6ebff',
-    },
-    marginLeft: '12px',
+  '.cm-completionIcon-function, .cm-completionIcon-method': {
+    '&:after': { content: "'f'" },
+    color: '#652d90',
   },
+
+  '.cm-completionIcon-interface': {
+    '&:after': { content: "'◌'" },
+  },
+
+  '.cm-completionIcon-keyword': {
+    '&:after': { content: "'k'" },
+    color: '#616161',
+  },
+
+  '.cm-completionIcon-namespace': {
+    '&:after': { content: "'▢'" },
+  },
+  '.cm-completionIcon-property': {
+    '&:after': { content: "'□'" },
+  },
+
+  '.cm-completionIcon-text': {
+    '&:after': { content: "'t'" },
+    color: '#ee9d28',
+  },
+
+  '.cm-completionIcon-type': {
+    '&:after': { content: "'𝑡'" },
+  },
+
+  '.cm-completionIcon-variable': {
+    '&:after': { content: "'𝑥'" },
+  },
+
   '.cm-completionInfo.cm-completionInfo-left': {
     '&:before': {
-      content: '\' \'',
-      height: '0',
-      position: 'absolute',
-      width: '0',
-      right: '-20px',
       border: '10px solid transparent',
       borderLeftColor: '#d6ebff',
+      content: "' '",
+      height: '0',
+      position: 'absolute',
+      right: '-20px',
+      width: '0',
     },
     marginRight: '12px',
   },
 
+  '.cm-completionInfo.cm-completionInfo-right': {
+    '&:before': {
+      border: '10px solid transparent',
+      borderRightColor: '#d6ebff',
+      content: "' '",
+      height: '0',
+      left: '-20px',
+      position: 'absolute',
+      width: '0',
+    },
+    marginLeft: '12px',
+  },
+
   '.cm-completionMatchedText': {
-    textDecoration: 'none',
-    fontWeight: 'bold',
     color: '#0066bf',
+    fontWeight: 'bold',
+    textDecoration: 'none',
   },
-
-  '.cm-line': {
-    padding: '0 11px',
-    '&::selection': {
-      backgroundColor: '#add6ff',
-    },
-    '& > span::selection': {
-      backgroundColor: '#add6ff',
-    },
-  },
-
-  '.cm-selectionMatch': {
-    backgroundColor: '#e6f3ff',
-  },
-
   '.cm-diagnostic': {
     '&.cm-diagnostic-error': {
       borderLeft: '3px solid #e65013',
     },
   },
-
-  '.cm-completionIcon': {
-    boxSizing: 'content-box',
-    fontSize: '16px',
-    lineHeight: '1',
-    marginRight: '10px',
-    verticalAlign: 'top',
-    '&:after': { content: '\'\\ea88\'' },
-    fontFamily: 'codicon',
-    paddingRight: '0',
-    opacity: '1',
-    color: '#007acc',
+  '.cm-line': {
+    '& > span::selection': {
+      backgroundColor: '#add6ff',
+    },
+    '&::selection': {
+      backgroundColor: '#add6ff',
+    },
+    padding: '0 11px',
   },
-
-  '.cm-completionIcon-function, .cm-completionIcon-method': {
-    '&:after': { content: '\'f\'' },
-    color: '#652d90',
+  '.cm-matchingBracket': {
+    backgroundColor: '#dedede',
+    color: '#000',
+    fontWeight: 'bold',
+    outline: '1px dashed transparent',
   },
-  '.cm-completionIcon-class': {
-    '&:after': { content: '\'○\'' },
+  '.cm-nonmatchingBracket': { borderColor: 'red' },
+  '.cm-placeholder': {
+    fontFamily:
+      // eslint-disable-next-line max-len
+      '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji"',
   },
-  '.cm-completionIcon-interface': {
-    '&:after': { content: '\'◌\'' },
+  '.cm-scroller': {
+    fontFamily: '"DejaVu Sans Mono", monospace',
+    overflow: 'hidden',
   },
-  '.cm-completionIcon-variable': {
-    '&:after': { content: '\'𝑥\'' },
+  '.cm-selectionMatch': {
+    backgroundColor: '#e6f3ff',
   },
-  '.cm-completionIcon-constant': {
-    '&:after': { content: '\'c\'' },
-    color: '#007acc',
+  '.cm-tooltip': {
+    backgroundColor: '#f8f8f8',
+    borderColor: 'rgba(52, 79, 113, 0.2)',
   },
-  '.cm-completionIcon-type': {
-    '&:after': { content: '\'𝑡\'' },
+  '.cm-tooltip.cm-completionInfo': {
+    backgroundColor: '#d6ebff',
+    border: 'none',
+    fontFamily: "'Open Sans', 'Lucida Sans Unicode', 'Lucida Grande', sans-serif;",
+    marginTop: '-11px',
+    maxWidth: 'min-content',
+    minWidth: '250px',
+    padding: '10px',
   },
-  '.cm-completionIcon-enum': {
-    '&:after': { content: '\'∪\'' },
-  },
-  '.cm-completionIcon-property': {
-    '&:after': { content: '\'□\'' },
-  },
-  '.cm-completionIcon-keyword': {
-    '&:after': { content: '\'k\'' },
-    color: '#616161',
-  },
-  '.cm-completionIcon-namespace': {
-    '&:after': { content: '\'▢\'' },
-  },
-  '.cm-completionIcon-text': {
-    '&:after': { content: '\'t\'' },
-    color: '#ee9d28',
+  '.cm-tooltip.cm-tooltip-autocomplete': {
+    '& > ul': {
+      fontFamily: '"DejaVu Sans Mono", monospace',
+      maxHeight: '350px',
+      maxWidth: 'unset',
+    },
+    '& > ul > li': {
+      padding: '2px 1em 2px 3px',
+    },
+    '& > ul > li[aria-selected]': {
+      backgroundColor: '#d6ebff',
+      color: 'unset',
+    },
+    '& li:hover': {
+      backgroundColor: '#ddd',
+    },
+    minWidth: '30%',
   },
 });
 
 export const promqlHighlighter = HighlightStyle.define([
-  { tag: tags.name, color: '#000' },
-  { tag: tags.number, color: '#09885a' },
-  { tag: tags.string, color: '#a31515' },
-  { tag: tags.keyword, color: '#008080' },
-  { tag: tags.function(tags.variableName), color: '#008080' },
-  { tag: tags.labelName, color: '#800000' },
+  { color: '#000', tag: tags.name },
+  { color: '#09885a', tag: tags.number },
+  { color: '#a31515', tag: tags.string },
+  { color: '#008080', tag: tags.keyword },
+  { color: '#008080', tag: tags.function(tags.variableName) },
+  { color: '#800000', tag: tags.labelName },
   { tag: tags.operator },
-  { tag: tags.modifier, color: '#008080' },
+  { color: '#008080', tag: tags.modifier },
   { tag: tags.paren },
   { tag: tags.squareBracket },
   { tag: tags.brace },
-  { tag: tags.invalid, color: 'red' },
-  { tag: tags.comment, color: '#888', fontStyle: 'italic' },
+  { color: 'red', tag: tags.invalid },
+  { color: '#888', fontStyle: 'italic', tag: tags.comment },
 ]);
