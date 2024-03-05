@@ -1,7 +1,10 @@
 .git
 .github
 .vscode
+dist/
 node_modules
-webpack_cache
-dist
-grafana_build
+.history
+.codecc
+.eslintcache
+.prettierignore
+pnpm-lock.yaml

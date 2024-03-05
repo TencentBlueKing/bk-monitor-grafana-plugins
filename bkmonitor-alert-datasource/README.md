@@ -13,7 +13,7 @@ This datasource will help you query timeseries metric data from Tencent Blueking
 Install the latest plugin using Grafana CLI:
 
 ```bash
-$ grafana-cli plugins install bkmonitor-timeseries-datasource
+$ grafana-cli plugins install bkmonitor-alert-datasource
 ```
 
 # Contact Us
