@@ -1,12 +1,12 @@
 /*
  * Tencent is pleased to support the open source community by making
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
  *
  * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
  *
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) is licensed under the MIT License.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
  *
- * License for 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition):
+ * License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
  *
  * ---------------------------------------------------
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -23,25 +23,16 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable import/prefer-default-export */
+import { DataSourcePlugin } from '@grafana/data';
 import { loadPluginCss } from '@grafana/runtime';
-import Datasource from './datasource/datasource';
-import ConfigEditor from './configuration/config-editor';
+
 import QueryEditor from './components/event-editor';
 import VariableQueryEditor from './components/variable-editor';
-import { DataSourcePlugin } from '@grafana/data';
-
-import './sass/grafana-monitor.dark.scss';
-import './sass/grafana-monitor.light.scss';
-import './sass/grafana-antd.dark.less';
-import './sass/grafana-antd.light.less';
+import ConfigEditor from './configuration/config-editor';
+import Datasource from './datasource/datasource';
 loadPluginCss({
-  dark: 'plugins/bkmonitor-event-datasource/css/grafana-antd.dark.css',
-  light: 'plugins/bkmonitor-event-datasource/css/grafana-antd.light.css',
-});
-loadPluginCss({
-  dark: 'plugins/bkmonitor-event-datasource/css/grafana-monitor.dark.css',
-  light: 'plugins/bkmonitor-event-datasource/css/grafana-monitor.light.css',
+  dark: 'plugins/bkmonitor-event-datasource/dark.css',
+  light: 'plugins/bkmonitor-event-datasource/light.css',
 });
 export const plugin = new DataSourcePlugin(Datasource)
   .setConfigEditor(ConfigEditor)

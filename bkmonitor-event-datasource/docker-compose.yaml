@@ -2,7 +2,7 @@ version: '3.0'
 
 services:
   grafana:
-    container_name: 'bkmonitor-timeseries-datasource'
+    container_name: 'blueking-event-datasource'
     platform: 'linux/amd64'
     build:
       context: ./.config
@@ -12,5 +12,5 @@ services:
     ports:
       - 3000:3000/tcp
     volumes:
-      - ./dist:/var/lib/grafana/plugins/bkmonitor-timeseries-datasource
+      - ./dist:/var/lib/grafana/plugins/blueking-event-datasource
       - ./provisioning:/etc/grafana/provisioning

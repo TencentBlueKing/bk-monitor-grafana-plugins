@@ -1,22 +1,26 @@
-@import "./query.scss";
+@import './query.scss';
 
 .event-variable-editor {
   display: flex;
   flex-direction: column;
 
   @include query-editor();
+
   .common-select {
     width: 200px;
   }
+
   .mitric-input {
     margin-bottom: 0px;
   }
+
   .variable-line {
     display: flex;
     width: 100%;
     color: #63656e;
     font-size: 12px;
     margin-bottom: 4px;
+
     &-label {
       flex: 0 0 160px;
       display: flex;
@@ -26,12 +30,14 @@
       background-color: #f1f5f9;
       margin-right: 4px;
     }
+
     &-content {
       flex: 1;
       min-height: 32px;
       display: flex;
       margin-right: 4px;
     }
+
     .condition-input-add {
       margin-bottom: 0px;
     }

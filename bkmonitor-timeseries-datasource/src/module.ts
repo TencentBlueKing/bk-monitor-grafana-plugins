@@ -31,8 +31,8 @@ import VariableQueryEditor from './components/variable-editor';
 import ConfigEditor from './configuration/config-editor';
 import Datasource from './datasource/datasource';
 loadPluginCss({
-  dark: 'plugins/blueking-bkmonitor-datasource/dark.css',
-  light: 'plugins/blueking-bkmonitor-datasource/light.css',
+  dark: 'plugins/bkmonitor-timeseries-datasource/dark.css',
+  light: 'plugins/bkmonitor-timeseries-datasource/light.css',
 });
 export const plugin = new DataSourcePlugin(Datasource)
   .setConfigEditor(ConfigEditor)
