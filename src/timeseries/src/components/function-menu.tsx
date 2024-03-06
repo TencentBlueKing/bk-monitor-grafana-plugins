@@ -191,27 +191,26 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
     );
   }
   get activeFunc() {
-    return this.activeFuncList.find(item => item.id === this.state.activeFuncId);
+    return this.activeFuncList.find((item) => item.id === this.state.activeFuncId);
   }
   get activeFuncList() {
-    const list = this.filterList.find(item => item.id === this.state.activeFuncType)?.children || [];
-    return this.props.isExpressionFunc ? list.filter(item => item.support_expression) : list;
+    const list = this.filterList.find((item) => item.id === this.state.activeFuncType)?.children || [];
+    return this.props.isExpressionFunc ? list.filter((item) => item.support_expression) : list;
   }
   get activeFuncTypeDesc() {
-    return this.filterFucList.find(item => item.id === this.state.activeFuncType)?.description || '';
+    return this.filterFucList.find((item) => item.id === this.state.activeFuncType)?.description || '';
   }
   get filterFucList() {
     if (this.props.isExpressionFunc) {
-      return this.props.functionList.filter(item => item.children.some(set => set.support_expression));
+      return this.props.functionList.filter((item) => item.children.some((set) => set.support_expression));
     }
     if (this.props.metric?.isAllFunc) return this.props.functionList;
-    return this.props.functionList.filter(item => ['sort', 'time_shift'].includes(item.id));
+    return this.props.functionList.filter((item) => ['sort', 'time_shift'].includes(item.id));
   }
   get filterList() {
     if (!this.state.keyword) return this.filterFucList;
-    return this.filterFucList.filter(
-      func =>
-        func?.children?.some(item => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
+    return this.filterFucList.filter((func) =>
+      func?.children?.some((item) => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
     );
   }
 }
