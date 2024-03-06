@@ -4,6 +4,8 @@
   "id": "bkmonitor-timeseries-datasource",
   "metrics": true,
   "annotations": false,
+  "alerting": true,
+  "mixed": true,
   "queryOptions": {
     "maxDataPoints": true
   },
