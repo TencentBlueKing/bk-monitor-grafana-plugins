@@ -10,8 +10,16 @@ RUN npm i -g pnpm@${PNPM_VERSION}
 
 COPY . .
 
-RUN pnpm i
-RUN pnpm run build
-RUN tar -czvf frontend.tar.gz  src/alert/dist src/event/dist src/timeseries/dist
+RUN pnpm i \ 
+&& pnpm run build \
+&& rm -rf build \
+&& mkdir -p build/alert \
+&& mkdir -p build/event \
+&& mkdir -p build/timeseries \
+&& mv src/alert/dist/* build/alert \
+&& mv src/event/dist/* build/event \
+&& mv src/timeseries/dist/* build/timeseries 
+
+RUN tar -czvf frontend.tar.gz  build
 
 CMD [ "echo", "前端构建完毕" ]

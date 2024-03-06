@@ -35,5 +35,5 @@ e2e-results/
 .eslintcache
 .codecc
 .vscode
-
+.DS_Store
 pre-*-bkcodeai
