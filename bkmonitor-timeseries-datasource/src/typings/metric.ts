@@ -404,7 +404,7 @@ export class MetricDetail {
     // && !this.result_table_id.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension
   }
   get isAllFunc() {
-    return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
+    return ['bk_data|time_series', 'bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
     && !this.result_table_id?.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension;
   }
   get canNotTimeAggMethod() {
