@@ -329,7 +329,7 @@ export class MetricDetail {
   unit: string;
 
   constructor(metricDetail: IMetric | MetricDetail) {
-    Object.keys(metricDetail).forEach((key) => (this[key] = metricDetail[key]));
+    Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));
     this.agg_method =
       metricDetail.agg_method ||
       (this.onlyCountMethod ? 'COUNT' : metricDetail?.method_list?.length ? metricDetail.method_list[0] : 'AVG');
@@ -352,7 +352,7 @@ export class MetricDetail {
     if (this.canNotTimeAggMethod) {
       return [].concat(METHOD_LIST, CP_METHOD_LIST);
     }
-    return this?.method_list?.length ? this.method_list.map((set) => ({ id: set, name: set })) : METHOD_LIST;
+    return this?.method_list?.length ? this.method_list.map(set => ({ id: set, name: set })) : METHOD_LIST;
   }
   get canNotTimeAggMethod() {
     return (
@@ -421,8 +421,8 @@ export class MetricDetail {
   get isSpecialCMDBDimension() {
     return (
       this.metricMetaId === 'bk_monitor|time_series' &&
-      (this.agg_dimension.some((dim) => ['bk_inst_id', 'bk_obj_id'].includes(dim)) ||
-        this.agg_condition.some((condition) => ['bk_inst_id', 'bk_obj_id'].includes(condition.key)))
+      (this.agg_dimension.some(dim => ['bk_inst_id', 'bk_obj_id'].includes(dim)) ||
+        this.agg_condition.some(condition => ['bk_inst_id', 'bk_obj_id'].includes(condition.key)))
     );
   }
   get metricMetaId() {
