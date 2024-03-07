@@ -8,6 +8,6 @@
 
 事件数据数据源
 
-### bkmonitor-aler-datasource
+### bkmonitor-alert-datasource
 
 告警数据数据源
