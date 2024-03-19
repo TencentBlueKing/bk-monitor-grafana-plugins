@@ -4,101 +4,115 @@
   justify-content: center;
   width: 32px;
   height: 32px;
-  border: 1px solid #dcdee5;
-  color: #979ba5;
   margin-left: -1px;
+  color: #979ba5;
+  border: 1px solid #dcdee5;
+
   &:hover {
     z-index: 99;
     cursor: pointer;
     border-color: #75afff;
   }
+
   .add-icon {
     font-size: 16px;
   }
 }
+
 @mixin query-editor {
   .query-editor {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     margin: 0;
-    flex-wrap: wrap;
+
     &-label {
-      flex: 0 0 32px;
-      width: 32px;
-      height: 32px;
       display: flex;
+      flex: 0 0 32px;
       align-items: center;
       justify-content: center;
-      border-radius: 2px;
-      background-color: #6395e7;
+      width: 32px;
+      height: 32px;
       margin-right: 2px;
       color: white;
       cursor: pointer;
+      background-color: #6395e7;
+      border-radius: 2px;
+
       &.is-unchecked {
-        background-color: #f5f6fa;
         color: #979ba5;
+        background-color: #f5f6fa;
       }
     }
+
     &-content {
-      flex: 1;
       display: flex;
+      flex: 1;
+      flex-wrap: wrap;
       height: 100%;
       min-height: 32px;
-      flex-wrap: wrap;
     }
+
     &-tools {
+      display: flex;
       flex: 0 0 24px;
       flex-direction: column;
-      justify-content: space-around;
       align-items: center;
-      background-color: #f5f6fa;
-      border-radius: 2px;
+      justify-content: space-around;
       margin-left: 12px;
       font-size: 12px;
       color: #63656e;
-      display: flex;
       visibility: hidden;
+      background-color: #f5f6fa;
+      border-radius: 2px;
+
       .source-icon {
         &:hover {
-          cursor: pointer;
           color: #3a84ff;
+          cursor: pointer;
         }
       }
+
       .delete-icon {
         &:hover {
-          cursor: pointer;
           color: #ff5656;
+          cursor: pointer;
         }
       }
     }
+
     &:hover {
       .query-editor-tools {
         visibility: visible;
       }
     }
+
     .svg-icon {
       width: 1em;
       height: 1em;
+      overflow: hidden;
       vertical-align: middle;
       fill: currentColor;
-      overflow: hidden;
     }
   }
+
   .editor-form {
     display: flex;
     margin-bottom: 4px;
+
     &-label {
-      min-width: 56px;
-      padding: 0 16px;
-      height: 32px;
       display: flex;
+      flex-wrap: nowrap;
       align-items: center;
-      background-color: #e7e9ef;
-      color: #313238;
+      min-width: 56px;
+      height: 32px;
+      padding: 0 16px;
       overflow: hidden;
+      color: #313238;
       text-overflow: ellipsis;
       white-space: nowrap;
-      flex-wrap: nowrap;
+      background-color: #e7e9ef;
+
       .label-tip {
         margin-right: -8px;
         margin-left: 8px;
@@ -106,79 +120,94 @@
         cursor: pointer;
       }
     }
+
     &-content {
+      display: flex;
       flex: 1;
       height: 32px;
-      display: flex;
     }
   }
+
   .query-formula {
     width: 88px;
   }
+
   .interval-input {
     display: flex;
+
     .interval-select {
-      width: 70px;
       flex: 0 0 70px;
+      width: 70px;
+
       &:hover {
         z-index: 99;
       }
     }
+
     .interval-unit {
-      width: 38px;
-      flex: 0 0 38px;
       display: flex;
+      flex: 0 0 38px;
       align-items: center;
       justify-content: center;
-      margin-left: -1px;
+      width: 38px;
       height: 32px;
+      margin-left: -1px;
+
       .ant-select-selector,
       .ant-select-selection-item {
-        padding: 0;
         display: flex;
         align-items: center;
         justify-content: center;
+        padding: 0;
       }
     }
   }
+
   .dimension-input {
     min-width: 150px;
   }
+
   .condition-input {
     display: flex;
     flex: 1;
     flex-wrap: wrap;
+
     &-key {
       min-width: 100px;
-      margin-left: -1px;
       margin-bottom: 4px;
+      margin-left: -1px;
     }
+
     &-method {
       min-width: 32px;
-      color: #3a84ff;
-      font-weight: 700;
-      margin-left: -1px;
       margin-bottom: 4px;
+      margin-left: -1px;
+      font-weight: 700;
+      color: #3a84ff;
     }
+
     &-value {
       min-width: 120px;
       max-width: 100%;
-      margin-left: -1px;
       margin-bottom: 4px;
+      margin-left: -1px;
+
       .ant-select-selector {
         display: flex;
         flex-wrap: nowrap;
         height: 32px;
       }
     }
+
     &-condition {
-      min-width: 46px;
-      max-width: 46px;
+      min-width: 50px;
+      max-width: 50px;
       height: 32px;
-      color: #ff9c01;
-      font-weight: 700;
-      margin-left: -1px;
       margin-bottom: 4px;
+      margin-left: -1px;
+      font-weight: 700;
+      color: #ff9c01;
+
       .ant-select-selector,
       .ant-select-selection-item {
         display: flex;
@@ -187,52 +216,65 @@
         padding: 0;
       }
     }
+
     &-add {
-      @include add-icon();
       margin-bottom: 4px;
       background-color: white;
+
+      @include add-icon();
     }
+
     .ant-select-selection-search-input {
       min-width: 10px !important;
     }
   }
+
   .type-input {
     min-width: 200px;
+
     .mark-text {
       color: #a2a4b3;
     }
   }
+
   .add-metric {
     width: 120px;
     margin-left: 34px;
     border-radius: 2px;
   }
+
   .ant-spin-nested-loading {
     width: 100%;
     height: 100%;
   }
+
   .ant-input-focused,
   .ant-input:focus {
     box-shadow: none !important;
   }
+
   .ant-input-number-handler-wrap {
     display: none;
   }
+
   .ant-input-number-focused,
   .ant-input-number:focus {
     z-index: 99;
     box-shadow: none !important;
   }
+
   .ant-select.ant-select-focused,
   .ant-select:not(.ant-select-disabled):hover {
     .ant-select-selector {
       z-index: 99;
       box-shadow: none !important;
     }
+
     .ant-select-arrow {
       z-index: 100;
     }
   }
+
   .ant-select-multiple .ant-select-selector {
     padding: 1.8px 5.6px;
   }
@@ -240,175 +282,212 @@
 
 .monitor-event-grafana {
   display: flex;
+  flex-direction: column;
   width: 100%;
   margin-top: 4px;
   font-size: 12px;
   color: #63656e;
-  flex-direction: column;
 
   @include query-editor()
 }
+
 .key-del {
   display: flex;
   align-items: center;
-  padding: 0 15px;
   height: 32px;
+  padding: 0 15px;
   margin-bottom: -4px;
+
   &:hover {
-    cursor: pointer;
     color: #1890ff;
+    cursor: pointer;
   }
 }
+
 .inite-wrapper {
   display: flex;
   width: 100%;
   height: 150px;
 }
+
 .rc-virtual-list-scrollbar {
   width: 4px !important;
+
   .rc-virtual-list-scrollbar-thumb {
     background-color: rgb(165, 165, 165) !important;
   }
 }
+
 .monitor-data-input-dropdown {
   .mark-text {
     display: none;
   }
 }
+
 .popover-metric-title {
   display: flex;
   align-items: center;
+  margin-bottom: 6px;
   font-size: 14px;
   font-weight: 600;
   color: #313238;
-  margin-bottom: 6px;
 }
+
 .popover-metric-item {
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: #63656e;
   line-height: 20px;
+  color: #63656e;
 }
+
 body {
   &.theme-dark {
-   $monitor-font-color: #ccccdc;
-   $monitor-bg-color: #111217;
-   $monitor-border-color: #2C2D36;
-   $monitor-label-bg-color: #22252b;
-   $monitor-metric-bg-color: #282b31;
-   background-color: #111217;
+    $monitor-font-color: #ccccdc;
+    $monitor-bg-color: #111217;
+    $monitor-border-color: #2c2d36;
+    $monitor-label-bg-color: #22252b;
+    $monitor-metric-bg-color: #282b31;
+    background-color: #111217;
+
     .variable-editor,
     .monitor-event-grafana {
-      color:$monitor-font-color !important;
+      color: $monitor-font-color !important;
       background-color: $monitor-bg-color !important;
+
       .variable-line-label {
-        color:$monitor-font-color !important;
+        color: $monitor-font-color !important;
         background: $monitor-label-bg-color !important;
       }
+
       .function-menu-anchor,
       .condition-input-add,
       .search-play {
-        color: #63656E !important;
-        background: #191B1F !important;
+        color: #63656e !important;
+        background: #191b1f !important;
         border-color: $monitor-border-color !important;
       }
+
       .query-editor-label {
-        background-color: #1D417E !important;
+        background-color: #1d417e !important;
       }
+
       .editor-form-label {
+        color: $monitor-font-color !important;
         background-color: $monitor-label-bg-color !important;
-        color:$monitor-font-color !important;
       }
-      .mitric-input  {
+
+      .mitric-input {
         background-color: $monitor-bg-color !important;
+
         &-name {
           border-color: $monitor-border-color !important;
         }
+
         .metric-label {
-          color:$monitor-font-color !important;
+          color: $monitor-font-color !important;
         }
       }
+
       .promql-editor-instance {
+        background-color: $monitor-bg-color !important;
         border-color: $monitor-border-color !important;
-        background-color: $monitor-bg-color !important;
       }
+
       .copy-mode-input {
+        color: #eaebf0;
         background-color: $monitor-bg-color !important;
-        color: #EAEBF0;
         border: 1px solid $monitor-border-color !important;
       }
+
       .query-editor-tools {
-        background-color: #35383D !important;
-        color: #EAEBF0 !important; 
+        color: #eaebf0 !important;
+        background-color: #35383d !important; 
         border: 1px solid $monitor-border-color !important;
       }
+
       .mitric-input .ant-cascader-picker-clear {
-        background-color: transparent !important;
         color: #63656e !important;
+        background-color: transparent !important;
       }
+
       .menu-add,
       .funtion-input {
         border-color: $monitor-border-color !important;
       }
     }
+
     .metric-dropdown-tag .tab-tag {
-      background-color: $monitor-metric-bg-color !important;
-      color: #EAEBF0 !important; 
+      color: #eaebf0 !important;
+      background-color: $monitor-metric-bg-color !important; 
       border: 1px solid $monitor-metric-bg-color !important;
     }
+
     .ant-popover-inner-content {
-      border: 1px solid $monitor-border-color !important;
       background-color: $monitor-bg-color !important;
+      border: 1px solid $monitor-border-color !important;
+
       .content-list {
         background-color: $monitor-bg-color !important;
       }
+
       .focus-item {
         background-color: $monitor-metric-bg-color !important;
       }
+
       .content-tag {
         background-color: $monitor-bg-color !important;
         border-left: 1px solid $monitor-metric-bg-color !important;
       }
     }
+
     .function-menu-panel {
-      background-color: $monitor-bg-color !important;
-      color: #EAEBF0 !important; 
+      color: #eaebf0 !important;
+      background-color: $monitor-bg-color !important; 
       border: 1px solid $monitor-border-color !important;
+
       .list-item {
         &.item-active,
         &:hover {
-          background-color: $monitor-metric-bg-color !important;
           color: #3a84ff !important;
-          cursor: pointer !important; 
+          cursor: pointer !important;
+          background-color: $monitor-metric-bg-color !important; 
         }
       }
+
       .panel-item {
         border-right-color: $monitor-border-color !important;
       }
     }
+
     .ant-tabs-nav::before {
       border-bottom-color: $monitor-border-color;
     }
+
     .ant-tooltip-inner {
       border: 1px solid $monitor-metric-bg-color !important;
     }
+
     .ant-select-dropdown {
       border: 1px solid $monitor-metric-bg-color !important;
     }
+
     .ant-select-disabled.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+      color: #eaebf0 !important;
       background-color: $monitor-bg-color !important;
       border: 1px solid $monitor-border-color !important;
-      color: #EAEBF0 !important;
     }
+
     .metric-dropdown-content .content-list .metric-item:not(.is-arrow):hover,
     .metric-dropdown-content .content-list .metric-item.is-checked {
       background-color: $monitor-metric-bg-color !important;
     }
+
     .cm-content {
       caret-color: white !important;
     }
   }
+
   &.theme-light {
     background-color: #f4f5f5 !important;
   }

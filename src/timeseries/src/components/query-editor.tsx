@@ -943,7 +943,6 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   }
   handleGetQueryData(metricList: MetricDetail[], expression?: string, display?: boolean) {
     const { cluster, expressionList, host, module, promqlAlias } = this.state;
-    console.info(expression, display);
     // const curExpression = typeof expression === 'undefined' ? this.state.expression : expression;
     // const curDisplay = typeof display === 'undefined' ? this.state.display : display;
     return {

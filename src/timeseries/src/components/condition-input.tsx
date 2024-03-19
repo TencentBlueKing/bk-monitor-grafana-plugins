@@ -210,6 +210,11 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     }
     this.props.onChange(param);
   };
+  handleValueConditionKeyDown = (e: any, index: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+    }
+  };
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -374,6 +379,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   ))}
                 </Select>,
                 <Select
+                  autoFocus={true}
                   className='condition-input-value'
                   defaultValue={item.value}
                   dropdownMatchSelectWidth={true}
@@ -385,8 +391,10 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   key={`value-${JSON.stringify(item || {})}-${item.key}`}
                   mode='tags'
                   onChange={v => this.handleValueChange(v, index)}
+                  onInputKeyDown={v => this.handleValueConditionKeyDown(v, index)}
                   placeholder={getEnByName('请选择', language)}
                   showArrow={false}
+                  tokenSeparators={[',', '|', '\n', ' ']}
                 >
                   {needNUll(item.key) && (
                     <Option
