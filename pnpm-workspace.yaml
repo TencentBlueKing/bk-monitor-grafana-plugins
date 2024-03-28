@@ -1,0 +1,5 @@
+packages:
+  # - 'bkmonitor-alert-datasource/'
+  # - 'bkmonitor-event-datasource/'
+  # - 'bkmonitor-timeseries-datasource/'
+  - 'src/*'

@@ -1,7 +1,0 @@
-.git
-.github
-.vscode
-node_modules
-webpack_cache
-dist
-grafana_build
