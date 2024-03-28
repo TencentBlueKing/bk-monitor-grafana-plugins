@@ -288,7 +288,7 @@
   font-size: 12px;
   color: #63656e;
 
-  @include query-editor()
+  @include query-editor();
 }
 
 .key-del {
@@ -402,7 +402,7 @@ body {
 
       .query-editor-tools {
         color: #eaebf0 !important;
-        background-color: #35383d !important; 
+        background-color: #35383d !important;
         border: 1px solid $monitor-border-color !important;
       }
 
@@ -419,7 +419,7 @@ body {
 
     .metric-dropdown-tag .tab-tag {
       color: #eaebf0 !important;
-      background-color: $monitor-metric-bg-color !important; 
+      background-color: $monitor-metric-bg-color !important;
       border: 1px solid $monitor-metric-bg-color !important;
     }
 
@@ -443,7 +443,7 @@ body {
 
     .function-menu-panel {
       color: #eaebf0 !important;
-      background-color: $monitor-bg-color !important; 
+      background-color: $monitor-bg-color !important;
       border: 1px solid $monitor-border-color !important;
 
       .list-item {
@@ -451,7 +451,7 @@ body {
         &:hover {
           color: #3a84ff !important;
           cursor: pointer !important;
-          background-color: $monitor-metric-bg-color !important; 
+          background-color: $monitor-metric-bg-color !important;
         }
       }
 
@@ -490,5 +490,23 @@ body {
 
   &.theme-light {
     background-color: #f4f5f5 !important;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    outline: none;
+    transition: color 0.3s;
+    text-decoration-skip: objects;
+  }
+
+  a:hover {
+    color: inherit;
+  }
+
+  a:active {
+    color: #366fd9;
   }
 }
