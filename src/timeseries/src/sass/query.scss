@@ -1179,4 +1179,19 @@ body {
   &.theme-light {
     background-color: #f4f5f5 !important;
   }
+  a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    outline: none;
+    transition: color 0.3s;
+    text-decoration-skip: objects;
+  }
+  a:hover {
+    color: inherit;
+  }
+  a:active {
+    color: #366fd9;
+  }
 }

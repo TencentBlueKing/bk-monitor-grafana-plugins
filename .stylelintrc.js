@@ -5,6 +5,10 @@ module.exports = {
     {
       files: ['./src/**/*.scss'],
       plugins: ['stylelint-scss', 'stylelint-order'],
+      rules: {
+        'scss/at-extend-no-missing-placeholder': true,
+        'scss/dollar-variable-pattern': '^_?[a-z]+[\\w-]*$',
+      },
     },
   ],
   rules: {
@@ -51,8 +55,6 @@ module.exports = {
         ignore: ['after-comment'],
       },
     ],
-    'scss/at-extend-no-missing-placeholder': true,
-    'scss/dollar-variable-pattern': '^_?[a-z]+[\\w-]*$',
     'selector-list-comma-newline-after': 'always',
     'selector-max-id': 3,
     'selector-no-vendor-prefix': true,
