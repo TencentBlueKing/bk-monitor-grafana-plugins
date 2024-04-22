@@ -262,6 +262,7 @@ export interface IMetric {
   metric_field_name: string;
   metric_id: string;
   name: string;
+  promql_metric: string;
   readable_name?: string;
   refId?: string;
   related_id: string;

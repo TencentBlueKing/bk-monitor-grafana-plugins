@@ -199,7 +199,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
    * @param {string} str
    * @return {*}
    */
-  getSearchNode = (str: string) => {
+  getSearchNode = (str: string | undefined) => {
     if (!str) return str;
     let { keyword } = this.state;
     const len = keyword.length;
@@ -566,10 +566,12 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                         id={metric.metric_id}
                         style={{ fontSize: 0, opacity: 0 }}
                       >
-                        {metric.readable_name}
+                        {metric.promql_metric || metric.readable_name}
                       </span>
                       <div className='title-wrap'>
-                        <span className='title-name'>{this.getSearchNode(metric.readable_name)}</span>
+                        <span className='title-name'>
+                          {this.getSearchNode(metric.promql_metric || metric.readable_name)}
+                        </span>
                         {this.getSearchNode(metric.titleAlias)}
                       </div>
                       {this.props.mode !== MetricInputMode.COPY && (
