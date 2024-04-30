@@ -1,5 +1,3 @@
-/* eslint-disable codecc/comment-ratio */
-/* eslint-disable max-len */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -25,9 +23,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable no-param-reassign */
+
 import {
   ArrayVector,
   DataFrame,
@@ -169,7 +167,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         }
       }
       const variables = this.buildWhereVariables([match], undefined);
-      // eslint-disable-next-line no-nested-ternary
+
       return variables.length ? (variables.length === 1 ? variables.join('') : `(${variables.join(',')})`) : match;
     });
     return aliasName;

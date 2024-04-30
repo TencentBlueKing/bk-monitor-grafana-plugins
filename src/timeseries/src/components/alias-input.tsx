@@ -45,10 +45,10 @@ export default class AliasInput extends React.PureComponent<IAliasInputProps> {
       <LanguageContext.Consumer>
         {({ language }) => (
           <Input
-            defaultValue={this.props.metric ? this.props.metric.alias : this.props.inputProps?.defaultValue}
-            onBlur={this.handleBlur}
-            placeholder={getEnByName('请输入', language)}
             style={{ minWidth: '100px', ...this.props.style }}
+            defaultValue={this.props.metric ? this.props.metric.alias : this.props.inputProps?.defaultValue}
+            placeholder={getEnByName('请输入', language)}
+            onBlur={this.handleBlur}
             {...this.props.inputProps}
           />
         )}

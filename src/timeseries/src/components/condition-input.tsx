@@ -29,7 +29,6 @@ import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import Divider from 'antd/es/divider';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import DataSource from '../datasource/datasource';
@@ -57,6 +56,14 @@ interface IState {
   metricMetaId: string;
 }
 export default class ConditionInput extends React.PureComponent<IProps, IState> {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      dimensionValueMap: {},
+      metricMetaId: props.metric.curMetricId,
+    };
+    this.initDimensionValueMap();
+  }
   /**
    * @description: 获取维度数据
    * @param {string} v 维度id
@@ -122,7 +129,6 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
       list.splice(index, 1, {} as any);
     } else {
       if (list[index + 1].condition && (list[index - 1]?.condition || index === 0)) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { condition, ...item } = list[index + 1];
         list[index + 1] = item;
       }
@@ -210,19 +216,12 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     }
     this.props.onChange(param);
   };
-  handleValueConditionKeyDown = (e: any, index: number) => {
+  handleValueConditionKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       e.preventDefault();
     }
   };
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      dimensionValueMap: {},
-      metricMetaId: props.metric.curMetricId,
-    };
-    this.initDimensionValueMap();
-  }
+
   componentDidUpdate() {
     if (this.props.metric?.curMetricId && this.state.metricMetaId !== this.props.metric.curMetricId) {
       this.setState({
@@ -275,7 +274,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
       if (!item) return true;
       return typeof item.type === 'undefined' || item.type === 'string';
     };
-    // eslint-disable-next-line max-len
+
     const getMaxWidth = (list: ICommonItem[]) =>
       Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
     return (
@@ -285,12 +284,12 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
             agg_condition.map((item, index) => [
               item?.condition && (
                 <Select
+                  key={`condition-${index}-${item.key}`}
                   className='condition-input-condition'
                   defaultValue={item.condition}
                   dropdownMatchSelectWidth={100}
-                  key={`condition-${index}-${item.key}`}
-                  onChange={v => this.handleConditionChange(v, index)}
                   showArrow={false}
+                  onChange={v => this.handleConditionChange(v, index)}
                 >
                   {CONDITION?.map(dim => (
                     <Option
@@ -304,11 +303,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
               ),
               typeof item.key !== 'undefined' ? (
                 <Select
-                  autoFocus={true}
-                  className='condition-input-key'
-                  defaultOpen={item.key === ''}
-                  defaultValue={item.key || ''}
-                  dropdownMatchSelectWidth={140}
+                  key={`key-${JSON.stringify(item || {})}-${item.key}`}
                   dropdownRender={(menu): JSX.Element =>
                     item.value ? (
                       <div>
@@ -326,13 +321,17 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                       menu
                     )
                   }
-                  key={`key-${JSON.stringify(item || {})}-${item.key}`}
-                  onChange={(v: string) => this.handleKeyChange(v, index)}
-                  onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
-                  onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
+                  autoFocus={true}
+                  className='condition-input-key'
+                  defaultOpen={item.key === ''}
+                  defaultValue={item.key || ''}
+                  dropdownMatchSelectWidth={140}
                   placeholder={getEnByName('请选择', language)}
                   showArrow={false}
                   showSearch
+                  onChange={(v: string) => this.handleKeyChange(v, index)}
+                  onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
+                  onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
                 >
                   {dimensions?.map(
                     dim =>
@@ -353,8 +352,8 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                 </Select>
               ) : (
                 <span
-                  className='condition-input-add'
                   key={`add-${index}`}
+                  className='condition-input-add'
                   onClick={() => this.handleAddClick(index)}
                 >
                   <PlusOutlined className='add-icon' />
@@ -362,12 +361,12 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
               ),
               item?.key && [
                 <Select
+                  key={`method-${JSON.stringify(item || {})}-${item.key}`}
                   className='condition-input-method'
                   defaultValue={item.method}
                   dropdownMatchSelectWidth={80}
-                  key={`method-${JSON.stringify(item || {})}-${item.key}`}
-                  onChange={v => this.handleMethodChange(v, index)}
                   showArrow={false}
+                  onChange={v => this.handleMethodChange(v, index)}
                 >
                   {this.getMethodList(item.key).map(dim => (
                     <Option
@@ -379,22 +378,22 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   ))}
                 </Select>,
                 <Select
-                  autoFocus={true}
-                  className='condition-input-value'
-                  defaultValue={item.value}
-                  dropdownMatchSelectWidth={true}
+                  key={`value-${JSON.stringify(item || {})}-${item.key}`}
                   dropdownStyle={{
                     display: dimensionValueMap[item.key]?.length < 1 ? 'none' : '',
                     minWidth: `${getMaxWidth(dimensionValueMap[item.key])}px`,
                     width: `${getMaxWidth(dimensionValueMap[item.key])}px`,
                   }}
-                  key={`value-${JSON.stringify(item || {})}-${item.key}`}
+                  autoFocus={true}
+                  className='condition-input-value'
+                  defaultValue={item.value}
+                  dropdownMatchSelectWidth={true}
                   mode='tags'
-                  onChange={v => this.handleValueChange(v, index)}
-                  onInputKeyDown={v => this.handleValueConditionKeyDown(v, index)}
                   placeholder={getEnByName('请选择', language)}
                   showArrow={false}
                   tokenSeparators={[',', '|', '\n', ' ']}
+                  onChange={v => this.handleValueChange(v, index)}
+                  onInputKeyDown={v => this.handleValueConditionKeyDown(v, index)}
                 >
                   {needNUll(item.key) && (
                     <Option

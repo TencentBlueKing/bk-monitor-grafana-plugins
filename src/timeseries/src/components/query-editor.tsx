@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -32,7 +30,6 @@ import { LoadingState, QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Message from 'antd/es/message';
 import Spin from 'antd/es/spin';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import QueryDataSource from '../datasource/datasource';
@@ -96,6 +93,62 @@ interface IQueryEditorState {
   type: string;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
+  constructor(props, context) {
+    super(props, context);
+    let { query } = props;
+    // 兼容旧版本targetData
+    if (query?.data?.metric && query?.data?.monitorObject) {
+      query = handleTransformOldQuery(query.data);
+    }
+    const {
+      alias = '',
+      cluster = [],
+      display = false,
+      expression = '',
+      expressionList = [],
+      functions = [],
+      host = [],
+      mode = 'ui',
+      module = [],
+      only_promql = false,
+      promqlAlias = '',
+      source = '',
+      step = '',
+    } = query;
+    let expressions: IExpresionItem[] = expressionList;
+    // 兼容旧版本
+    if (expression?.length) {
+      expressions = [
+        {
+          active: display,
+          alias,
+          expression,
+          functions,
+        },
+      ];
+    }
+    this.state = {
+      cluster,
+      editorStatus: 'default',
+      expressionList: expressions,
+      format: query.format ?? 'time_series',
+      functionList: [],
+      host,
+      inited: false,
+      isTranform: false,
+      language: getCookie('blueking_language'),
+      loading: true,
+      metricList: [{} as any],
+      mode: only_promql || mode === 'code' ? 'code' : 'ui',
+      module,
+      promqlAlias: promqlAlias || alias,
+      searchState: SearcState.deafult,
+      source,
+      step,
+      type: query.type ?? 'range',
+    };
+    this.initState(query);
+  }
   addvanceSettingChange = (key: AddvanceSettingKey, v: string) => {
     this.setState(
       {
@@ -111,18 +164,18 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const { expressionList, functionList } = this.state;
     return expressionList.map((item, index) => (
       <div
-        className='query-editor'
         key={index}
+        className='query-editor'
       >
         <span
           className={`query-editor-label ${!item.active ? 'is-unchecked' : ''}`}
           onClick={() => this.handleExpressionChecked(index)}
         >
           <svg
-            className='svg-icon'
-            height='200'
-            viewBox='0 0 1024 1024'
             width='200'
+            height='200'
+            className='svg-icon'
+            viewBox='0 0 1024 1024'
           >
             <path d='M128 64v512a128 128 0 0 0 118.442667 127.658667L256 704h448v-128L1024 768l-320 192v-128H256A256 256 0 0 1 0.341333 588.8L0 576v-512h128z' />
           </svg>
@@ -134,21 +187,21 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             title={getEnByName('表达式', language)}
           >
             <AliasInput
+              key={item.expression.length ? 'empty' : 'value'}
+              style={{ minWidth: '288px' }}
               inputProps={{
                 defaultValue: item.expression,
                 placeholder: getEnByName('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language),
               }}
-              key={item.expression.length ? 'empty' : 'value'}
               onChange={v => this.handleExpressionChange(v, index)}
-              style={{ minWidth: '288px' }}
             />
           </EditorForm>
           <EditorForm title={getEnByName('函数', language)}>
             <>
               {item.functions?.map((funtion, i) => (
                 <FunctionInput
-                  funtion={funtion}
                   key={`${funtion.id}-${i}`}
+                  funtion={funtion}
                   onDelete={() => this.handleDeleteExpressionFuntion(index, i)}
                   onEdit={(e, needQuery = true) => this.handleEditExpressionFuntion(e, index, i, needQuery)}
                 />
@@ -171,12 +224,12 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         </div>
         <div className={'query-editor-tools multipe-metric'}>
           <svg
-            className='svg-icon source-icon'
+            width='16'
             height='16'
+            className='svg-icon source-icon'
+            viewBox='0 0 24 24'
             // style={{ display: metricList.length < 2 ? 'none' : 'flex' }}
             onClick={() => this.handleExpressionChecked(index)}
-            viewBox='0 0 24 24'
-            width='16'
           >
             {item.active ? (
               <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
@@ -185,11 +238,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             )}
           </svg>
           <svg
-            className='svg-icon delete-icon'
-            height='200'
-            onClick={() => this.handleDeleteExpression(index)}
-            viewBox='0 0 1024 1024'
             width='200'
+            height='200'
+            className='svg-icon delete-icon'
+            viewBox='0 0 1024 1024'
+            onClick={() => this.handleDeleteExpression(index)}
           >
             <path d='M799.2 874.4c0 34.4-28.001 62.4-62.4 62.4H287.2c-34.4 0-62.4-28-62.4-62.4V212h574.4v662.4zM349.6 100c0-7.2 5.6-12.8 12.8-12.8h300c7.2 0 12.8 5.6 12.8 12.8v37.6H349.6V100z m636.8 37.6H749.6V100c0-48.001-39.2-87.2-87.2-87.2h-300c-48 0-87.2 39.199-87.2 87.2v37.6H37.6C16.8 137.6 0 154.4 0 175.2s16.8 37.6 37.6 37.6h112v661.6c0 76 61.6 137.6 137.6 137.6h449.6c76 0 137.6-61.6 137.6-137.6V212h112c20.8 0 37.6-16.8 37.6-37.6s-16.8-36.8-37.6-36.8zM512 824c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6m-175.2 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0.8 20.8 17.6 37.6 37.6 37.6m350.4 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6' />
           </svg>
@@ -828,8 +881,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         >
           {isLoading ? (
             <LoadingOutlined
-              spin
               style={{ color: '#3A84FF', cursor: isLoading ? 'not-allowed' : 'pointer' }}
+              spin
             />
           ) : (
             <i className={`fa ${searchState === SearcState.deafult ? 'fa-play' : 'fa-pause'}`} />
@@ -838,9 +891,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         <Button
           className={`search-auto ${isLoading ? 'is-loading' : ''}`}
           disabled={isLoading}
-          onClick={() => !isLoading && this.props.onRunQuery()}
           size='small'
           type='primary'
+          onClick={() => !isLoading && this.props.onRunQuery()}
         >
           {btnText}
         </Button>
@@ -854,62 +907,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       </div>
     );
   };
-  constructor(props, context) {
-    super(props, context);
-    let { query } = props;
-    // 兼容旧版本targetData
-    if (query?.data?.metric && query?.data?.monitorObject) {
-      query = handleTransformOldQuery(query.data);
-    }
-    const {
-      alias = '',
-      cluster = [],
-      display = false,
-      expression = '',
-      expressionList = [],
-      functions = [],
-      host = [],
-      mode = 'ui',
-      module = [],
-      only_promql = false,
-      promqlAlias = '',
-      source = '',
-      step = '',
-    } = query;
-    let expressions: IExpresionItem[] = expressionList;
-    // 兼容旧版本
-    if (expression?.length) {
-      expressions = [
-        {
-          active: display,
-          alias,
-          expression,
-          functions,
-        },
-      ];
-    }
-    this.state = {
-      cluster,
-      editorStatus: 'default',
-      expressionList: expressions,
-      format: query.format ?? 'time_series',
-      functionList: [],
-      host,
-      inited: false,
-      isTranform: false,
-      language: getCookie('blueking_language'),
-      loading: true,
-      metricList: [{} as any],
-      mode: only_promql || mode === 'code' ? 'code' : 'ui',
-      module,
-      promqlAlias: promqlAlias || alias,
-      searchState: SearcState.deafult,
-      source,
-      step,
-      type: query.type ?? 'range',
-    };
-    this.initState(query);
-  }
+
   handleCommonSetMetric<T extends MetricDetail, K extends keyof MetricDetail>(
     metricIndex: number,
     name: K,
@@ -941,7 +939,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     });
     return letter;
   }
-  handleGetQueryData(metricList: MetricDetail[], expression?: string, display?: boolean) {
+  handleGetQueryData(metricList: MetricDetail[]) {
     const { cluster, expressionList, host, module, promqlAlias } = this.state;
     // const curExpression = typeof expression === 'undefined' ? this.state.expression : expression;
     // const curDisplay = typeof display === 'undefined' ? this.state.display : display;
@@ -1170,8 +1168,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <>
                     {metricList.map((item, index) => (
                       <div
-                        className='query-editor'
                         key={index}
+                        className='query-editor'
                       >
                         {(metricList.length > 0 || !!this.state.expressionList?.length) && (
                           <span
@@ -1245,8 +1243,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                       <>
                                         {item.functions?.map((funtion, i) => (
                                           <FunctionInput
-                                            funtion={funtion}
                                             key={`${funtion.id}-${i}`}
+                                            funtion={funtion}
                                             onDelete={() => this.handleDeleteFuntion(index, i)}
                                             onEdit={(e, needQuery = true) =>
                                               this.handleEditFuntion(e, index, i, needQuery)
@@ -1272,14 +1270,14 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               </>
                             ) : (
                               <PromqlEditor
-                                executeQuery={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
-                                onBlur={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                                 style={{
                                   borderColor: item.status === 'error' ? '#ea3636' : '#dcdee5',
                                   minHeight: '64px',
                                 }}
+                                executeQuery={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                                 value={item.source}
                                 verifiy={false}
+                                onBlur={(v, hasError) => this.handleMetricSourceBlur(index, v, hasError)}
                               />
                             )}
                           </div>
@@ -1304,12 +1302,12 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         )}
                                       </svg> */}
                             <svg
-                              className='svg-icon source-icon'
+                              width='16'
                               height='16'
+                              className='svg-icon source-icon'
+                              viewBox='0 0 24 24'
                               // style={{ display: metricList.length < 2 ? 'none' : 'flex' }}
                               onClick={() => this.handleSetMetricDisplay(index)}
-                              viewBox='0 0 24 24'
-                              width='16'
                             >
                               {item.display ? (
                                 <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
@@ -1318,21 +1316,21 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               )}
                             </svg>
                             <svg
-                              className='svg-icon source-icon'
+                              width='16'
                               height='16'
+                              className='svg-icon source-icon'
+                              viewBox='0 0 24 24'
                               // style={{ display: metricList.length < 2 ? 'none' : 'flex' }}
                               onClick={() => this.handleCopyMetric(index)}
-                              viewBox='0 0 24 24'
-                              width='16'
                             >
                               <path d='M21,8.94a1.31,1.31,0,0,0-.06-.27l0-.09a1.07,1.07,0,0,0-.19-.28h0l-6-6h0a1.07,1.07,0,0,0-.28-.19.32.32,0,0,0-.09,0A.88.88,0,0,0,14.05,2H10A3,3,0,0,0,7,5V6H6A3,3,0,0,0,3,9V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V18h1a3,3,0,0,0,3-3V9S21,9,21,8.94ZM15,5.41,17.59,8H16a1,1,0,0,1-1-1ZM15,19a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9A1,1,0,0,1,6,8H7v7a3,3,0,0,0,3,3h5Zm4-4a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1V5a1,1,0,0,1,1-1h3V7a3,3,0,0,0,3,3h3Z'></path>
                             </svg>
                             <svg
-                              className='svg-icon delete-icon'
-                              height='200'
-                              onClick={() => this.handleDeleteMetric(index)}
-                              viewBox='0 0 1024 1024'
                               width='200'
+                              height='200'
+                              className='svg-icon delete-icon'
+                              viewBox='0 0 1024 1024'
+                              onClick={() => this.handleDeleteMetric(index)}
                             >
                               <path d='M799.2 874.4c0 34.4-28.001 62.4-62.4 62.4H287.2c-34.4 0-62.4-28-62.4-62.4V212h574.4v662.4zM349.6 100c0-7.2 5.6-12.8 12.8-12.8h300c7.2 0 12.8 5.6 12.8 12.8v37.6H349.6V100z m636.8 37.6H749.6V100c0-48.001-39.2-87.2-87.2-87.2h-300c-48 0-87.2 39.199-87.2 87.2v37.6H37.6C16.8 137.6 0 154.4 0 175.2s16.8 37.6 37.6 37.6h112v661.6c0 76 61.6 137.6 137.6 137.6h449.6c76 0 137.6-61.6 137.6-137.6V212h112c20.8 0 37.6-16.8 37.6-37.6s-16.8-36.8-37.6-36.8zM512 824c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6m-175.2 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0.8 20.8 17.6 37.6 37.6 37.6m350.4 0c20.8 0 37.6-16.8 37.6-37.6v-400c0-20.8-16.8-37.6-37.6-37.6s-37.6 16.8-37.6 37.6v400c0 20.8 16.8 37.6 37.6 37.6' />
                             </svg>
@@ -1345,11 +1343,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 ) : (
                   <>
                     <PromqlEditor
-                      executeQuery={this.handleSourceBlur}
-                      onBlur={this.handleSourceBlur}
                       style={{ borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5', minHeight: '68px' }}
+                      executeQuery={this.handleSourceBlur}
                       value={source}
                       verifiy={true}
+                      onBlur={this.handleSourceBlur}
                     />
                     {/* <div>
                           <EditorForm title={getEnByName('别名', language)}>
@@ -1372,8 +1370,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       datasource={this.props.datasource}
                       host={host}
                       module={module}
-                      onChange={this.handleTargetChange}
                       targetType={targetType}
+                      onChange={this.handleTargetChange}
                     />
                   </EditorForm>
                 ) : undefined}
@@ -1381,22 +1379,22 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <>
                     {
                       <Button
+                        style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
                         className='add-metric'
                         icon={<PlusOutlined rev={''} />}
-                        onClick={this.handleAddEmptyMetric}
-                        style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
                         type='default'
+                        onClick={this.handleAddEmptyMetric}
                       >
                         {getEnByName('多指标', language)}
                       </Button>
                     }
                     {
                       <Button
+                        style={{ marginLeft: '10px' }}
                         className='add-metric'
                         icon={<PlusOutlined />}
-                        onClick={this.handleAddExpression}
-                        style={{ marginLeft: '10px' }}
                         type='default'
+                        onClick={this.handleAddExpression}
                       >
                         {getEnByName('表达式', language)}
                       </Button>
@@ -1415,10 +1413,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <AddvanceSetting
                     format={this.state.format}
                     mode={mode}
-                    onChange={this.addvanceSettingChange}
                     promqlAlias={promqlAlias}
                     step={step}
                     type={this.state.type}
+                    onChange={this.addvanceSettingChange}
                   />
                 }
               </>

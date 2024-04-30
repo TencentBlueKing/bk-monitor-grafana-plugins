@@ -29,7 +29,7 @@ import React, { ChangeEvent } from 'react';
 
 import { MyDataSourceOptions, MySecureJsonData } from '../types';
 
-interface Props extends DataSourcePluginOptionsEditorProps<MyDataSourceOptions> {}
+type Props = DataSourcePluginOptionsEditorProps<MyDataSourceOptions>;
 
 export function ConfigEditor(props: Props) {
   const { onOptionsChange, options } = props;
@@ -75,10 +75,10 @@ export function ConfigEditor(props: Props) {
         labelWidth={12}
       >
         <Input
-          onChange={onPathChange}
+          width={40}
           placeholder='json field returned to frontend'
           value={jsonData.path || ''}
-          width={40}
+          onChange={onPathChange}
         />
       </InlineField>
       <InlineField
@@ -86,12 +86,12 @@ export function ConfigEditor(props: Props) {
         labelWidth={12}
       >
         <SecretInput
-          isConfigured={(secureJsonFields && secureJsonFields.apiKey) as boolean}
-          onChange={onAPIKeyChange}
-          onReset={onResetAPIKey}
+          width={40}
+          isConfigured={secureJsonFields?.apiKey}
           placeholder='secure json field (backend only)'
           value={secureJsonData.apiKey || ''}
-          width={40}
+          onChange={onAPIKeyChange}
+          onReset={onResetAPIKey}
         />
       </InlineField>
     </div>

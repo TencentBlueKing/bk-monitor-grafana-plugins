@@ -18,6 +18,7 @@
     },
     "transpileOnly": true
   },
-  "include": ["./src", "./types"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js"],
+  "exclude": ["node_modules", "src/**/.config/**"],
   "extends": "@grafana/tsconfig"
 }

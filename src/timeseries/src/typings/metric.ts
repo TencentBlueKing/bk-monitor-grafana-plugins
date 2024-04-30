@@ -24,8 +24,6 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable camelcase */
 
 // 汇聚方法列表
 export const METHOD_LIST = [
@@ -382,7 +380,7 @@ export class MetricDetail {
   get canSetFunction() {
     return this.metricMetaId !== 'bk_monitor|event';
   }
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
+
   get canSetMetricCalc() {
     return true;
     // return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)

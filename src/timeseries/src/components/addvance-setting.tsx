@@ -72,17 +72,19 @@ const typeList = [
   },
 ];
 export default class AddvanceSetting extends React.PureComponent<IAddvanceSettingProps, IAddvanceState> {
-  handleClickTitle = () => {
-    this.setState({
-      showContent: !this.state.showContent,
-    });
-  };
   constructor(props) {
     super(props);
     this.state = {
       showContent: false,
     };
   }
+
+  handleClickTitle = () => {
+    this.setState({
+      showContent: !this.state.showContent,
+    });
+  };
+
   render(): JSX.Element {
     const { showContent } = this.state;
     const { format, mode, onChange, promqlAlias, step, type } = this.props;
@@ -107,8 +109,8 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
         <EditorForm title={getEnByName('输出模式')}>
           <Select
             dropdownStyle={{ minWidth: '100px' }}
-            onChange={v => onChange('format', v)}
             value={format}
+            onChange={v => onChange('format', v)}
           >
             {formatList.map(item => (
               <Select.Option
@@ -121,8 +123,8 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
           </Select>
           <EditorForm title={getEnByName('类型')}>
             <Select
-              onChange={v => onChange('type', v)}
               value={type}
+              onChange={v => onChange('type', v)}
             >
               {typeList.map(item => (
                 <Select.Option
@@ -141,8 +143,8 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
       <div className='addvance-setting'>
         <div className='addvance-setting-title'>
           <span
-            onClick={this.handleClickTitle}
             style={{ display: 'flex' }}
+            onClick={this.handleClickTitle}
           >
             <i className={`fa fa-angle-down ${showContent ? 'is-open' : ''}`} />
             {getEnByName('高级配置')}
@@ -158,22 +160,22 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
               title='Min Step'
             >
               <AliasInput
+                style={{ height: '32px', width: '88px' }}
                 inputProps={{ defaultValue: step, placeholder: 'auto' }}
                 onChange={v => onChange('step', v)}
-                style={{ height: '32px', width: '88px' }}
               />
               <EditorForm title={getEnByName('别名')}>
                 <AliasInput
+                  style={{ height: '32px', width: '288px' }}
                   inputProps={{ defaultValue: promqlAlias }}
                   onChange={v => onChange('promqlAlias', v)}
-                  style={{ height: '32px', width: '288px' }}
                 />
               </EditorForm>
               <EditorForm title={getEnByName('输出模式')}>
                 <Select
                   dropdownStyle={{ minWidth: '100px' }}
-                  onChange={v => onChange('format', v)}
                   value={format}
+                  onChange={v => onChange('format', v)}
                 >
                   {formatList.map(item => (
                     <Select.Option
@@ -187,8 +189,8 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
               </EditorForm>
               <EditorForm title={getEnByName('类型')}>
                 <Select
-                  onChange={v => onChange('type', v)}
                   value={type}
+                  onChange={v => onChange('type', v)}
                 >
                   {typeList.map(item => (
                     <Select.Option

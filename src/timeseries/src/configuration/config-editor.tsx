@@ -34,6 +34,12 @@ export default class ConfigEditor extends React.PureComponent<
   DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>,
   { useToken: boolean }
 > {
+  constructor(props) {
+    super(props);
+    this.state = {
+      useToken: props.options?.jsonData?.useToken ?? false,
+    };
+  }
   handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
     this.props.onOptionsChange({
       ...this.props.options,
@@ -63,12 +69,6 @@ export default class ConfigEditor extends React.PureComponent<
       },
     });
   };
-  constructor(props) {
-    super(props);
-    this.state = {
-      useToken: props.options?.jsonData?.useToken ?? false,
-    };
-  }
   render() {
     const { onOptionsChange, options } = this.props;
     const tagProps: any = {
@@ -79,17 +79,17 @@ export default class ConfigEditor extends React.PureComponent<
         <h3 className='page-heading'>BlueKing Monitor API Details</h3>
         <div className='gf-form-group'>
           <div
-            className='gf-form'
             style={{ width: '100%' }}
+            className='gf-form'
           >
             <FormField
               inputEl={
                 <Input
+                  style={{ width: '500px' }}
                   defaultValue={options.jsonData.baseUrl}
-                  onBlur={e => this.handleChange('baseUrl', e)}
                   placeholder={getEnByName('蓝鲸监控API路径')}
                   spellCheck={false}
-                  style={{ width: '500px' }}
+                  onBlur={e => this.handleChange('baseUrl', e)}
                 />
               }
               label='Base Url'
@@ -98,8 +98,8 @@ export default class ConfigEditor extends React.PureComponent<
             />
           </div>
           <div
-            className='gf-form'
             style={{ width: '100%' }}
+            className='gf-form'
           >
             <FormField
               inputEl={
@@ -121,6 +121,8 @@ export default class ConfigEditor extends React.PureComponent<
                   inputEl={
                     <TagsInput
                       {...tagProps}
+                      width={500}
+                      tags={options.jsonData.keepCookies}
                       // style={{ width: '500px' }}
                       onChange={cookies =>
                         onOptionsChange({
@@ -131,8 +133,6 @@ export default class ConfigEditor extends React.PureComponent<
                           },
                         })
                       }
-                      tags={options.jsonData.keepCookies}
-                      width={500}
                     />
                   }
                   label='Allowed cookies'
@@ -141,17 +141,17 @@ export default class ConfigEditor extends React.PureComponent<
                 />
               </div>
               <div
-                className='gf-form'
                 style={{ width: '100%' }}
+                className='gf-form'
               >
                 <FormField
                   inputEl={
                     <Input
+                      style={{ width: '500px' }}
                       defaultValue={options.jsonData.bizId}
-                      onBlur={e => this.handleChange('bizId', e)}
                       placeholder={getEnByName('蓝鲸监控业务ID')}
                       spellCheck={false}
-                      style={{ width: '500px' }}
+                      onBlur={e => this.handleChange('bizId', e)}
                     />
                   }
                   label='业务ID'
@@ -160,22 +160,22 @@ export default class ConfigEditor extends React.PureComponent<
                 />
               </div>
               <div
-                className='gf-form'
                 style={{ width: '100%' }}
+                className='gf-form'
               >
                 <FormField
                   inputEl={
                     <Input
-                      defaultValue={options.secureJsonData?.token ?? ''}
-                      onBlur={this.handleTokenChange}
+                      style={{ width: '500px' }}
                       placeholder={
                         options.secureJsonFields?.token
                           ? getEnByName('已设置免登入Token')
                           : getEnByName('蓝鲸监控当前业务免登入Token')
                       }
+                      defaultValue={options.secureJsonData?.token ?? ''}
                       spellCheck={false}
-                      style={{ width: '500px' }}
                       type='password'
+                      onBlur={this.handleTokenChange}
                     />
                   }
                   label='Token'

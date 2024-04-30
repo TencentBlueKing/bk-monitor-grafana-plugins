@@ -50,6 +50,16 @@ interface IFunctionMenuState {
 }
 
 export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps, IFunctionMenuState> {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      activeFuncId: '',
+      activeFuncType: '',
+      activeItem: null,
+      keyword: '',
+      show: false,
+    };
+  }
   handleFuncMouseenter = (item: IFunctionItem) => {
     this.setState({
       activeFuncId: item?.id || '',
@@ -91,16 +101,6 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
       show,
     });
   };
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      activeFuncId: '',
-      activeFuncType: '',
-      activeItem: null,
-      keyword: '',
-      show: false,
-    };
-  }
 
   render(): JSX.Element {
     const { activeFuncId, activeFuncType, activeItem, keyword, show } = this.state;
@@ -114,18 +114,18 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                 <div className='function-menu-panel'>
                   <Input
                     className='panel-search'
-                    onChange={this.handleKeywordChange}
                     placeholder={getEnByName('搜索函数', language)}
                     suffix={<SearchOutlined style={{ color: '#c4c6cc', fontSize: '16px' }} />}
                     value={keyword}
+                    onChange={this.handleKeywordChange}
                   ></Input>
                   <div className='panel-list'>
                     {this.filterList?.length > 0 && (
                       <ul className='panel-item'>
                         {this.filterList.map((item: IFunctionItem) => (
                           <li
-                            className={`list-item ${item.id === activeFuncType ? 'item-active' : ''}`}
                             key={item.id}
+                            className={`list-item ${item.id === activeFuncType ? 'item-active' : ''}`}
                             onMouseEnter={() => this.handleFuncTypeMouseenter(item)}
                           >
                             {item.name}
@@ -140,8 +140,8 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                           (item: IFunctionItem) =>
                             item.id.toLocaleLowerCase().includes(keyword.toLocaleLowerCase()) && (
                               <li
-                                className={`list-item ${item.id === activeFuncId ? 'item-active' : ''}`}
                                 key={item.id}
+                                className={`list-item ${item.id === activeFuncId ? 'item-active' : ''}`}
                                 onClick={() => this.handleSelectFunc(item)}
                                 onMouseEnter={() => this.handleFuncMouseenter(item)}
                               >
@@ -173,9 +173,9 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                   </div>
                 </div>
               }
-              onVisibleChange={this.handleVisibleChange}
               trigger='click'
               visible={show}
+              onVisibleChange={this.handleVisibleChange}
             >
               {functions?.length ? (
                 <span className='menu-add'>
@@ -191,26 +191,26 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
     );
   }
   get activeFunc() {
-    return this.activeFuncList.find((item) => item.id === this.state.activeFuncId);
+    return this.activeFuncList.find(item => item.id === this.state.activeFuncId);
   }
   get activeFuncList() {
-    const list = this.filterList.find((item) => item.id === this.state.activeFuncType)?.children || [];
-    return this.props.isExpressionFunc ? list.filter((item) => item.support_expression) : list;
+    const list = this.filterList.find(item => item.id === this.state.activeFuncType)?.children || [];
+    return this.props.isExpressionFunc ? list.filter(item => item.support_expression) : list;
   }
   get activeFuncTypeDesc() {
-    return this.filterFucList.find((item) => item.id === this.state.activeFuncType)?.description || '';
+    return this.filterFucList.find(item => item.id === this.state.activeFuncType)?.description || '';
   }
   get filterFucList() {
     if (this.props.isExpressionFunc) {
-      return this.props.functionList.filter((item) => item.children.some((set) => set.support_expression));
+      return this.props.functionList.filter(item => item.children.some(set => set.support_expression));
     }
     if (this.props.metric?.isAllFunc) return this.props.functionList;
-    return this.props.functionList.filter((item) => ['sort', 'time_shift'].includes(item.id));
+    return this.props.functionList.filter(item => ['sort', 'time_shift'].includes(item.id));
   }
   get filterList() {
     if (!this.state.keyword) return this.filterFucList;
-    return this.filterFucList.filter((func) =>
-      func?.children?.some((item) => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
+    return this.filterFucList.filter(func =>
+      func?.children?.some(item => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
     );
   }
 }

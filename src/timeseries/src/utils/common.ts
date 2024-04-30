@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,7 +23,6 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable import/prefer-default-export */
 import { QueryData } from '../typings/datasource';
 import { VariableQuery } from '../typings/variable';
 /**
@@ -172,7 +170,7 @@ export const handleTransformOldTarget = (data: any) => {
  * @return {*}
  */
 export const handleTransformOldFunc = (data: any) => {
-  const funcList = [];
+  const funcList: any[] = [];
   if (data.func?.rank?.sort) {
     funcList.push({
       id: data.func.rank.sort === 'desc' ? 'top' : 'bottom',
