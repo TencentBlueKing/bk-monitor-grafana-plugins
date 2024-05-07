@@ -26,7 +26,7 @@
 import { DataSourcePlugin } from '@grafana/data';
 import { loadPluginCss } from '@grafana/runtime';
 
-  import QueryEditor from './components/event-editor';
+import QueryEditor from './components/event-editor';
 import VariableQueryEditor from './components/variable-editor';
 import ConfigEditor from './configuration/config-editor';
 import Datasource from './datasource/datasource';

@@ -204,7 +204,7 @@ module.exports = [
     },
   },
   {
-    files: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.js', 'src/**/*.js'],
+    files: ['src/**/*.ts', 'src/**/*.tsx', 'src/**/*.js'],
     languageOptions: {
       parser: typescriptEslintParser,
       parserOptions: {
@@ -256,6 +256,15 @@ module.exports = [
   },
   eslintConfigPrettier,
   {
-    ignores: ['node_modules', 'dist', '/lib', '/dev', '/docs', '/plugins', '/src/__tests__/demos', '.config/**'],
+    ignores: [
+      'node_modules',
+      'src/**/dist',
+      '/lib',
+      '/dev',
+      '/docs',
+      '/plugins',
+      '/src/__tests__/demos',
+      'src/**/.config',
+    ],
   },
 ];

@@ -23,9 +23,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable no-param-reassign */
+
 import {
   DataQueryRequest,
   DataQueryResponse,
@@ -88,7 +88,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public useToken: boolean;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
-    this.url = instanceSettings.url;
+    this.url = instanceSettings.url!;
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
@@ -361,7 +361,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     if (!targetList?.length) {
       return Promise.resolve({ data: [] });
     }
-    const promiseList = [];
+    const promiseList: Array<Promise<any>> = [];
     const isTableQuery = options.panelType === 'table';
     targetList.forEach((item: QueryData) => {
       const configList = [];

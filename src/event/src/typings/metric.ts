@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,8 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable camelcase */
+
 export const METHOD_LIST = [
   {
     id: 'SUM',
@@ -191,7 +189,7 @@ export interface ICommonItem {
   type: string;
   bk_data_id?: string;
 }
-export type MetricType = 'custom|event' | 'bk_monitor|log' | 'alert|event';
+export type MetricType = 'alert|event' | 'bk_monitor|log' | 'custom|event';
 
 export interface IDataItem extends ICommonItem {
   dimensions: ICommonItem[];
