@@ -136,7 +136,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       host,
       inited: false,
       isTranform: false,
-      language: getCookie('blueking_language'),
+      language: getCookie('blueking_language') || '',
       loading: true,
       metricList: [{} as any],
       mode: only_promql || mode === 'code' ? 'code' : 'ui',
@@ -542,7 +542,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    * @param {any} options
    * @return {*}
    */
-  handleMetricChange = async (metric: IMetric, metricIndex: number): Promise<void> => {
+  handleMetricChange = async (metric: IMetric | null, metricIndex: number): Promise<void> => {
     if (metric?.metric_id) {
       let metricList = this.state.metricList.map((item, index) =>
         index === metricIndex
@@ -637,9 +637,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       this.setState({ step: v }, this.handleQuery);
     }
   };
-  handleQuery = (list?: MetricDetail[], expression?: string, display?: boolean) => {
+  handleQuery = (list?: MetricDetail[]) => {
     const metricList = list?.length ? list : this.state.metricList;
-    const query: any = this.handleGetQueryData(metricList, expression, display);
+    const query: any = this.handleGetQueryData(metricList);
     const { datasource, hide, key, queryType, refId } = this.props.query;
     this.props.onChange({
       datasource,
@@ -999,8 +999,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleInitFuntions(functionList: IFunctionItem[], functions: IFunctionItem[]) {
     const funcList: IFunctionItem[] = functionList.reduce(
       (pre, cur) => (cur?.children?.length ? [...pre, ...cur.children] : pre),
-      [],
-    ) as any;
+      [] as any,
+    );
     return functions.map(func => {
       const funcItem = funcList.find(set => set.id === func.id);
       if (funcItem) {
@@ -1089,7 +1089,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleResetMetricDimension(metricList: MetricDetail[]) {
     const longDimension = metricList.reduce(
       (pre, cur) => (cur?.agg_dimension?.length > pre?.length ? cur.agg_dimension : pre),
-      [],
+      [] as any,
     );
     return metricList.map((item, index) => {
       if (item.metricMetaId) {

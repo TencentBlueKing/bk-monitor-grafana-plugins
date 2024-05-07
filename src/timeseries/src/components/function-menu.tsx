@@ -44,7 +44,7 @@ export interface IFunctionMenuProps {
 interface IFunctionMenuState {
   activeFuncId: string;
   activeFuncType: string;
-  activeItem: IFunctionItem;
+  activeItem?: IFunctionItem;
   keyword: string;
   show: boolean;
 }
@@ -55,7 +55,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
     this.state = {
       activeFuncId: '',
       activeFuncType: '',
-      activeItem: null,
+      activeItem: undefined,
       keyword: '',
       show: false,
     };
@@ -104,7 +104,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
 
   render(): JSX.Element {
     const { activeFuncId, activeFuncType, activeItem, keyword, show } = this.state;
-    const functions = this.props.isExpressionFunc ? this.props.functions : this.props.metric.functions;
+    const functions = this.props.isExpressionFunc ? this.props.functions : this.props.metric?.functions;
     return (
       <div className='function-menu'>
         <LanguageContext.Consumer>
@@ -163,8 +163,8 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                     )}
                     {(activeFuncId || activeFuncType) && (
                       <div className='panel-desc'>
-                        <div className='desc-title'>{activeItem.name}</div>
-                        <div className='desc-content'>{activeItem.description}</div>
+                        <div className='desc-title'>{activeItem?.name}</div>
+                        <div className='desc-content'>{activeItem?.description}</div>
                       </div>
                     )}
                     {(!this.filterList?.length || !this.activeFuncList?.length) && (
@@ -202,7 +202,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
   }
   get filterFucList() {
     if (this.props.isExpressionFunc) {
-      return this.props.functionList.filter(item => item.children.some(set => set.support_expression));
+      return this.props.functionList.filter(item => item?.children?.some(set => set.support_expression));
     }
     if (this.props.metric?.isAllFunc) return this.props.functionList;
     return this.props.functionList.filter(item => ['sort', 'time_shift'].includes(item.id));

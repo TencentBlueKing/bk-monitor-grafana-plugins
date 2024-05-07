@@ -1,5 +1,5 @@
 {
-  "name": "alert",
+  "name": "event",
   "version": "1.0.0",
   "description": "",
   "scripts": {
@@ -30,7 +30,6 @@
     "@types/node": "^20.8.7",
     "@types/react": "17.0.42",
     "@types/react-dom": "17.0.14",
-    "@types/testing-library__jest-dom": "5.14.8",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "eslint": "^8.55.0",
@@ -65,7 +64,7 @@
     "webpack-livereload-plugin": "^3.0.2"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=18"
   },
   "dependencies": {
     "@ant-design/icons": "4.8.1",
@@ -75,7 +74,6 @@
     "@grafana/schema": "10.0.3",
     "@grafana/ui": "10.0.3",
     "antd": "^4.20.0",
-    "codemirror-promql": "^0.19.0",
     "postcss-scss": "^4.0.9",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",

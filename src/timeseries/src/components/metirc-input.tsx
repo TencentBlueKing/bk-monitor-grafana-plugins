@@ -36,9 +36,9 @@ import Popover from 'antd/es/popover';
 import Spin from 'antd/es/spin';
 import Tabs from 'antd/es/tabs';
 import Tooltip from 'antd/es/tooltip';
-import DashboardDatasource from 'datasource/datasource';
 import React from 'react';
 
+import DashboardDatasource from '../datasource/datasource';
 import { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { createMetricTitleTooltips, getEnByName, random } from '../utils/utils';
@@ -52,7 +52,7 @@ export interface IQueryProps {
   datasource: DashboardDatasource;
   metric?: MetricDetail;
   mode?: MetricInputMode;
-  onMetricChange?: (metric: IMetric) => void;
+  onMetricChange?: (metric: IMetric | null) => void;
 }
 type RightPanelType = 'datasource' | 'scenario';
 interface ITagItem {
@@ -86,7 +86,7 @@ interface IQueryState {
   refleshMetric: boolean;
   resultTableLabel: string[];
   scenarioList: IDataSourceItem[];
-  tag: ITagItem;
+  tag?: ITagItem | null;
   tagList: ITagItem[];
   timer: any;
   total: number;
@@ -121,7 +121,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       total: 0,
     };
   }
-  displayRender = (): JSX.Element => {
+  displayRender = () => {
     const { data_label, metric_field, metric_field_name, result_table_id, result_table_label_name, result_table_name } =
       this.props.metric!;
     const labels = [result_table_label_name, result_table_name, metric_field_name];
@@ -176,7 +176,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       titleAlias: metric.metric_field === metric.metric_field_name ? '' : metric.metric_field_name,
       titleName: [metric.result_table_id, metric.metric_field].filter(Boolean).join('.'),
     }));
-    let tags = [];
+    let tags: ITagItem[] = [];
     if (tag?.id) {
       if (tag_list.length) {
         tags = tag_list.some(item => item.id === tag.id) ? tag_list : [{ ...tag }].concat(tag_list);
@@ -230,7 +230,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     let { keyword } = this.state;
     const len = keyword.length;
     if (!keyword?.trim().length || !str.toLocaleLowerCase().includes(keyword.toLocaleLowerCase())) return str;
-    const list = [];
+    const list: Array<any | string> = [];
     let lastIndex = -1;
     keyword = keyword.replace(/([.*/]{1})/gim, '\\$1');
     str.replace(new RegExp(`${keyword}`, 'igm'), (key, index) => {
@@ -273,7 +273,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         result_table_id: resultTableId,
       })
       .then(res => {
-        this.props.onMetricChange(res[0]);
+        this.props.onMetricChange?.(res[0]);
         this.handleVisibleChange(false);
       })
       .catch(e => {
@@ -315,7 +315,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
    * @return {*}
    */
   handleClear = () => {
-    this.props.onMetricChange(null);
+    this.props.onMetricChange?.(null);
     this.handleVisibleChange(false);
   };
   /**
@@ -346,7 +346,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     } else if (this.state.isArrowKeySet && ['Enter', 'NumpadEnter'].includes(e.code)) {
       const { focusIndex, metricList } = this.state;
       const metric = metricList[focusIndex];
-      this.props.onMetricChange(metric);
+      this.props.onMetricChange?.(metric);
       this.handleVisibleChange(false);
     }
   };
@@ -363,7 +363,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       this.handleVisibleChange(false);
       return;
     }
-    this.props.onMetricChange(metric);
+    this.props.onMetricChange?.(metric);
     this.handleVisibleChange(false);
   };
   handleMouseMove = () => {
@@ -708,7 +708,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const metircDom = document.getElementById(metric.metric_id);
     const range = document.createRange();
     const selection = window.getSelection();
-    range.selectNodeContents(metircDom);
+    range.selectNodeContents(metircDom as Node);
     selection?.removeAllRanges();
     selection?.addRange(range);
     Message.success({

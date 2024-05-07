@@ -25,8 +25,8 @@
  */
 import Select from 'antd/es/select';
 import React from 'react';
-import { EditMode } from 'typings/metric';
 
+import { EditMode } from '../typings/metric';
 import { getEnByName } from '../utils/utils';
 import AliasInput from './alias-input';
 import EditorForm from './editor-form';

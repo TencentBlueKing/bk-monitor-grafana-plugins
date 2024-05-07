@@ -327,7 +327,7 @@ export class MetricDetail {
   time_field?: string;
   unit: string;
 
-  constructor(metricDetail: IMetric | MetricDetail) {
+  constructor(metricDetail: MetricDetail | Partial<IMetric>) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));
     this.agg_method =
       metricDetail.agg_method ||

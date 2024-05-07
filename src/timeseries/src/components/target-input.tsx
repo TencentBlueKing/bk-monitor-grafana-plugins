@@ -101,7 +101,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
       });
     }
   };
-  handleGetHostList = async (moduleIdList: string[]) => {
+  handleGetHostList = async (moduleIdList: string[]): Promise<ITargetItem[]> => {
     let list = [];
     if (moduleIdList?.length) {
       const isHost = this.props.targetType === TARGET_TYPE.HOST;
@@ -124,7 +124,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
     }
     return list;
   };
-  handleGetModuleList = async (clusterList: string[]) => {
+  handleGetModuleList = async (clusterList: string[]): Promise<ITargetItem[]> => {
     let list = [];
     if (clusterList?.length) {
       const params = {

@@ -393,7 +393,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   showArrow={false}
                   tokenSeparators={[',', '|', '\n', ' ']}
                   onChange={v => this.handleValueChange(v, index)}
-                  onInputKeyDown={v => this.handleValueConditionKeyDown(v, index)}
+                  onInputKeyDown={v => this.handleValueConditionKeyDown(v)}
                 >
                   {needNUll(item.key) && (
                     <Option

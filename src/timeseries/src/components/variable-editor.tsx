@@ -58,7 +58,7 @@ interface IVariableEditorState {
   showField: string | undefined;
   valueField: string | undefined;
 }
-const language = getCookie('blueking_language');
+const language = getCookie('blueking_language')!;
 export default class VariableQueryEditor extends React.PureComponent<IVariableEditorProps, IVariableEditorState> {
   // k8s列表
   k8sTypes: { label: string; value: string }[] = [
@@ -142,7 +142,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       needQuery ? this.handleQuery : undefined,
     );
   };
-  handleMetricChange = async (metric: IMetric) => {
+  handleMetricChange = async (metric: IMetric | null) => {
     if (metric?.metric_id) {
       metric.agg_dimension = metric.default_dimensions?.slice?.(0, 1) || [metric.dimensions?.slice?.(0, 1)?.[0].id];
       this.setState(

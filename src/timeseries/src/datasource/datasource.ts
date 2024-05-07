@@ -101,7 +101,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public useToken: boolean;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
-    this.url = instanceSettings.url;
+    this.url = instanceSettings.url!;
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
@@ -202,10 +202,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         object_type: metric?.result_table_label,
       };
     }
-    if (query.format === 'heatmap') {
+    if (query?.format === 'heatmap') {
       return this.formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
     }
-    if (query.format === 'table') {
+    if (query?.format === 'table') {
       return this.formatTable(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
     }
     return this.formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
@@ -214,7 +214,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     if (query.queryType === VariableQueryType.Promql) {
       return {
         end_time: (getTemplateSrv() as any).timeRange.to.unix(),
-        promql: this.buildPromqlVariables(query.promql, scopedVars),
+        promql: this.buildPromqlVariables(query.promql!, scopedVars),
         start_time: (getTemplateSrv() as any).timeRange.from.unix(),
       };
     }
@@ -763,7 +763,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         mode: item.only_promql ? 'code' : item.mode,
       };
     });
-    const promiseList = [];
+    const promiseList: Array<Promise<any>> = [];
     let errorMsg = '';
     queryList.forEach((item: QueryData) => {
       const configList = [];

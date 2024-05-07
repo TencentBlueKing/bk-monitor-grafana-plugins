@@ -94,7 +94,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
     const { funtion } = this.props;
     const getParamList = (param: IFunctionParam) =>
       param?.shortlist?.length ? (
-        <Menu defaultSelectedKeys={[param.value.toString()]}>
+        <Menu defaultSelectedKeys={[param.value!.toString()]}>
           {(param.shortlist as any).map(id => (
             <Menu.Item key={id === '' ? EMPTY_VALUE : id.toString()}>
               <div
