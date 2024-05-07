@@ -23,16 +23,17 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 import { DataQuery } from '@grafana/data';
+
 import { IConditionItem, IFunctionItem, EditMode, IntervalType } from './metric';
 // datasource 查询数据
 export interface IQueryConfig {
   data_source_label: string; // 指标来源
-  data_type_label: string;  // 指标类型
-  data_label: string;  // 指标二段式使用
+  data_type_label: string; // 指标类型
+  data_label: string; // 指标二段式使用
   result_table_label: string; // 表名
-  filter_dict: {};
+  filter_dict: object;
   functions: IFunctionItem[];
   group_by: string[];
   interval: IntervalType;

@@ -23,28 +23,28 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 import { IConditionItem } from './metric';
 // 变量类型
 export enum VariableQueryType {
+  Dimension = 'dimension',
   Host = 'host',
   Module = 'module',
-  Set = 'set',
+  Promql = 'prometheus',
   ServiceInstance = 'service_instance',
-  Dimension = 'dimension',
-  Promql = 'prometheus'
+  Set = 'set',
 }
 export enum K8sVariableQueryType {
   Cluster = 'cluster',
-  Namespace = 'namespace',
-  Pod = 'pod',
   Container = 'container',
+  Namespace = 'namespace',
   Node = 'node',
-  Service = 'service'
+  Pod = 'pod',
+  Service = 'service',
 }
 export enum ScenarioType {
   Kubernetes = 'kubernetes',
-  OS = 'os'
+  OS = 'os',
 }
 // 指标类型变量配置
 export interface IMetricConfig {

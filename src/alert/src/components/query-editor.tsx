@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -30,7 +28,6 @@ import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import { LoadingState, QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Spin from 'antd/es/spin';
-/* eslint-disable camelcase */
 import React from 'react';
 import { ICommonItem, IConditionItem, IntervalType } from 'typings/metric';
 
@@ -66,6 +63,26 @@ interface IQueryEditorState {
   where: IConditionItem[];
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
+  constructor(props, context) {
+    super(props, context);
+    const { query } = props;
+    const { alias, group_by, interval, interval_unit, method, where } =
+      (query.query_configs?.[0] as IQueryConfig) || {};
+    this.state = {
+      agg_method: method || 'COUNT',
+      alias: alias || '',
+      fieldList: [],
+      group_by: group_by || [],
+      inited: false,
+      interval: interval || 'auto',
+      interval_unit: interval_unit || 'h',
+      language: getCookie('blueking_language'),
+      loading: true,
+      searchState: SearcState.deafult,
+      where: where?.length ? where : [{} as any],
+    };
+    this.initState();
+  }
   handleAliasChange = async (v: string) => {
     this.setState(
       {
@@ -160,8 +177,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         >
           {isLoading ? (
             <LoadingOutlined
-              spin
               style={{ color: '#3A84FF', cursor: isLoading ? 'not-allowed' : 'pointer' }}
+              spin
             />
           ) : (
             <i className={`fa ${searchState === SearcState.deafult ? 'fa-play' : 'fa-pause'}`} />
@@ -170,35 +187,15 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         <Button
           className={`search-auto ${isLoading ? 'is-loading' : ''}`}
           disabled={isLoading}
-          onClick={this.handleClickQuery}
           size='small'
           type='primary'
+          onClick={this.handleClickQuery}
         >
           {btnText}
         </Button>
       </div>
     );
   };
-  constructor(props, context) {
-    super(props, context);
-    const { query } = props;
-    const { alias, group_by, interval, interval_unit, method, where } =
-      (query.query_configs?.[0] as IQueryConfig) || {};
-    this.state = {
-      agg_method: method || 'COUNT',
-      alias: alias || '',
-      fieldList: [],
-      group_by: group_by || [],
-      inited: false,
-      interval: interval || 'auto',
-      interval_unit: interval_unit || 'h',
-      language: getCookie('blueking_language'),
-      loading: true,
-      searchState: SearcState.deafult,
-      where: where?.length ? where : [{} as any],
-    };
-    this.initState();
-  }
   handleGetQueryData() {
     return {
       query_configs: [

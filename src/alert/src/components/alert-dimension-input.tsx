@@ -24,12 +24,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
-import React from 'react';
-import { ICommonItem } from '../typings/metric';
+
+import CloseOutlined from '@ant-design/icons/CloseOutlined';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
-import CloseOutlined from '@ant-design/icons/CloseOutlined';
+import React from 'react';
+
+import { ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { getEnByName } from '../utils/utils';
 const { Option } = Select;
@@ -61,44 +62,50 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
     });
   };
   render(): JSX.Element {
-    const {
-      variableQuery,
-      onDimensionChange,
-      agg_dimension,
-      dimensions,
-    } = this.props;
+    const { variableQuery, onDimensionChange, agg_dimension, dimensions } = this.props;
     const selectProps: any = {};
     !variableQuery && (selectProps.mode = 'tags');
     return (
       <LanguageContext.Consumer>
         {({ language }) => (
           <Select
-            className="dimension-input"
-            showArrow={false}
-            showSearch
-            placeholder={getEnByName('维度', language)}
-            open={this.state.open}
             tagRender={(item): JSX.Element => (
-              <Tooltip placement="top" title={item.value}>
-                <span className="ant-select-selection-item">
-                  <span className="ant-select-selection-item-content">{item.label}</span>
-                  <span className="ant-select-selection-item-remove" onClick={item.onClose}>
+              <Tooltip
+                placement='top'
+                title={item.value}
+              >
+                <span className='ant-select-selection-item'>
+                  <span className='ant-select-selection-item-content'>{item.label}</span>
+                  <span
+                    className='ant-select-selection-item-remove'
+                    onClick={item.onClose}
+                  >
                     <CloseOutlined />
                   </span>
                 </span>
               </Tooltip>
             )}
+            className='dimension-input'
+            open={this.state.open}
+            placeholder={getEnByName('维度', language)}
+            showArrow={false}
+            showSearch
             {...selectProps}
             value={agg_dimension}
-            onFocus={this.onDimensionFocus}
             onBlur={this.onDimensionBlur}
             onChange={onDimensionChange}
+            onFocus={this.onDimensionFocus}
           >
-            {dimensions?.filter(item => item.is_dimension)?.map(item => (
-              <Option value={item.id} key={item.id}>
-                {item.name}
-              </Option>
-            ))}
+            {dimensions
+              ?.filter(item => item.is_dimension)
+              ?.map(item => (
+                <Option
+                  key={item.id}
+                  value={item.id}
+                >
+                  {item.name}
+                </Option>
+              ))}
           </Select>
         )}
       </LanguageContext.Consumer>

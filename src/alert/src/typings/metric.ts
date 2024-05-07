@@ -24,9 +24,6 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable no-nested-ternary */
-/* eslint-disable camelcase */
-
 
 // 汇聚方法列表
 export const METHOD_LIST = [
@@ -112,10 +109,10 @@ export const NOT_TIME_AGG_METHOD_LIST = [
   },
 ];
 
-export type IntervalType = number | 'auto' | string;
+export type IntervalType = 'auto' | number | string;
 export interface IIntervalItem {
   id: IntervalType;
-  name: string | number;
+  name: number | string;
 }
 // 汇聚周期列表
 export const INTERVAL_LIST: IIntervalItem[] = [
@@ -239,8 +236,8 @@ export const STRING_CONDITION_METHOD_LIST = [
 // 监控目标类型
 export enum TARGET_TYPE {
   'HOST' = 'HOST',
+  'NONE' = 'NONE',
   'SERVICE_INSTANCE' = 'SERVICE_INSTANCE',
-  'NONE' = 'NONE'
 }
 // 监控条件 设置条件
 export const CONDITION = [
@@ -302,8 +299,18 @@ export type EditMode = 'code' | 'ui';
 export type EditorStatus = 'default' | 'error';
 // 指标详情 实例
 export class MetricDetail {
+  agg_condition: IConditionItem[] = [];
+  agg_dimension: string[];
+  agg_interval: IntervalType = 'auto';
+  agg_interval_list: IIntervalItem[] = INTERVAL_LIST;
+  agg_interval_unit = 's';
+  agg_interval_unit_list = INTERVAL_UNIT_LIST;
+  agg_method = 'AVG';
+  alias = '';
   collect_interval: number;
   condition_methods: IConditionMethodItem[];
+  // 指标二段式使用
+  data_label = '';
   data_source_label: string;
   data_source_label_name: string;
   data_type_label: string;
@@ -311,123 +318,49 @@ export class MetricDetail {
   default_dimensions: string[];
   description: string;
   dimensions: ICommonItem[];
+  display = true;
   extend_fields: Record<string, any>;
+  functions: IFunctionItem[] = [];
   id: string;
-  metric_id: string;
+  index_set_id = '';
+
+  loading = false;
+  method_list: [];
   metric_field: string;
   metric_field_name: string;
+  metric_id: string;
+  // source code 使用
+  mode: EditMode = 'ui';
   name: string;
+  readable_name?: string;
+  refId = '';
   related_id: string;
   related_name: string;
   result_table_id: string;
   result_table_label: string;
   result_table_label_name: string;
   result_table_name: string;
-  unit: string;
-  method_list: [];
-
-  agg_interval_unit_list = INTERVAL_UNIT_LIST;
-  agg_interval_list: IIntervalItem[] = INTERVAL_LIST;
-  index_set_id = '';
-  agg_interval: IntervalType = 'auto';
-  agg_interval_unit = 's';
-  alias = '';
-  agg_method = 'AVG';
-  agg_dimension: string[];
-  agg_condition: IConditionItem[] = [];
-  functions: IFunctionItem[] = [];
-  display = true;
-  refId = '';
-  // source code 使用
-  mode: EditMode = 'ui';
   source = '';
-  loading = false;
   status: EditorStatus = 'default';
-  readable_name?: string;
   time_field?: string;
-  // 指标二段式使用
-  data_label = '';
+  unit: string;
 
   constructor(metricDetail: IMetric | MetricDetail) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));
-    this.agg_method = metricDetail.agg_method
-      || (this.onlyCountMethod ? 'COUNT' : metricDetail?.method_list?.length ? metricDetail.method_list[0] : 'AVG');
+    this.agg_method =
+      metricDetail.agg_method ||
+      (this.onlyCountMethod ? 'COUNT' : metricDetail?.method_list?.length ? metricDetail.method_list[0] : 'AVG');
     this.agg_dimension = metricDetail.agg_dimension || metricDetail.default_dimensions || [];
-    const condition = (metricDetail.agg_condition
-    || (metricDetail.default_condition?.length ? metricDetail.default_condition : [{} as any])).slice();
+    const condition = (
+      metricDetail.agg_condition ||
+      (metricDetail.default_condition?.length ? metricDetail.default_condition : [{} as any])
+    ).slice();
 
     if (condition[condition.length - 1]?.key) {
       condition.push({} as any);
     }
     this.agg_condition = condition.length ? condition : [{}];
     this.index_set_id = metricDetail?.extend_fields?.index_set_id || '';
-  }
-  get curMetricId() {
-    return `${this.data_source_label}|${this.data_type_label}|${this.result_table_id}|${this.metric_field}`;
-  }
-  get metricMetaId() {
-    return `${this.data_source_label}|${this.data_type_label}`;
-  }
-  // 是否可以设置多指标
-  get canSetMulitpeMetric() {
-    return (
-      ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
-      && !this.result_table_id?.match(/^uptimecheck/i)
-      && !this.isSpecialCMDBDimension
-    );
-  }
-  get isSpecialCMDBDimension() {
-    return (
-      this.metricMetaId === 'bk_monitor|time_series'
-      && (this.agg_dimension.some(dim => ['bk_inst_id', 'bk_obj_id'].includes(dim))
-        || this.agg_condition.some(condition => ['bk_inst_id', 'bk_obj_id'].includes(condition.key)))
-    );
-  }
-  // 是否可以设置实时查询
-  get canSetRealTimeSearch() {
-    return ['bk_monitor|time_series', 'custom|time_series', 'bk_monitor|event'].includes(this.metricMetaId);
-  }
-  // 是否可设置汇聚查询
-  get canSetConvergeSearch() {
-    return this.metricMetaId !== 'bk_monitor|event';
-  }
-  // 是否可设置汇聚查询
-  get canSetSourceCode() {
-    return this.data_type_label === 'time_series' && this.data_source_label !== 'bk_log_search';
-  }
-  // 是否可设置维度
-  get canSetDimension() {
-    return this.metricMetaId !== 'bk_monitor|event';
-  }
-  // 是否可设置汇聚方法
-  get canSetAggMethod() {
-    return this.metricMetaId !== 'bk_monitor|event';
-  }
-  // 是否可设置汇聚周期
-  get canSetAggInterval() {
-    return this.metricMetaId !== 'bk_monitor|event';
-  }
-  // 是否可设置检索语句
-  get canSetQueryString() {
-    return this.data_source_label !== 'bk_monitor' && this.data_type_label === 'log';
-  }
-  // 是否可设置函数
-  get canSetFunction() {
-    return this.metricMetaId !== 'bk_monitor|event';
-  }
-  // 是否可设置多指标计算
-  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
-  get canSetMetricCalc() {
-    return true;
-    // return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
-    // && !this.result_table_id.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension
-  }
-  get isAllFunc() {
-    return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
-    && !this.result_table_id?.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension;
-  }
-  get canNotTimeAggMethod() {
-    return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) && !(this.result_table_id?.match(/^uptimecheck/i) && ['message', 'response_code'].includes(this.metric_field)) && !this.isSpecialCMDBDimension;
   }
   get aggMethodList() {
     if (this.onlyCountMethod) {
@@ -438,12 +371,86 @@ export class MetricDetail {
     }
     return this?.method_list?.length ? this.method_list.map(set => ({ id: set, name: set })) : METHOD_LIST;
   }
+  get canNotTimeAggMethod() {
+    return (
+      ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) &&
+      !(this.result_table_id?.match(/^uptimecheck/i) && ['message', 'response_code'].includes(this.metric_field)) &&
+      !this.isSpecialCMDBDimension
+    );
+  }
+  // 是否可设置汇聚周期
+  get canSetAggInterval() {
+    return this.metricMetaId !== 'bk_monitor|event';
+  }
+  // 是否可设置汇聚方法
+  get canSetAggMethod() {
+    return this.metricMetaId !== 'bk_monitor|event';
+  }
+  // 是否可设置汇聚查询
+  get canSetConvergeSearch() {
+    return this.metricMetaId !== 'bk_monitor|event';
+  }
+  // 是否可设置维度
+  get canSetDimension() {
+    return this.metricMetaId !== 'bk_monitor|event';
+  }
+  // 是否可设置函数
+  get canSetFunction() {
+    return this.metricMetaId !== 'bk_monitor|event';
+  }
+
+  get canSetMetricCalc() {
+    return true;
+    // return ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId)
+    // && !this.result_table_id.match(/^uptimecheck/i) && !this.isSpecialCMDBDimension
+  }
+  // 是否可以设置多指标
+  get canSetMulitpeMetric() {
+    return (
+      ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) &&
+      !this.result_table_id?.match(/^uptimecheck/i) &&
+      !this.isSpecialCMDBDimension
+    );
+  }
+  // 是否可设置检索语句
+  get canSetQueryString() {
+    return this.data_source_label !== 'bk_monitor' && this.data_type_label === 'log';
+  }
+  // 是否可以设置实时查询
+  get canSetRealTimeSearch() {
+    return ['bk_monitor|time_series', 'custom|time_series', 'bk_monitor|event'].includes(this.metricMetaId);
+  }
+  // 是否可设置汇聚查询
+  get canSetSourceCode() {
+    return this.data_type_label === 'time_series' && this.data_source_label !== 'bk_log_search';
+  }
+  // 是否可设置多指标计算
+  get curMetricId() {
+    return `${this.data_source_label}|${this.data_type_label}|${this.result_table_id}|${this.metric_field}`;
+  }
+  get isAllFunc() {
+    return (
+      ['bk_monitor|time_series', 'custom|time_series'].includes(this.metricMetaId) &&
+      !this.result_table_id?.match(/^uptimecheck/i) &&
+      !this.isSpecialCMDBDimension
+    );
+  }
+  get isSpecialCMDBDimension() {
+    return (
+      this.metricMetaId === 'bk_monitor|time_series' &&
+      (this.agg_dimension.some(dim => ['bk_inst_id', 'bk_obj_id'].includes(dim)) ||
+        this.agg_condition.some(condition => ['bk_inst_id', 'bk_obj_id'].includes(condition.key)))
+    );
+  }
+  get metricMetaId() {
+    return `${this.data_source_label}|${this.data_type_label}`;
+  }
   get onlyCountMethod() {
     return (
-      ['bk_log_search|log', 'custom|event'].includes(this.metricMetaId)
-      || (this.metricMetaId === 'bk_monitor|time_series'
-        && this.result_table_id === 'uptimecheck.http'
-        && ['message', 'response_code'].includes(this.metric_field))
+      ['bk_log_search|log', 'custom|event'].includes(this.metricMetaId) ||
+      (this.metricMetaId === 'bk_monitor|time_series' &&
+        this.result_table_id === 'uptimecheck.http' &&
+        ['message', 'response_code'].includes(this.metric_field))
     );
   }
 
@@ -457,10 +464,10 @@ export class MetricDetail {
 export interface IFunctionParam {
   id?: string; // 函数参数id
   name?: string; // 函数参数名称
-  default: string | number; // 函数参数默认值
-  value?: string | number; // 函数参数值
+  default: number | string; // 函数参数默认值
+  value?: number | string; // 函数参数值
   edit?: boolean; // 是否可编辑
-  shortlist: string[] | number[]; // 参数可选值列表
+  shortlist: number[] | string[]; // 参数可选值列表
 }
 // 监控函数
 export interface IFunctionItem {
@@ -470,7 +477,7 @@ export interface IFunctionItem {
   params?: IFunctionParam[]; // 函数参数列表
   description?: string; // 函数描述
   key?: string; // 函数key
-  support_expression?: boolean
+  support_expression?: boolean;
 }
 
 // 监控条件列表item

@@ -23,9 +23,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import { MetricDetail } from '../typings/metric';
 import Tooltip from 'antd/es/tooltip';
+import React from 'react';
+
+import { MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 export interface IEditorFormProps {
   metricList?: MetricDetail[];
@@ -46,19 +47,30 @@ export default class EditorForm extends React.PureComponent<IEditorFormProps, IE
     return (
       <LanguageContext.Consumer>
         {({ language }) => (
-          <div className="editor-form" style={style}>
-            <span className="editor-form-label" style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}>
+          <div
+            style={style}
+            className='editor-form'
+          >
+            <span
+              style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
+              className='editor-form-label'
+            >
               {renderTitle ? renderTitle() : title}
               {tips && (
-                <Tooltip placement="right" mouseEnterDelay={0.2} title={tips} overlayClassName="monitor-tooltip">
+                <Tooltip
+                  mouseEnterDelay={0.2}
+                  overlayClassName='monitor-tooltip'
+                  placement='right'
+                  title={tips}
+                >
                   <i
-                    className="fa fa-info-circle label-tip"
                     style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
+                    className='fa fa-info-circle label-tip'
                   />
                 </Tooltip>
               )}
             </span>
-            <div className="editor-form-content">{this.props?.children}</div>
+            <div className='editor-form-content'>{this.props?.children}</div>
           </div>
         )}
       </LanguageContext.Consumer>
