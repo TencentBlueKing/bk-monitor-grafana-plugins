@@ -23,8 +23,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 import { DataQuery } from '@grafana/data';
+
 import { IConditionItem } from './metric';
 export interface IQueryConfig {
   data_source_label: string;

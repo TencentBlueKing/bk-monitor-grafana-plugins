@@ -23,15 +23,15 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
+
 import { IConditionItem } from './metric';
 
 export enum VariableQueryType {
+  Dimension = 'dimension',
   Host = 'host',
   Module = 'module',
-  Set = 'set',
   ServiceInstance = 'service_instance',
-  Dimension = 'dimension'
+  Set = 'set',
 }
 export interface IMetricConfig {
   data_source_label: string;

@@ -26,15 +26,15 @@
 class ApiCache {
   public cacheMap: Map<string, any> = new Map();
 
+  public getCache(key: string) {
+    return this.cacheMap.get(key);
+  }
+
   public setCache(key: string, data: any) {
     this.cacheMap.set(key, data);
     setTimeout(() => {
       this.cacheMap.delete(key);
     }, 20000);
-  }
-
-  public getCache(key: string) {
-    return this.cacheMap.get(key);
   }
 }
 

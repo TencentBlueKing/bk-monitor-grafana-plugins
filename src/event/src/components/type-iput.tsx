@@ -23,8 +23,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
 import Select from 'antd/es/select';
+import React from 'react';
+
 import { MetricType } from '../typings/metric';
 const { Option } = Select;
 const metaList: { id: MetricType; name: string }[] = [
@@ -49,9 +50,16 @@ export default class TypeInput extends React.PureComponent<ITypeInputProps> {
   render(): JSX.Element {
     return (
       <div>
-        <Select className="type-input" value={this.props.value} onChange={this.props.onChange}>
+        <Select
+          className='type-input'
+          value={this.props.value}
+          onChange={this.props.onChange}
+        >
           {metaList.map(item => (
-            <Option key={item.id} value={item.id}>
+            <Option
+              key={item.id}
+              value={item.id}
+            >
               {item.name}
             </Option>
           ))}

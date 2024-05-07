@@ -24,22 +24,23 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
-import React from 'react';
-import VariableLine from './variable-line';
+
 import Select from 'antd/es/select';
-import ConditionIput from './condition-input';
-import TypeInput from './type-iput';
-import DataInput from './data-input';
-import AliasInput from './alias-input';
-import DimensionInput from './dimension-input';
-import { VariableQueryType, VariableQuery } from '../typings/variable';
 import Spin from 'antd/es/spin';
-import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
+import React from 'react';
+
 import Datasource from '../datasource/datasource';
+import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
+import { VariableQueryType, VariableQuery } from '../typings/variable';
+import { LanguageContext } from '../utils/context';
 // import { CascaderOptionType } from 'antd/es/cascader';
 import { getCookie, getEnByName } from '../utils/utils';
-import { LanguageContext } from '../utils/context';
+import AliasInput from './alias-input';
+import ConditionIput from './condition-input';
+import DataInput from './data-input';
+import DimensionInput from './dimension-input';
+import TypeInput from './type-iput';
+import VariableLine from './variable-line';
 interface IVariableEditorProps {
   datasource: Datasource;
   query?: VariableQuery;
@@ -76,7 +77,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     super(props);
     const { query } = props;
     const { queryType = VariableQueryType.Host, where, showField, valueField } = query;
-    const condition = where?.length ? where :  ([{}] as any);
+    const condition = where?.length ? where : ([{}] as any);
     if (condition[condition.length - 1]?.key) {
       condition.push({} as any);
     }
@@ -115,7 +116,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
           data_source_label,
           data_type_label,
         });
-        const condition = (where?.length ? where :  ([{}] as any)).slice();
+        const condition = (where?.length ? where : ([{}] as any)).slice();
         if (condition[condition.length - 1]?.key) {
           condition.push({} as any);
         }
@@ -155,12 +156,12 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       this.props.onChange(
         showField && valueField
           ? {
-            queryType,
-            showField,
-            valueField,
-            where: condition.filter(item => item.key),
-            variables: this.handleGetVariables(condition),
-          }
+              queryType,
+              showField,
+              valueField,
+              where: condition.filter(item => item.key),
+              variables: this.handleGetVariables(condition),
+            }
           : {},
         definition,
       );
@@ -170,17 +171,17 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       this.props.onChange(
         dimension?.length
           ? {
-            queryType,
-            variables: this.handleGetVariables(condition),
-            dimensionConfig: {
-              data_source_label,
-              data_type_label,
-              result_table_id: dataId,
-              where: condition.filter(item => item.key),
-              group_by: dimension,
-              query_string: queryString,
-            },
-          }
+              queryType,
+              variables: this.handleGetVariables(condition),
+              dimensionConfig: {
+                data_source_label,
+                data_type_label,
+                result_table_id: dataId,
+                where: condition.filter(item => item.key),
+                group_by: dimension,
+                query_string: queryString,
+              },
+            }
           : {},
         definition,
       );
@@ -189,8 +190,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
   handleGetVariables(conditions: IConditionItem[]): string {
     const variableRegex = /\$(\w+)|\[\[([\s\S]+?)(?::(\w+))?\]\]|\${(\w+)(?:\.([^:^}]+))?(?::(\w+))?}/g;
     const variables = new Set();
-    conditions?.forEach((item) => {
-      item?.value?.forEach?.((val) => {
+    conditions?.forEach(item => {
+      item?.value?.forEach?.(val => {
         const matches = val.match(variableRegex);
         matches && variables.add(matches);
       });
@@ -263,7 +264,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
    */
   handleDataTypeChange = async (typeId: MetricType, needQuery = true) => {
     this.setState({ loading: true });
-    await new Promise(async (resolve) => {
+    await new Promise(async resolve => {
       const [data_source_label, data_type_label] = typeId.split('|');
       const dataList: IDataItem[] = await this.props.datasource.getDataSourceConfig({
         data_source_label,
@@ -341,12 +342,19 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
     const dimensionList = this.curData.dimensions;
     return (
       <LanguageContext.Provider value={{ language }}>
-        <div className="event-variable-editor">
+        <div className='event-variable-editor'>
           <Spin spinning={loading}>
             <VariableLine title={getEnByName('类型', language)}>
-              <Select defaultValue={queryType} className="common-select" onChange={this.handleQueryTypeChange}>
+              <Select
+                className='common-select'
+                defaultValue={queryType}
+                onChange={this.handleQueryTypeChange}
+              >
                 {this.queryTypes.map(item => (
-                  <Select.Option key={item.value} value={item.value}>
+                  <Select.Option
+                    key={item.value}
+                    value={item.value}
+                  >
                     {item.label}
                   </Select.Option>
                 ))}
@@ -356,15 +364,18 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
               <>
                 <VariableLine title={getEnByName('展示字段', language)}>
                   <Select
+                    className='common-select'
+                    optionFilterProp={'children'}
                     placeholder={getEnByName('请选择展示字段', language)}
                     value={showField}
-                    onChange={this.handleShowFieldChange}
                     showSearch
-                    optionFilterProp={'children'}
-                    className="common-select"
+                    onChange={this.handleShowFieldChange}
                   >
                     {fieldList.map(item => (
-                      <Select.Option key={item.id} value={item.id}>
+                      <Select.Option
+                        key={item.id}
+                        value={item.id}
+                      >
                         {item.name}
                       </Select.Option>
                     ))}
@@ -372,15 +383,18 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                 </VariableLine>
                 <VariableLine title={getEnByName('值字段', language)}>
                   <Select
-                    value={valueField}
-                    placeholder={getEnByName('请选择值字段', language)}
-                    onChange={this.handleValueFieldChange}
-                    showSearch
+                    className='common-select'
                     optionFilterProp={'children'}
-                    className="common-select"
+                    placeholder={getEnByName('请选择值字段', language)}
+                    value={valueField}
+                    showSearch
+                    onChange={this.handleValueFieldChange}
                   >
                     {fieldList.map(item => (
-                      <Select.Option key={item.id} value={item.id}>
+                      <Select.Option
+                        key={item.id}
+                        value={item.id}
+                      >
                         {item.name}
                       </Select.Option>
                     ))}
@@ -388,8 +402,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                 </VariableLine>
                 <VariableLine title={getEnByName('条件', language)}>
                   <ConditionIput
-                    dimensionList={fieldList}
                     condition={condition}
+                    dimensionList={fieldList}
                     onChange={this.handleConditionChange}
                   />
                 </VariableLine>
@@ -397,17 +411,24 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             ) : (
               <>
                 <VariableLine title={getEnByName('数据类型', language)}>
-                  <TypeInput value={typeId} onChange={this.handleDataTypeChange} />
+                  <TypeInput
+                    value={typeId}
+                    onChange={this.handleDataTypeChange}
+                  />
                 </VariableLine>
                 <VariableLine title={getEnByName('数据名称', language)}>
-                  <DataInput value={dataId} list={dataList} onChange={this.handleDataIdChage} />
+                  <DataInput
+                    list={dataList}
+                    value={dataId}
+                    onChange={this.handleDataIdChage}
+                  />
                 </VariableLine>
                 {dataId ? (
                   <>
                     <VariableLine title={getEnByName('Query string', language)}>
                       <AliasInput
-                        value={queryString}
                         style={{ minWidth: '100%', flex: 1 }}
+                        value={queryString}
                         onChange={this.handleQueryStringChange}
                       />
                     </VariableLine>
@@ -415,15 +436,15 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                       <DimensionInput
                         dimension={dimension}
                         dimensionList={dimensionList}
-                        onDimensionChange={this.handleDimensionChange}
                         variableQuery={true}
+                        onDimensionChange={this.handleDimensionChange}
                       />
                     </VariableLine>
                     <VariableLine title={getEnByName('条件', language)}>
                       <ConditionIput
                         condition={dimCondition}
-                        getDimensionValue={this.getDimensionValue}
                         dimensionList={dimensionList}
+                        getDimensionValue={this.getDimensionValue}
                         onChange={this.handleDimensionConditionChange}
                       />
                     </VariableLine>

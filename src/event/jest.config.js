@@ -4,5 +4,6 @@ process.env.TZ = 'UTC';
 
 module.exports = {
   // Jest configuration provided by Grafana scaffolding
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   ...require('./.config/jest.config'),
 };

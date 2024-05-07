@@ -34,5 +34,5 @@ export interface QueryOption extends DataSourceJsonData {
 }
 
 export interface SecureOption {
-  token?: string
+  token?: string;
 }

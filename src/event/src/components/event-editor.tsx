@@ -24,24 +24,26 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import EditorForm from './editor-form';
-import TypeInput from './type-iput';
-import DataInput from './data-input';
-import AliasInput from './alias-input';
-import QueryFormula from './query-formula';
-import IntervalInput from './interval-input';
-import DimensionInput from './dimension-input';
-import ConditionInput from './condition-input';
-import Spin from 'antd/es/spin';
-import { QueryEditorProps } from '@grafana/data';
-import QueryDataSource from '../datasource/datasource';
-import { getCookie, getEnByName } from '../utils/utils';
-import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
-import { QueryData } from '../typings/datasource';
-import { QueryOption } from '../typings/config';
-export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 
+import { QueryEditorProps } from '@grafana/data';
+import Spin from 'antd/es/spin';
+import React from 'react';
+
+import QueryDataSource from '../datasource/datasource';
+import { QueryOption } from '../typings/config';
+import { QueryData } from '../typings/datasource';
+import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
+import { getCookie, getEnByName } from '../utils/utils';
+import AliasInput from './alias-input';
+import ConditionInput from './condition-input';
+import DataInput from './data-input';
+import DimensionInput from './dimension-input';
+import EditorForm from './editor-form';
+import IntervalInput from './interval-input';
+import QueryFormula from './query-formula';
+import TypeInput from './type-iput';
+
+export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 interface IQueryEditorState {
   loading: boolean;
   inited: boolean;
@@ -82,7 +84,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       },
     ] = query_configs;
     const typeId = `${data_source_label}|${data_type_label}` as MetricType;
-    const condition = where.length ? where :  ([{}] as any);
+    const condition = where.length ? where : ([{}] as any);
     if (condition[condition.length - 1]?.key) {
       condition.push({} as any);
     }
@@ -120,8 +122,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.props.onRunQuery();
   };
   handleGetQueryData() {
-    const { alias, typeId, dataId, dimension, metric, interval,
-      intervalUnit, method, condition, queryString } = this.state;
+    const { alias, typeId, dataId, dimension, metric, interval, intervalUnit, method, condition, queryString } =
+      this.state;
     const [data_source_label, data_type_label] = typeId.split('|');
     if (!dataId) return {};
     return {
@@ -263,45 +265,77 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const dimensionList = this.curData.dimensions;
     const metricList = this.curData.metrics;
     return (
-      <div className="monitor-event-grafana">
-        <Spin spinning={loading} tip="Loading...">
+      <div className='monitor-event-grafana'>
+        <Spin
+          spinning={loading}
+          tip='Loading...'
+        >
           {inited ? (
             <>
-              <div className="query-editor">
+              <div className='query-editor'>
                 <EditorForm title={getEnByName('类型', language)}>
-                  <TypeInput value={typeId} onChange={this.handeTypeIdChange} />
+                  <TypeInput
+                    value={typeId}
+                    onChange={this.handeTypeIdChange}
+                  />
                 </EditorForm>
-                <EditorForm title={getEnByName('数据名称', language)} labelStyle={{ minWidth: '108px' }}>
-                  <DataInput showId={true} value={dataId} list={dataList} onChange={this.handleDataIdChage} />
+                <EditorForm
+                  labelStyle={{ minWidth: '108px' }}
+                  title={getEnByName('数据名称', language)}
+                >
+                  <DataInput
+                    list={dataList}
+                    showId={true}
+                    value={dataId}
+                    onChange={this.handleDataIdChage}
+                  />
                 </EditorForm>
               </div>
               {dataId ? (
-                <div className="query-editor">
+                <div className='query-editor'>
                   <EditorForm
                     style={{ width: '100%' }}
-                    title={getEnByName('Query String', language)}
                     labelStyle={{ minWidth: '115px' }}
-                    tips="meta"
+                    tips='meta'
+                    title={getEnByName('Query String', language)}
                   >
                     <AliasInput
-                      value={queryString}
                       style={{ minWidth: '100%', flex: 1 }}
+                      value={queryString}
                       onChange={this.handleQueryStringChange}
                     />
                   </EditorForm>
                 </div>
               ) : undefined}
               {dataId ? (
-                <div className="query-editor">
-                  <EditorForm title={getEnByName('方法', language)} tips="formula" labelStyle={{ minWidth: '100px' }}>
-                    <QueryFormula value={method} typeId={typeId} onMethodChange={this.handleMethodChange} />
+                <div className='query-editor'>
+                  <EditorForm
+                    labelStyle={{ minWidth: '100px' }}
+                    tips='formula'
+                    title={getEnByName('方法', language)}
+                  >
+                    <QueryFormula
+                      typeId={typeId}
+                      value={method}
+                      onMethodChange={this.handleMethodChange}
+                    />
                   </EditorForm>
                   {method !== 'COUNT' && false ? (
-                    <EditorForm title={getEnByName('指标', language)} tips="metric">
-                      <DataInput value={metric} list={metricList} onChange={this.handleDataIdChage} />
+                    <EditorForm
+                      tips='metric'
+                      title={getEnByName('指标', language)}
+                    >
+                      <DataInput
+                        list={metricList}
+                        value={metric}
+                        onChange={this.handleDataIdChage}
+                      />
                     </EditorForm>
                   ) : undefined}
-                  <EditorForm title={getEnByName('周期', language)} tips="interval">
+                  <EditorForm
+                    tips='interval'
+                    title={getEnByName('周期', language)}
+                  >
                     <IntervalInput
                       interval={interval}
                       intervalUnit={intervalUnit}
@@ -309,7 +343,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onIntervalUnitChange={this.handleIntervalUnitChange}
                     />
                   </EditorForm>
-                  <EditorForm title={getEnByName('维度', language)} tips="tag" labelStyle={{ minWidth: '110px' }}>
+                  <EditorForm
+                    labelStyle={{ minWidth: '110px' }}
+                    tips='tag'
+                    title={getEnByName('维度', language)}
+                  >
                     <DimensionInput
                       dimension={dimension}
                       dimensionList={dimensionList}
@@ -319,19 +357,22 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <EditorForm title={getEnByName('条件', language)}>
                     <ConditionInput
                       condition={condition}
-                      getDimensionValue={this.getDimensionValue}
                       dimensionList={dimensionList}
+                      getDimensionValue={this.getDimensionValue}
                       onChange={this.handleConditionChange}
                     />
                   </EditorForm>
                   <EditorForm title={getEnByName('别名', language)}>
-                    <AliasInput value={alias} onChange={this.handleAliasChange} />
+                    <AliasInput
+                      value={alias}
+                      onChange={this.handleAliasChange}
+                    />
                   </EditorForm>
                 </div>
               ) : undefined}
             </>
           ) : (
-            <div className="inite-wrapper" />
+            <div className='inite-wrapper' />
           )}
         </Spin>
       </div>
