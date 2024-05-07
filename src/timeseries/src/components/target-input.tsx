@@ -56,6 +56,18 @@ interface ITargetInputState {
   searchValue: string;
 }
 export default class TargetInput extends React.PureComponent<ITargetInputProps, ITargetInputState> {
+  constructor(props, context) {
+    super(props, context);
+    this.state = {
+      allHostList: [],
+      clusterList: props.cluster,
+      hasGetCluster: false,
+      hostList: props.host,
+      loading: false,
+      moduleList: props.module,
+      searchValue: '',
+    };
+  }
   /**
    * @description: 集群变化时触发
    * @param {string} clusters
@@ -217,18 +229,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
       : [...host, item];
     this.handleHostChange(selectedHost.map(set => set.value));
   };
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      allHostList: [],
-      clusterList: props.cluster,
-      hasGetCluster: false,
-      hostList: props.host,
-      loading: false,
-      moduleList: props.module,
-      searchValue: '',
-    };
-  }
+
   render(): JSX.Element {
     const { clusterList, hostList, loading, moduleList, searchValue } = this.state;
     const { cluster, host, module, targetType } = this.props;
@@ -278,18 +279,18 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
             <ul className='select-list'>
               {hostList.map(item => (
                 <li
-                  className={`select-list-item ${host.some(set => set.value === item.value) ? 'active' : ''}`}
                   key={item.value}
+                  className={`select-list-item ${host.some(set => set.value === item.value) ? 'active' : ''}`}
                   onClick={() => this.handleSelectHost(item)}
                 >
                   {item.label}
                   {host.some(set => set.value === item.value) ? (
                     <span className='anticon-check'>
                       <svg
-                        fill='currentColor'
-                        height='1em'
-                        viewBox='64 64 896 896'
                         width='1em'
+                        height='1em'
+                        fill='currentColor'
+                        viewBox='64 64 896 896'
                       >
                         <path d='M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z'></path>
                       </svg>
@@ -315,12 +316,12 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               maxTagCount={3}
               maxTagPlaceholder={handleMaxTagPlaceholder}
               mode='multiple'
-              onChange={this.handleClusterChange}
-              onFocus={this.handleClusterFocus}
               optionFilterProp='label'
               options={clusterList}
               placeholder={getEnByName('集群', language)}
               value={clusterValue}
+              onChange={this.handleClusterChange}
+              onFocus={this.handleClusterFocus}
             >
               {/* {clusterList?.map(item => (
                 <Option value={item.value} key={item.value}>
@@ -329,19 +330,19 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               ))} */}
             </Select>
             <Select
+              style={{ marginRight: 0 }}
               className='target-input-module'
               dropdownClassName='target-input-cluster-dropdown'
               dropdownRender={menu => handleDropdownRender(menu, 'module')}
               maxTagCount={3}
               maxTagPlaceholder={handleMaxTagPlaceholder}
               mode='multiple'
-              onChange={this.handleModuleChange}
-              onFocus={this.handleModuleFocus}
               optionFilterProp='label'
               options={moduleList}
               placeholder={getEnByName('模块', language)}
-              style={{ marginRight: 0 }}
               value={moduleValue}
+              onChange={this.handleModuleChange}
+              onFocus={this.handleModuleFocus}
             >
               {moduleList?.map(item => (
                 <Option
@@ -353,25 +354,25 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               ))}
             </Select>
             <Select
+              style={{ marginRight: 0 }}
+              placeholder={
+                targetType === TARGET_TYPE.SERVICE_INSTANCE
+                  ? getEnByName('服务实例', language)
+                  : getEnByName('主机', language)
+              }
               className='target-input-host'
               dropdownClassName='target-input-cluster-dropdown'
               dropdownRender={menu => handleHostDropdownRender(menu, 'host')}
               maxTagCount={3}
               maxTagPlaceholder={handleMaxTagPlaceholder}
               mode='multiple'
+              options={hostList}
+              searchValue={searchValue}
+              value={hostValue}
               onChange={this.handleHostChange}
               onDropdownVisibleChange={this.handleHostDropdownVisibleChange}
               onFocus={this.handleHostFocus}
               onSearch={this.handleSearch}
-              options={hostList}
-              placeholder={
-                targetType === TARGET_TYPE.SERVICE_INSTANCE
-                  ? getEnByName('服务实例', language)
-                  : getEnByName('主机', language)
-              }
-              searchValue={searchValue}
-              style={{ marginRight: 0 }}
-              value={hostValue}
             ></Select>
           </div>
         )}

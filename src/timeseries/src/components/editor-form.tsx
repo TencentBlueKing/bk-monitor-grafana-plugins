@@ -48,12 +48,12 @@ export default class EditorForm extends React.PureComponent<IEditorFormProps, IE
       <LanguageContext.Consumer>
         {({ language }) => (
           <div
-            className='editor-form'
             style={style}
+            className='editor-form'
           >
             <span
-              className='editor-form-label'
               style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
+              className='editor-form-label'
             >
               {renderTitle ? renderTitle() : title}
               {tips && (
@@ -64,8 +64,8 @@ export default class EditorForm extends React.PureComponent<IEditorFormProps, IE
                   title={tips}
                 >
                   <i
-                    className='fa fa-info-circle label-tip'
                     style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
+                    className='fa fa-info-circle label-tip'
                   />
                 </Tooltip>
               )}

@@ -202,9 +202,9 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
     return (
       <div className='promql-editor'>
         <div
-          className='promql-editor-instance'
           ref={this.containerRef}
           style={this.props.style}
+          className='promql-editor-instance'
         ></div>
       </div>
     );
