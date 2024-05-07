@@ -23,15 +23,17 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
-import { QueryOption, SecureOption } from '../typings/config';
 import { LegacyForms, TagsInput } from '@grafana/ui';
+import React from 'react';
+
+import { QueryOption, SecureOption } from '../typings/config';
 import { getEnByName } from '../utils/utils';
 const { Input, FormField, Switch } = LegacyForms;
-export default class ConfigEditor extends React.PureComponent<DataSourcePluginOptionsEditorProps<QueryOption,
-SecureOption>,
-{useToken: boolean}> {
+export default class ConfigEditor extends React.PureComponent<
+  DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>,
+  { useToken: boolean }
+> {
   constructor(props) {
     super(props);
     this.state = {
@@ -47,7 +49,7 @@ SecureOption>,
       },
     });
   };
-  handleUseTokenChange = (e) => {
+  handleUseTokenChange = e => {
     const useToken = e.target.checked;
     this.setState({ useToken });
     this.props.onOptionsChange({
@@ -74,98 +76,115 @@ SecureOption>,
     };
     return (
       <>
-        <h3 className="page-heading">BlueKing Monitor API Details</h3>
-        <div className="gf-form-group">
-          <div className="gf-form" style={{ width: '100%' }}>
+        <h3 className='page-heading'>BlueKing Monitor API Details</h3>
+        <div className='gf-form-group'>
+          <div
+            style={{ width: '100%' }}
+            className='gf-form'
+          >
             <FormField
-              label="Base Url"
-              labelWidth={10}
               inputEl={
                 <Input
                   style={{ width: '500px' }}
                   defaultValue={options.jsonData.baseUrl}
-                  spellCheck={false}
                   placeholder={getEnByName('蓝鲸监控API路径')}
+                  spellCheck={false}
                   onBlur={e => this.handleChange('baseUrl', e)}
                 />
               }
+              label='Base Url'
+              labelWidth={10}
               tooltip={getEnByName('蓝鲸监控API路径')}
             />
           </div>
-          <div className="gf-form" style={{ width: '100%' }}>
+          <div
+            style={{ width: '100%' }}
+            className='gf-form'
+          >
             <FormField
-              label={getEnByName('是否启用token')}
-              labelWidth={10}
               inputEl={
                 <Switch
-                  label=""
                   checked={this.state.useToken}
+                  label=''
                   onChange={this.handleUseTokenChange}
                 />
               }
+              label={getEnByName('是否启用token')}
+              labelWidth={10}
               tooltip={getEnByName('是否启用token')}
             />
           </div>
-          {
-            this.state.useToken && <>
-              <div className="gf-form">
+          {this.state.useToken && (
+            <>
+              <div className='gf-form'>
                 <FormField
-                  label="Allowed cookies"
-                  labelWidth={10}
                   inputEl={
                     <TagsInput
                       {...tagProps}
-                      tags={options.jsonData.keepCookies}
                       width={500}
+                      tags={options.jsonData.keepCookies}
                       // style={{ width: '500px' }}
-                      onChange={cookies => onOptionsChange({
-                        ...this.props.options,
-                        jsonData: {
-                          ...this.props.options.jsonData,
-                          keepCookies: cookies,
-                        },
-                      })
+                      onChange={cookies =>
+                        onOptionsChange({
+                          ...this.props.options,
+                          jsonData: {
+                            ...this.props.options.jsonData,
+                            keepCookies: cookies,
+                          },
+                        })
                       }
                     />
                   }
+                  label='Allowed cookies'
+                  labelWidth={10}
                   tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
                 />
               </div>
-              <div className="gf-form" style={{ width: '100%' }}>
+              <div
+                style={{ width: '100%' }}
+                className='gf-form'
+              >
                 <FormField
-                  label="业务ID"
-                  labelWidth={10}
                   inputEl={
                     <Input
                       style={{ width: '500px' }}
                       defaultValue={options.jsonData.bizId}
-                      spellCheck={false}
                       placeholder={getEnByName('蓝鲸监控业务ID')}
+                      spellCheck={false}
                       onBlur={e => this.handleChange('bizId', e)}
                     />
                   }
+                  label='业务ID'
+                  labelWidth={10}
                   tooltip={getEnByName('蓝鲸监控业务ID')}
                 />
               </div>
-              <div className="gf-form" style={{ width: '100%' }}>
+              <div
+                style={{ width: '100%' }}
+                className='gf-form'
+              >
                 <FormField
-                  label="Token"
-                  labelWidth={10}
                   inputEl={
                     <Input
-                      type='password'
                       style={{ width: '500px' }}
+                      placeholder={
+                        options.secureJsonFields?.token
+                          ? getEnByName('已设置免登入Token')
+                          : getEnByName('蓝鲸监控当前业务免登入Token')
+                      }
                       defaultValue={options.secureJsonData?.token ?? ''}
                       spellCheck={false}
-                      placeholder={options.secureJsonFields?.token ? getEnByName('已设置免登入Token') : getEnByName('蓝鲸监控当前业务免登入Token')}
+                      type='password'
                       onBlur={this.handleTokenChange}
                     />
                   }
+                  label='Token'
+                  labelWidth={10}
                   tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
                 />
               </div>
             </>
-          }
+          )}
         </div>
       </>
     );

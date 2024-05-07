@@ -25,16 +25,16 @@
  */
 class ApiCache {
   public cacheMap: Map<string, any> = new Map();
+  // 获取缓存
+  public getCache(key: string) {
+    return this.cacheMap.get(key);
+  }
   // 设置api缓存
   public setCache(key: string, data: any) {
     this.cacheMap.set(key, data);
     setTimeout(() => {
       this.cacheMap.delete(key);
     }, 20000);
-  }
-  // 获取缓存
-  public getCache(key: string) {
-    return this.cacheMap.get(key);
   }
 }
 
