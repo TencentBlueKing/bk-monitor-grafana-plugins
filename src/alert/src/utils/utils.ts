@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import enData from '../lang/en.json';
 
 /**
@@ -35,7 +35,6 @@ export const random = (n: number, str = 'abcdefghijklmnopqrstuvwxyz0123456789'):
   // 生成n位长度的字符串
   let result = '';
   for (let i = 0; i < n; i++) {
-    // eslint-disable-next-line radix
     result += str[parseInt(String(Math.random() * str.length))];
   }
   return result;
@@ -45,7 +44,7 @@ export const random = (n: number, str = 'abcdefghijklmnopqrstuvwxyz0123456789'):
  * @param {string} name cookie名称
  * @return {*}
  */
-export const getCookie = (name: string): string | null => {
+export const getCookie = (name: string): null | string => {
   const reg = new RegExp(`(^|)${name}=([^;]*)(;|$)`);
   const data = document.cookie.match(reg);
   if (data) {
@@ -113,12 +112,15 @@ export const createMetricTitleTooltips = (metricData: any) => {
   const relatedId = data.related_id;
   if (resultTableLabel === 'uptimecheck' && !relatedId) {
     const list = elList.bk_monitor_time_series;
-    elList.bk_monitor_time_series = list.filter(item => item.label !== getEnByName('插件ID') && item.label !== getEnByName('插件名'));
+    elList.bk_monitor_time_series = list.filter(
+      item => item.label !== getEnByName('插件ID') && item.label !== getEnByName('插件名'),
+    );
   }
   const curElList = (elList as any)[curActive] || [...options];
-  let content = curActive === 'bk_log_search_time_series'
-    ? `<div class="popover-metric-title">${[data.related_name, data.metric_field].filter(Boolean).join('.')}</div>\n`
-    : `<div class="popover-metric-title">${[data.result_table_id, data.metric_field].filter(Boolean).join('.')}</div>\n`;
+  let content =
+    curActive === 'bk_log_search_time_series'
+      ? `<div class="popover-metric-title">${[data.related_name, data.metric_field].filter(Boolean).join('.')}</div>\n`
+      : `<div class="popover-metric-title">${[data.result_table_id, data.metric_field].filter(Boolean).join('.')}</div>\n`;
   if (data.collect_config) {
     const collectorConfig = data.collect_config
       .split(';')
@@ -128,10 +130,10 @@ export const createMetricTitleTooltips = (metricData: any) => {
   }
 
   if (data.metric_field === data.metric_field_name) {
-    const index = curElList.indexOf((item: { label: string; }) => item.label === getEnByName('指标别名'));
+    const index = curElList.indexOf((item: { label: string }) => item.label === getEnByName('指标别名'));
     curElList.splice(index, 1);
   }
-  curElList.forEach((item: { label: any; val: any; }) => {
+  curElList.forEach((item: { label: any; val: any }) => {
     content += `<div class="popover-metric-item"><div>${item.label}：${item.val || '--'}</div></div>\n`;
   });
   content += `<div class="popover-metric-item"><div>${getEnByName('单位')}：${metricData.unit || '--'}</div></div>\n`;

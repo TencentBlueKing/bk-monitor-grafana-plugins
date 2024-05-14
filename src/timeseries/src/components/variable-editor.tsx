@@ -26,7 +26,6 @@
  */
 import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import Datasource from '../datasource/datasource';
@@ -61,6 +60,60 @@ interface IVariableEditorState {
 }
 const language = getCookie('blueking_language');
 export default class VariableQueryEditor extends React.PureComponent<IVariableEditorProps, IVariableEditorState> {
+  // k8s列表
+  k8sTypes: { label: string; value: string }[] = [
+    { label: K8sVariableQueryType.Cluster, value: K8sVariableQueryType.Cluster },
+    { label: K8sVariableQueryType.Container, value: K8sVariableQueryType.Container },
+    { label: K8sVariableQueryType.Namespace, value: K8sVariableQueryType.Namespace },
+    { label: K8sVariableQueryType.Node, value: K8sVariableQueryType.Node },
+    { label: K8sVariableQueryType.Pod, value: K8sVariableQueryType.Pod },
+    { label: K8sVariableQueryType.Service, value: K8sVariableQueryType.Service },
+  ];
+  // 主机列表
+  queryTypes: { label: string; value: string }[] = [
+    { label: getEnByName('主机', language), value: VariableQueryType.Host },
+    { label: getEnByName('模块', language), value: VariableQueryType.Module },
+    { label: getEnByName('集群', language), value: VariableQueryType.Set },
+    { label: getEnByName('服务实例', language), value: VariableQueryType.ServiceInstance },
+    { label: getEnByName('维度', language), value: VariableQueryType.Dimension },
+    { label: 'prometheus', value: VariableQueryType.Promql },
+  ];
+  // 场景列表
+  scenarioList: { label: string; value: string }[] = [
+    { label: getEnByName('主机监控', language), value: ScenarioType.OS },
+    { label: getEnByName('Kubernetes', language), value: ScenarioType.Kubernetes },
+  ];
+  constructor(props) {
+    super(props);
+    let { query } = props;
+    if (query?.conditions || query?.dimensionData) {
+      query = handleTransformOldVariableQuery(query);
+    }
+    const { promql = '', queryType = VariableQueryType.Host, scenario, showField, valueField, where } = query;
+    const condition = (where?.length ? where : [{} as any]).slice();
+    if (condition[condition.length - 1]?.key) {
+      condition.push({} as any);
+    }
+    const isPromql = queryType === VariableQueryType.Promql;
+    // if (!isPromql) {
+    //   this.queryTypes = this.queryTypes.filter(item => item.value !== VariableQueryType.Promql);
+    // }
+    this.state = {
+      condition,
+      editorStatus: 'default',
+      fieldList: [],
+      language,
+      loading: !isPromql,
+      metricDetail: {} as any,
+      promql,
+      queryType: queryType || VariableQueryType.Host,
+      // 场景 默认 os
+      scenario: scenario || ScenarioType.OS,
+      showField,
+      valueField,
+    };
+    this.initstate(query);
+  }
   handleConditionChange = async (condition: IConditionItem[], needQuery = true) => {
     this.setState(
       {
@@ -157,60 +210,6 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       this.state.showField ? this.handleQuery : undefined,
     );
   };
-  // k8s列表
-  k8sTypes: { label: string; value: string }[] = [
-    { label: K8sVariableQueryType.Cluster, value: K8sVariableQueryType.Cluster },
-    { label: K8sVariableQueryType.Container, value: K8sVariableQueryType.Container },
-    { label: K8sVariableQueryType.Namespace, value: K8sVariableQueryType.Namespace },
-    { label: K8sVariableQueryType.Node, value: K8sVariableQueryType.Node },
-    { label: K8sVariableQueryType.Pod, value: K8sVariableQueryType.Pod },
-    { label: K8sVariableQueryType.Service, value: K8sVariableQueryType.Service },
-  ];
-  // 主机列表
-  queryTypes: { label: string; value: string }[] = [
-    { label: getEnByName('主机', language), value: VariableQueryType.Host },
-    { label: getEnByName('模块', language), value: VariableQueryType.Module },
-    { label: getEnByName('集群', language), value: VariableQueryType.Set },
-    { label: getEnByName('服务实例', language), value: VariableQueryType.ServiceInstance },
-    { label: getEnByName('维度', language), value: VariableQueryType.Dimension },
-    { label: 'prometheus', value: VariableQueryType.Promql },
-  ];
-  // 场景列表
-  scenarioList: { label: string; value: string }[] = [
-    { label: getEnByName('主机监控', language), value: ScenarioType.OS },
-    { label: getEnByName('Kubernetes', language), value: ScenarioType.Kubernetes },
-  ];
-  constructor(props) {
-    super(props);
-    let { query } = props;
-    if (query?.conditions || query?.dimensionData) {
-      query = handleTransformOldVariableQuery(query);
-    }
-    const { promql = '', queryType = VariableQueryType.Host, scenario, showField, valueField, where } = query;
-    const condition = (where?.length ? where : [{} as any]).slice();
-    if (condition[condition.length - 1]?.key) {
-      condition.push({} as any);
-    }
-    const isPromql = queryType === VariableQueryType.Promql;
-    // if (!isPromql) {
-    //   this.queryTypes = this.queryTypes.filter(item => item.value !== VariableQueryType.Promql);
-    // }
-    this.state = {
-      condition,
-      editorStatus: 'default',
-      fieldList: [],
-      language,
-      loading: !isPromql,
-      metricDetail: {} as any,
-      promql,
-      queryType: queryType || VariableQueryType.Host,
-      // 场景 默认 os
-      scenario: scenario || ScenarioType.OS,
-      showField,
-      valueField,
-    };
-    this.initstate(query);
-  }
   handleDeleteMetric() {
     this.setState(
       {
@@ -377,8 +376,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             <VariableLine title={getEnByName('类型', language)}>
               <Select
                 className='common-select'
-                onChange={v => this.handleQueryTypeChange(v)}
                 value={queryType}
+                onChange={v => this.handleQueryTypeChange(v)}
               >
                 {(scenario === ScenarioType.Kubernetes ? this.k8sTypes : this.queryTypes).map(item => (
                   <Select.Option
@@ -393,11 +392,11 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             {queryType === VariableQueryType.Promql ? (
               <div>
                 <PromqlEditor
-                  executeQuery={this.handleSourceBlur}
-                  onBlur={this.handleSourceBlur}
                   style={{ borderColor: editorStatus === 'error' ? '#ea3636' : '#dcdee5', minHeight: '120px' }}
+                  executeQuery={this.handleSourceBlur}
                   value={promql}
                   verifiy={false}
+                  onBlur={this.handleSourceBlur}
                 />
               </div>
             ) : (
@@ -407,11 +406,11 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                     <VariableLine title={getEnByName('展示字段', language)}>
                       <Select
                         className='common-select'
-                        onChange={this.handleShowFieldChange}
                         optionFilterProp={'children'}
                         placeholder={getEnByName('请选择展示字段', language)}
-                        showSearch
                         value={showField}
+                        showSearch
+                        onChange={this.handleShowFieldChange}
                       >
                         {fieldList.map(item => (
                           <Select.Option
@@ -426,11 +425,11 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                     <VariableLine title={getEnByName('值字段', language)}>
                       <Select
                         className='common-select'
-                        onChange={this.handleValueFieldChange}
                         optionFilterProp={'children'}
                         placeholder={getEnByName('请选择值字段', language)}
-                        showSearch
                         value={valueField}
+                        showSearch
+                        onChange={this.handleValueFieldChange}
                       >
                         {fieldList.map(item => (
                           <Select.Option
@@ -463,8 +462,8 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                         <VariableLine title={getEnByName('维度', language)}>
                           <DimensionInput
                             metric={metricDetail}
-                            onDimensionChange={this.handleDimensionChange}
                             variableQuery={true}
+                            onDimensionChange={this.handleDimensionChange}
                           />
                         </VariableLine>
                         <VariableLine title={getEnByName('条件', language)}>

@@ -27,7 +27,6 @@
 import CloseOutlined from '@ant-design/icons/CloseOutlined';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import { MetricDetail } from '../typings/metric';
@@ -44,6 +43,12 @@ interface IDimensionInputState {
 }
 
 export default class DimensionInput extends React.PureComponent<IDimensionInputProps, IDimensionInputState> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+    };
+  }
   onDimensionBlur = (): void => {
     this.setState({
       open: false,
@@ -54,12 +59,6 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
       open: true,
     });
   };
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false,
-    };
-  }
   render(): JSX.Element {
     const {
       metric: { agg_dimension, dimensions },
@@ -72,11 +71,6 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
       <LanguageContext.Consumer>
         {({ language }) => (
           <Select
-            className='dimension-input'
-            open={this.state.open}
-            placeholder={getEnByName('维度', language)}
-            showArrow={false}
-            showSearch
             tagRender={(item): JSX.Element => (
               <Tooltip
                 placement='top'
@@ -93,11 +87,16 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
                 </span>
               </Tooltip>
             )}
+            className='dimension-input'
+            open={this.state.open}
+            placeholder={getEnByName('维度', language)}
+            showArrow={false}
+            showSearch
             {...selectProps}
+            value={agg_dimension}
             onBlur={this.onDimensionBlur}
             onChange={onDimensionChange}
             onFocus={this.onDimensionFocus}
-            value={agg_dimension}
           >
             {dimensions?.map(item => (
               <Option

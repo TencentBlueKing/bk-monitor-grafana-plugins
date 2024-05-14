@@ -23,8 +23,8 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
 import Select from 'antd/es/select';
+import React from 'react';
 import { ICommonItem } from 'typings/metric';
 const { Option } = Select;
 export interface IDataInputProps {
@@ -38,13 +38,18 @@ export default class DataInput extends React.PureComponent<IDataInputProps> {
     return (
       <div>
         <Select
-          className="type-input"
+          className='type-input'
+          dropdownClassName={'monitor-data-input-dropdown'}
           value={this.props.value}
           onChange={this.props.onChange}
-          dropdownClassName={'monitor-data-input-dropdown'}>
+        >
           {this.props.list.map(item => (
-            <Option key={item.id} value={item.id}>
-              {item.name}{this.props.showId && <span className="mark-text">（#{item.bk_data_id}）</span>}
+            <Option
+              key={item.id}
+              value={item.id}
+            >
+              {item.name}
+              {this.props.showId && <span className='mark-text'>（#{item.bk_data_id}）</span>}
             </Option>
           ))}
         </Select>

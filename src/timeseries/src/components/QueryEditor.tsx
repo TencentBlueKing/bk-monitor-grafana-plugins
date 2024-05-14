@@ -48,11 +48,11 @@ export function QueryEditor({ onChange, onRunQuery, query }: Props) {
     <div className='gf-form'>
       <InlineField label='Constant'>
         <Input
-          onChange={onConstantChange}
+          width={8}
           step='0.1'
           type='number'
           value={constant}
-          width={8}
+          onChange={onConstantChange}
         />
       </InlineField>
       <InlineField
@@ -61,8 +61,8 @@ export function QueryEditor({ onChange, onRunQuery, query }: Props) {
         tooltip='Not used yet'
       >
         <Input
-          onChange={onQueryTextChange}
           value={queryText || ''}
+          onChange={onQueryTextChange}
         />
       </InlineField>
     </div>

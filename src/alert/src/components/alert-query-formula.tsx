@@ -23,9 +23,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import { METHOD_LIST } from '../typings/metric';
 import Select from 'antd/es/select';
+import React from 'react';
+
+import { METHOD_LIST } from '../typings/metric';
 const { Option } = Select;
 export interface IQueryFormulaProps {
   agg_method: string;
@@ -36,12 +37,17 @@ export default class AlertQueryFormula extends React.PureComponent<IQueryFormula
   render(): JSX.Element {
     const { agg_method, onMethodChange } = this.props;
     return (
-      <Select className="query-formula"
-        dropdownMatchSelectWidth={false}
+      <Select
+        className='query-formula'
         defaultValue={agg_method}
-        onChange={onMethodChange}>
+        dropdownMatchSelectWidth={false}
+        onChange={onMethodChange}
+      >
         {METHOD_LIST.filter(item => item.id === 'COUNT')?.map(item => (
-          <Option value={item.id} key={item.id}>
+          <Option
+            key={item.id}
+            value={item.id}
+          >
             {item.name}
           </Option>
         ))}

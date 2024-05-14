@@ -28,7 +28,6 @@ import Dropdown from 'antd/es/dropdown';
 import InputNumber from 'antd/es/input-number';
 import Menu from 'antd/es/menu';
 import Select from 'antd/es/select';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import { IntervalType, MetricDetail } from '../typings/metric';
@@ -84,9 +83,9 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
             <InputNumber
               className='interval-select'
               min={agg_interval_unit === 's' ? 10 : 1}
-              onBlur={this.handlePeriodBlur}
               precision={0}
               value={agg_interval as number}
+              onBlur={this.handlePeriodBlur}
             />
           </div>
         </Dropdown>
@@ -95,8 +94,8 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
           defaultValue={agg_interval_unit}
           disabled={agg_interval === 'auto'}
           dropdownMatchSelectWidth={80}
-          onChange={onIntervalUnitChange}
           showArrow={false}
+          onChange={onIntervalUnitChange}
         >
           {agg_interval_unit_list?.map(item => (
             <Option

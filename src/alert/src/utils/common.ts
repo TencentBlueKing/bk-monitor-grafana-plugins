@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,8 +23,6 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable import/prefer-default-export */
-import { QueryData } from '../typings/datasource';
 import { VariableQuery } from '../typings/variable';
 /**
  * @description: 转换旧版本查询
@@ -41,7 +38,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
   let metricConfig: any = {};
   if (data.dimensionData) {
     const { metric, conditions, dimensions, monitorObject } = data.dimensionData;
-    const [dataSourceTypeLabel,, resultTableId, metricField] = metric?.id;
+    const [dataSourceTypeLabel, , resultTableId, metricField] = metric?.id;
     const dataSourceLabel = dataSourceTypeLabel?.replace(/(_|\.)(log|event|time_series)$/, '') || '';
     metricConfig = {
       data_source_label: dataSourceLabel,
@@ -49,10 +46,12 @@ export const handleTransformOldVariableQuery = (data: any) => {
       result_table_label: monitorObject?.id,
       result_table_id: resultTableId,
       metric_field: metricField,
-      where: conditions?.map(item => item.reduce((pre, cur) => {
-        pre[cur.type] = cur.value;
-        return pre;
-      }, {})),
+      where: conditions?.map(item =>
+        item.reduce((pre, cur) => {
+          pre[cur.type] = cur.value;
+          return pre;
+        }, {}),
+      ),
       group_by: typeof dimensions === 'string' ? [dimensions] : dimensions,
     };
   }
@@ -61,10 +60,12 @@ export const handleTransformOldVariableQuery = (data: any) => {
     showField: data.showField,
     valueField: data.valueField,
     where:
-      data.conditions?.map?.(item => item.reduce((pre, cur) => {
-        pre[cur.type] = cur.value;
-        return pre;
-      }, {})) || [],
+      data.conditions?.map?.(item =>
+        item.reduce((pre, cur) => {
+          pre[cur.type] = cur.value;
+          return pre;
+        }, {}),
+      ) || [],
     variables: data.variables,
     metricConfig,
   };
@@ -79,7 +80,7 @@ export const handleTransformOldTarget = (data: any) => {
   // 最早期版本
   if (data.target) {
     let host = [];
-    host = data.target?.realValues?.map?.((set) => {
+    host = data.target?.realValues?.map?.(set => {
       if (data.monitorObject.groupId === 'hosts') {
         const idList = set.split('-');
         return {
@@ -121,7 +122,7 @@ export const handleTransformOldTarget = (data: any) => {
  * @return {*}
  */
 export const handleTransformOldFunc = (data: any) => {
-  const funcList = [];
+  const funcList: Array<Promise<any>> = [];
   if (data.func?.rank?.sort) {
     funcList.push({
       id: data.func.rank.sort === 'desc' ? 'top' : 'bottom',

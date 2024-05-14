@@ -37,7 +37,6 @@ import Spin from 'antd/es/spin';
 import Tabs from 'antd/es/tabs';
 import Tooltip from 'antd/es/tooltip';
 import DashboardDatasource from 'datasource/datasource';
-/* eslint-disable camelcase */
 import React from 'react';
 
 import { IMetric, MetricDetail } from '../typings/metric';
@@ -95,6 +94,33 @@ interface IQueryState {
 
 export default class MonitorQueryEditor extends React.PureComponent<IQueryProps, IQueryState> {
   containerRef: any = null;
+  inputRef: any = null;
+
+  constructor(props, context) {
+    super(props, context);
+    this.containerRef = React.createRef();
+    this.inputRef = React.createRef();
+    this.state = {
+      dataSourceList: [],
+      datasourceLabel: [],
+      focusIndex: -1,
+      isArrowKeySet: false,
+      keyword: '',
+      loading: false,
+      metricList: [],
+      moreLoading: false,
+      open: false,
+      page: 1,
+      pageSize: 20,
+      refleshMetric: false,
+      resultTableLabel: [],
+      scenarioList: [],
+      tag: null,
+      tagList: [],
+      timer: null,
+      total: 0,
+    };
+  }
   displayRender = (): JSX.Element => {
     const { data_label, metric_field, metric_field_name, result_table_id, result_table_label_name, result_table_name } =
       this.props.metric!;
@@ -443,33 +469,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     }
     this.setState({ open: v });
   };
-  inputRef: any = null;
 
-  constructor(props, context) {
-    super(props, context);
-    this.containerRef = React.createRef();
-    this.inputRef = React.createRef();
-    this.state = {
-      dataSourceList: [],
-      datasourceLabel: [],
-      focusIndex: -1,
-      isArrowKeySet: false,
-      keyword: '',
-      loading: false,
-      metricList: [],
-      moreLoading: false,
-      open: false,
-      page: 1,
-      pageSize: 20,
-      refleshMetric: false,
-      resultTableLabel: [],
-      scenarioList: [],
-      tag: null,
-      tagList: [],
-      timer: null,
-      total: 0,
-    };
-  }
   componentDidMount(): void {
     document.addEventListener('mousemove', this.handleMouseMove);
   }
@@ -497,13 +497,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       <div className='metric-dropdown'>
         <div className='metric-dropdown-input'>
           <Input
+            ref={this.inputRef}
             allowClear={true}
             autoFocus={true}
+            placeholder={getEnByName('搜索指标')}
+            value={keyword}
             onChange={this.handleSearch}
             onFocus={this.handInputFocus}
-            placeholder={getEnByName('搜索指标')}
-            ref={this.inputRef}
-            value={keyword}
           />
           <span
             className={`reflesh-icon ${this.state.refleshMetric ? 'reflesh-pendding' : ''}`}
@@ -534,32 +534,32 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         >
           <div className='metric-dropdown-content'>
             <ul
-              className='content-list'
-              onScroll={this.handleScoll}
               ref={this.containerRef}
+              className='content-list'
               tabIndex={-1}
+              onScroll={this.handleScoll}
             >
               {metricList.map((metric, i) => (
                 <Tooltip
                   key={i}
-                  mouseEnterDelay={isArrowKeySet ? 99999999 : 1}
-                  placement='right'
                   title={
                     !!metric?.metric_field ? (
                       <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(metric) }} />
                     ) : undefined
                   }
+                  mouseEnterDelay={isArrowKeySet ? 99999999 : 1}
+                  placement='right'
                 >
                   <div
+                    id={`${metric.metric_id}_${i}`}
+                    key={`${metric.metric_id}_${i}`}
                     className={`metric-item ${focusIndex === i ? 'focus-item' : ''} ${
                       isArrowKeySet ? 'is-arrow' : ''
                     } ${metric.metric_id === this.props.metric?.metric_id ? 'is-checked' : ''}`}
-                    id={`${metric.metric_id}_${i}`}
-                    key={`${metric.metric_id}_${i}`}
+                    tabIndex={-1}
                     onClick={e => this.handleMetricChange(e, metric)}
                     onMouseEnter={e => this.handleShowTool(e, metric, i)}
                     onMouseLeave={() => this.handleHideTool(metric)}
-                    tabIndex={-1}
                   >
                     <div className='metric-item-title'>
                       <span
@@ -575,15 +575,15 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                       {this.props.mode !== MetricInputMode.COPY && (
                         <Tooltip title={getEnByName('复制指标名')}>
                           <span
+                            style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
                             className='copy-icon'
                             onClick={e => this.handleCopyMetric(metric, e)}
-                            style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
                           >
                             <svg
+                              width='200'
                               height='200'
                               version='1.1'
                               viewBox='0 0 1024 1024'
-                              width='200'
                               xmlns='http://www.w3.org/2000/svg'
                             >
                               <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
@@ -600,10 +600,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 <div className='empty-content'>
                   <div className='empty-content-icon'>
                     <svg
-                      className='ant-empty-img-simple'
-                      height='41'
-                      viewBox='0 0 64 41'
                       width='64'
+                      height='41'
+                      className='ant-empty-img-simple'
+                      viewBox='0 0 64 41'
                       xmlns='http://www.w3.org/2000/svg'
                     >
                       <g
@@ -648,13 +648,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               {showAllTotal && <div className='all-data'>{getEnByName('已加载全部数据')}</div>}
               {this.state.moreLoading && (
                 <Spin
-                  className='more-loading'
                   indicator={
                     <LoadingOutlined
-                      spin
                       style={{ fontSize: 20 }}
+                      spin
                     />
                   }
+                  className='more-loading'
                 ></Spin>
               )}
             </ul>
@@ -678,13 +678,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         <ul className='content-tag-list'>
           {list.map(item => (
             <Checkbox
+              key={item.id}
               checked={
                 dataType === 'datasource'
                   ? datasourceLabel.some(set => set.id === item.id)
                   : resultTableLabel.includes(item.id)
               }
               className='list-item'
-              key={item.id}
               onChange={e => this.handleCheckChange(e, dataType, item)}
             >
               {item.name}
@@ -742,11 +742,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
             <Popover
               content={this.contentRender()}
               getPopupContainer={() => document.querySelector('.dashboard-settings') || document.body}
-              onVisibleChange={this.handleVisibleChange}
               overlayClassName='mitric-input-popover'
               placement='bottomLeft'
               trigger='click'
               visible={this.state.open}
+              onVisibleChange={this.handleVisibleChange}
             >
               {this.props.mode === MetricInputMode.COPY ? (
                 <div className='copy-mode-input'>
@@ -755,16 +755,16 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 </div>
               ) : (
                 <div
-                  onClick={this.handShowContent}
                   style={{ flex: 1 }}
+                  onClick={this.handShowContent}
                 >
                   <Tooltip
-                    placement='right'
                     title={
                       !!this.props.metric?.metric_field ? (
                         <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(this.props.metric) }} />
                       ) : undefined
                     }
+                    placement='right'
                   >
                     <span className='mitric-input-name'>
                       {needPlaceholder ? getEnByName('选择指标') : this.displayRender()}
@@ -774,9 +774,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               )}
             </Popover>
             <CloseCircleFilled
+              style={{ display: needPlaceholder ? 'none' : 'flex' }}
               className='anticon ant-cascader-picker-clear'
               onClick={this.handleClear}
-              style={{ display: needPlaceholder ? 'none' : 'flex' }}
             />
           </div>
         )}

@@ -36,19 +36,19 @@ export interface IQueryFormulaProps {
 export default class Formula extends React.PureComponent<IQueryFormulaProps> {
   render(): JSX.Element {
     const { metric, onMethodChange } = this.props;
-    // eslint-disable-next-line max-len
+
     const getMaxWidth = (list: ICommonItem[]) =>
       Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
     return (
       <Select
-        className='query-formula'
-        defaultValue={metric.agg_method}
-        dropdownMatchSelectWidth={false}
         dropdownStyle={{
           display: metric.aggMethodList?.length < 1 ? 'none' : '',
           minWidth: `${getMaxWidth(metric.aggMethodList as any)}px`,
           width: `${getMaxWidth(metric.aggMethodList as any)}px`,
         }}
+        className='query-formula'
+        defaultValue={metric.agg_method}
+        dropdownMatchSelectWidth={false}
         onChange={onMethodChange}
       >
         {metric.aggMethodList?.map(item => (

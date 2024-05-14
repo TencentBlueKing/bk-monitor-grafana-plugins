@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,13 +23,14 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
-import React from 'react';
-import { INTERVAL_LIST, INTERVAL_UNIT_LIST } from '../typings/metric';
-import InputNumber from 'antd/es/input-number';
+
 import Dropdown from 'antd/es/dropdown';
+import InputNumber from 'antd/es/input-number';
 import Menu from 'antd/es/menu';
 import Select from 'antd/es/select';
+import React from 'react';
+
+import { INTERVAL_LIST, INTERVAL_UNIT_LIST } from '../typings/metric';
 const { Option } = Select;
 const { Item } = Menu;
 export interface IIntervalInputProps {
@@ -50,18 +50,24 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
     const menuList = (
       <Menu selectedKeys={[String(interval)]}>
         {INTERVAL_LIST?.filter?.(item => (intervalUnit === 's' ? item.id >= 10 : item.id))?.map(item => (
-          <Item key={item.id} onClick={() => interval !== item.id && onIntervalChange(item.id)}>
+          <Item
+            key={item.id}
+            onClick={() => interval !== item.id && onIntervalChange(item.id)}
+          >
             {item.name}
           </Item>
         ))}
       </Menu>
     );
     return (
-      <div className="interval-input">
-        <Dropdown overlay={menuList} trigger={['click']}>
+      <div className='interval-input'>
+        <Dropdown
+          overlay={menuList}
+          trigger={['click']}
+        >
           <div style={{ position: 'relative' }}>
             <InputNumber
-              className="interval-select"
+              className='interval-select'
               min={intervalUnit === 's' ? 10 : 1}
               precision={0}
               value={interval}
@@ -70,14 +76,17 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
           </div>
         </Dropdown>
         <Select
-          className="interval-unit"
-          showArrow={false}
+          className='interval-unit'
           defaultValue={intervalUnit}
-          onChange={onIntervalUnitChange}
           dropdownMatchSelectWidth={80}
+          showArrow={false}
+          onChange={onIntervalUnitChange}
         >
           {INTERVAL_UNIT_LIST?.map(item => (
-            <Option value={item.id} key={item.id}>
+            <Option
+              key={item.id}
+              value={item.id}
+            >
               {item.name}
             </Option>
           ))}

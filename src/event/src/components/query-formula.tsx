@@ -23,23 +23,31 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import React from 'react';
-import { METHOD_LIST, MetricType } from '../typings/metric';
 import Select from 'antd/es/select';
+import React from 'react';
+
+import { METHOD_LIST, MetricType } from '../typings/metric';
 const { Option } = Select;
 export interface IQueryFormulaProps {
   onMethodChange: (v: string) => void;
   value: string;
-  typeId: MetricType
+  typeId: MetricType;
 }
 
 export default class Formula extends React.PureComponent<IQueryFormulaProps> {
   render(): JSX.Element {
     const { onMethodChange, value, typeId } = this.props;
     return (
-      <Select className="query-formula" value={value} onChange={onMethodChange}>
+      <Select
+        className='query-formula'
+        value={value}
+        onChange={onMethodChange}
+      >
         {METHOD_LIST.filter(item => (typeId === 'custom|event' ? item.id === 'COUNT' : true)).map(item => (
-          <Option value={item.id} key={item.id}>
+          <Option
+            key={item.id}
+            value={item.id}
+          >
             {item.name}
           </Option>
         ))}

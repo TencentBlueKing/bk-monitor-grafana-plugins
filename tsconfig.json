@@ -4,7 +4,7 @@
     "declaration": false,
     "rootDir": "./src",
     "baseUrl": "./src",
-    "typeRoots": ["../node_modules/@types"],
+    "typeRoots": ["./node_modules/@types"],
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "jsx": "react",

@@ -24,13 +24,14 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable camelcase */
-import React from 'react';
-import { INTERVAL_LIST, ALERT_INTERVAL_UNIT_LIST, IntervalType } from '../typings/metric';
-import InputNumber from 'antd/es/input-number';
+
 import Dropdown from 'antd/es/dropdown';
+import InputNumber from 'antd/es/input-number';
 import Menu from 'antd/es/menu';
 import Select from 'antd/es/select';
+import React from 'react';
+
+import { INTERVAL_LIST, ALERT_INTERVAL_UNIT_LIST, IntervalType } from '../typings/metric';
 const { Option } = Select;
 const { Item } = Menu;
 export interface IIntervalInputProps {
@@ -42,41 +43,41 @@ export interface IIntervalInputProps {
 
 export default class IntervalInput extends React.PureComponent<IIntervalInputProps> {
   handlePeriodBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    let value: string | number = 10;
+    let value: number | string = 10;
     if (typeof e.target.value === 'number' || /^[0-9]+$/.test(e.target.value)) {
       value = +e.target.value;
     } else if (typeof e.target.value === 'string') {
       if (/^\$/.test(e.target.value)) {
         value = e.target.value;
       } else {
-        value =  'auto';
+        value = 'auto';
       }
     }
     this.props.agg_interval !== value && this.props.onIntervalChange(value);
   };
   render(): JSX.Element {
-    const {
-      onIntervalChange,
-      onIntervalUnitChange,
-      agg_interval,
-      agg_interval_unit,
-    } = this.props;
+    const { onIntervalChange, onIntervalUnitChange, agg_interval, agg_interval_unit } = this.props;
     const menuList = (
       <Menu selectedKeys={[String(agg_interval)]}>
-        {INTERVAL_LIST
-          .map(item => (
-            <Item key={item.id} onClick={() => agg_interval !== item.id && onIntervalChange(item.id)}>
-              {item.name}
-            </Item>
-          ))}
+        {INTERVAL_LIST.map(item => (
+          <Item
+            key={item.id}
+            onClick={() => agg_interval !== item.id && onIntervalChange(item.id)}
+          >
+            {item.name}
+          </Item>
+        ))}
       </Menu>
     );
     return (
-      <div className="interval-input">
-        <Dropdown overlay={menuList} trigger={['click']}>
+      <div className='interval-input'>
+        <Dropdown
+          overlay={menuList}
+          trigger={['click']}
+        >
           <div style={{ position: 'relative' }}>
             <InputNumber
-              className="interval-select"
+              className='interval-select'
               min={1}
               precision={0}
               value={agg_interval as number}
@@ -85,15 +86,18 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
           </div>
         </Dropdown>
         <Select
-          disabled={agg_interval === 'auto'}
-          className="interval-unit"
-          showArrow={false}
+          className='interval-unit'
           defaultValue={agg_interval_unit}
-          onChange={onIntervalUnitChange}
+          disabled={agg_interval === 'auto'}
           dropdownMatchSelectWidth={80}
+          showArrow={false}
+          onChange={onIntervalUnitChange}
         >
           {ALERT_INTERVAL_UNIT_LIST?.map(item => (
-            <Option value={item.id} key={item.id}>
+            <Option
+              key={item.id}
+              value={item.id}
+            >
               {item.name}
             </Option>
           ))}

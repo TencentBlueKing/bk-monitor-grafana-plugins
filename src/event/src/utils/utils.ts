@@ -23,18 +23,17 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import enData from '../lang/en.json';
 export const random = (n: number, str = 'abcdefghijklmnopqrstuvwxyz0123456789'): string => {
   // 生成n位长度的字符串
   let result = '';
   for (let i = 0; i < n; i++) {
-    // eslint-disable-next-line radix
     result += str[parseInt(String(Math.random() * str.length))];
   }
   return result;
 };
-export const getCookie = (name: string): string | null => {
+export const getCookie = (name: string): null | string => {
   const reg = new RegExp(`(^|)${name}=([^;]*)(;|$)`);
   const data = document.cookie.match(reg);
   if (data) {

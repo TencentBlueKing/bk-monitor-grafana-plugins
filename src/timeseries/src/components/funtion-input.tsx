@@ -1,10 +1,3 @@
-/* eslint-disable no-param-reassign */
-import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
-import Divider from 'antd/es/divider';
-import Dropdown from 'antd/es/dropdown';
-import Input from 'antd/es/input';
-import Menu from 'antd/es/menu';
-import Popover from 'antd/es/popover';
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -30,6 +23,13 @@ import Popover from 'antd/es/popover';
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+
+import CloseCircleOutlined from '@ant-design/icons/CloseCircleOutlined';
+import Divider from 'antd/es/divider';
+import Dropdown from 'antd/es/dropdown';
+import Input from 'antd/es/input';
+import Menu from 'antd/es/menu';
+import Popover from 'antd/es/popover';
 import React from 'react';
 
 import { IFunctionItem, IFunctionParam } from '../typings/metric';
@@ -46,6 +46,12 @@ interface IFunctionInputState {
 }
 
 export default class FunctionInput extends React.PureComponent<IFunctionInputProps, IFunctionInputState> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isSelect: false,
+    };
+  }
   handleDelete = () => {
     this.props.onDelete();
     setTimeout(() => {
@@ -85,12 +91,6 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
       this.props.onEdit(this.props.funtion);
     }
   };
-  constructor(props) {
-    super(props);
-    this.state = {
-      isSelect: false,
-    };
-  }
   render(): JSX.Element {
     const { funtion } = this.props;
     const getParamList = (param: IFunctionParam) =>
@@ -145,10 +145,10 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                     visible={param.edit && param.shortlist?.length > 0}
                   >
                     <Input
-                      autoFocus
+                      key={param.id}
                       className='param-input'
                       defaultValue={param.value === '' ? '-空-' : param.value}
-                      key={param.id}
+                      autoFocus
                       onBlur={e => this.handleParamBlur(e, param)}
                     ></Input>
                   </Dropdown>
@@ -156,8 +156,8 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
               }
               return (
                 <span
-                  className='funtion-input-param'
                   key={param.id}
+                  className='funtion-input-param'
                   onClick={e => this.handleParamClick(e, param)}
                 >
                   {param.value === '' ? EMPTY_VALUE : param.value}
