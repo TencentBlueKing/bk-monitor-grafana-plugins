@@ -333,8 +333,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       fields.push({
         config: {
           displayNameFromDS: newSerie.target,
+          unit: newSerie.unit || undefined,
         },
-        display: getDisplayProcessor(),
+        // display: getDisplayProcessor(),
         labels: serie.dimensions,
         name: TIME_SERIES_VALUE_FIELD_NAME,
         type: FieldType.number,
@@ -440,8 +441,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       };
       const ValueField = {
         config: {
-          displayName: newSerie.target,
-          unit: newSerie.unit,
+          displayName: alias ? target : undefined,
+          unit: newSerie.unit || undefined,
         },
         labels: newSerie.dimensions || {},
         name: 'Value',
