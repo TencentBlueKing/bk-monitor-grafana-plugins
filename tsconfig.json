@@ -18,6 +18,14 @@
     },
     "transpileOnly": true
   },
-  "include": ["./src", "./types"],
-  "extends": "@grafana/tsconfig"
+  "extends": "@grafana/tsconfig",
+  "include": [
+    "./src",
+    "./types",
+    "./stylelint.config.js",
+    "./eslint.config.js",
+    "./prettier.config.js",
+    "./*.js",
+    "index.d.ts"
+  ]
 }

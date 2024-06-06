@@ -23,27 +23,6 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-module.exports = [
-  ...require('@blueking/bkui-lint/eslint'),
-  {
-    rules: {
-      'vue/multi-word-component-names': 'off',
-      'vue/no-reserved-component-names': 'off',
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-var-requires': 'off',
-      'perfectionist/sort-classes': 'off',
-    },
-  },
-  {
-    ignores: [
-      '**/node_modules',
-      '**/lib',
-      '**/dist',
-      '/dev',
-      '/docs',
-      '/plugins',
-      '/src/__tests__/demos',
-      'src/**/.config',
-    ],
-  },
-];
+module.exports = {
+  extends: ['@blueking/bkui-lint/stylelint.js'],
+};
