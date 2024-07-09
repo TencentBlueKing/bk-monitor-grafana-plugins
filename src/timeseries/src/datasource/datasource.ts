@@ -23,7 +23,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-
+declare global {
+  interface Window {
+    grafanaBootData: any;
+    graphWatermark: boolean;
+  }
+}
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   ArrayVector,
@@ -438,9 +443,17 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         type: FieldType.time,
         values: new ArrayVector(newSerie.datapoints.map(v => v[1])),
       };
+      const isGrafana9 = !!window.grafanaBootData?.settings?.buildInfo?.version?.toString()?.startsWith('9.');
+      const nameConfig = isGrafana9
+        ? {
+            displayNameFromDS: target,
+          }
+        : {
+            displayName: target,
+          };
       const ValueField = {
         config: {
-          displayName: alias ? target : undefined,
+          ...nameConfig,
           unit: newSerie.unit || undefined,
         },
         labels: newSerie.dimensions || {},
