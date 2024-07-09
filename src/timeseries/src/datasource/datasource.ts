@@ -23,15 +23,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-declare global {
-  interface Window {
-    grafanaBootData: any;
-    graphWatermark: boolean;
-  }
-}
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   ArrayVector,
+  BootData,
   DataFrame,
   DataQueryRequest,
   DataQueryResponse,
@@ -95,7 +90,11 @@ export enum QueryUrl {
   testAndSaveUrl = '',
   update_metric_list_by_biz = 'update_metric_list_by_biz/',
 }
-
+declare global {
+  interface Window {
+    grafanaBootData?: BootData;
+  }
+}
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
   public bizId: number | string;
