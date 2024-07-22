@@ -325,8 +325,10 @@ export class MetricDetail {
   status: EditorStatus = 'default';
   time_field?: string;
   unit: string;
-
-  constructor(metricDetail: IMetric | MetricDetail) {
+  subtitle = '';
+  titleAlias = '';
+  titleName = '';
+  constructor(public metricDetail: IMetric | MetricDetail) {
     Object.keys(metricDetail).forEach(key => (this[key] = metricDetail[key]));
     this.agg_method =
       metricDetail.agg_method ||
@@ -439,6 +441,19 @@ export class MetricDetail {
     if (['host_device', 'host_process', 'os'].includes(this.result_table_label)) return TARGET_TYPE.HOST;
     if (['component', 'service_module'].includes(this.result_table_label)) return TARGET_TYPE.SERVICE_INSTANCE;
     return TARGET_TYPE.NONE;
+  }
+  initShowMetricField(data_source_list: { data_source_label: string; data_type_label: string; name: string }[]) {
+    this.subtitle = [
+      this.result_table_label_name,
+      data_source_list.find(
+        item => item.data_source_label === this.data_source_label && item.data_type_label === this.data_type_label,
+      )?.name,
+      this.related_name,
+    ]
+      .filter(Boolean)
+      .join(' / ');
+    this.titleAlias = this.metric_field === this.metric_field_name ? '' : this.metric_field_name;
+    this.titleName = [this.result_table_id, this.metric_field].filter(Boolean).join('.');
   }
 }
 // 监控函数参数

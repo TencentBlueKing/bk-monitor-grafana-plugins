@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -28,6 +30,7 @@
 import CloseCircleFilled from '@ant-design/icons/CloseCircleFilled';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import SyncOutlined from '@ant-design/icons/SyncOutlined';
+import Button from 'antd/es/button';
 import Checkbox from 'antd/es/checkbox';
 import Input from 'antd/es/input';
 import Message from 'antd/es/message';
@@ -176,6 +179,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       titleAlias: metric.metric_field === metric.metric_field_name ? '' : metric.metric_field_name,
       titleName: [metric.result_table_id, metric.metric_field].filter(Boolean).join('.'),
     }));
+    this.props.metric?.initShowMetricField?.(data_source_list);
     let tags = [];
     if (tag?.id) {
       if (tag_list.length) {
@@ -458,6 +462,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           total: 0,
         },
         () => {
+          // this.getMetricList()
           this.getMetricList(true);
           setTimeout(() => {
             this.inputRef.current.focus();
@@ -476,22 +481,78 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
   componentWillUnmount(): void {
     document.removeEventListener('mousemove', this.handleMouseMove);
   }
+  createMetricElement(metric: IMetric, i: number) {
+    const { focusIndex, isArrowKeySet } = this.state;
+    const isSelectedMetric = this.props.metric?.metric_id && metric?.metric_id === this.props.metric?.metric_id;
+    return (
+      <Tooltip
+        key={i}
+        title={
+          !!metric?.metric_field ? (
+            <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(metric) }} />
+          ) : undefined
+        }
+        mouseEnterDelay={isArrowKeySet ? 99999999 : 1}
+        placement='right'
+      >
+        <div
+          id={`${metric.metric_id}_${i}`}
+          key={`${metric.metric_id}_${i}`}
+          className={`metric-item ${focusIndex === i ? 'focus-item' : ''} ${
+            isArrowKeySet ? 'is-arrow' : ''
+          } ${metric.metric_id === this.props.metric?.metric_id ? 'is-checked' : ''}`}
+          tabIndex={-1}
+          onClick={e => this.handleMetricChange(e, metric)}
+          onMouseEnter={e => this.handleShowTool(e, metric, i)}
+          onMouseLeave={() => this.handleHideTool(metric)}
+        >
+          {isSelectedMetric && (
+            <div className='metric-selected'>
+              <span className='metric-selected-lable'>{getEnByName('已选')}</span>
+            </div>
+          )}
+          <div className='metric-item-title'>
+            <span
+              id={metric.metric_id}
+              style={{ fontSize: 0, opacity: 0 }}
+            >
+              {metric.readable_name}
+            </span>
+            <div className='title-wrap'>
+              <span className='title-name'>
+                {isSelectedMetric ? metric.readable_name : this.getSearchNode(metric.readable_name!)}
+              </span>
+              {isSelectedMetric ? metric.titleAlias : this.getSearchNode(metric.titleAlias)}
+            </div>
+            {this.props.mode !== MetricInputMode.COPY && (
+              <Tooltip title={getEnByName('复制指标名')}>
+                <span
+                  style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
+                  className='copy-icon'
+                  onClick={e => this.handleCopyMetric(metric, e)}
+                >
+                  <svg
+                    width='200'
+                    height='200'
+                    version='1.1'
+                    viewBox='0 0 1024 1024'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                  </svg>
+                </span>
+              </Tooltip>
+            )}
+          </div>
+          <div className='metric-item-subtitle'>{metric.subtitle}</div>
+        </div>
+      </Tooltip>
+    );
+  }
   // 弹层面版
   contentRender() {
-    const {
-      dataSourceList,
-      focusIndex,
-      isArrowKeySet,
-      keyword,
-      loading,
-      metricList,
-      page,
-      pageSize,
-      scenarioList,
-      tag,
-      tagList,
-      total,
-    } = this.state;
+    const { dataSourceList, keyword, loading, metricList, page, pageSize, scenarioList, tag, tagList, total } =
+      this.state;
     const showAllTotal = metricList.length > 0 && Math.ceil(total / pageSize) <= page;
     return (
       <div className='metric-dropdown'>
@@ -539,63 +600,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               tabIndex={-1}
               onScroll={this.handleScoll}
             >
-              {metricList.map((metric, i) => (
-                <Tooltip
-                  key={i}
-                  title={
-                    !!metric?.metric_field ? (
-                      <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(metric) }} />
-                    ) : undefined
-                  }
-                  mouseEnterDelay={isArrowKeySet ? 99999999 : 1}
-                  placement='right'
-                >
-                  <div
-                    id={`${metric.metric_id}_${i}`}
-                    key={`${metric.metric_id}_${i}`}
-                    className={`metric-item ${focusIndex === i ? 'focus-item' : ''} ${
-                      isArrowKeySet ? 'is-arrow' : ''
-                    } ${metric.metric_id === this.props.metric?.metric_id ? 'is-checked' : ''}`}
-                    tabIndex={-1}
-                    onClick={e => this.handleMetricChange(e, metric)}
-                    onMouseEnter={e => this.handleShowTool(e, metric, i)}
-                    onMouseLeave={() => this.handleHideTool(metric)}
-                  >
-                    <div className='metric-item-title'>
-                      <span
-                        id={metric.metric_id}
-                        style={{ fontSize: 0, opacity: 0 }}
-                      >
-                        {metric.readable_name}
-                      </span>
-                      <div className='title-wrap'>
-                        <span className='title-name'>{this.getSearchNode(metric.readable_name)}</span>
-                        {this.getSearchNode(metric.titleAlias)}
-                      </div>
-                      {this.props.mode !== MetricInputMode.COPY && (
-                        <Tooltip title={getEnByName('复制指标名')}>
-                          <span
-                            style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
-                            className='copy-icon'
-                            onClick={e => this.handleCopyMetric(metric, e)}
-                          >
-                            <svg
-                              width='200'
-                              height='200'
-                              version='1.1'
-                              viewBox='0 0 1024 1024'
-                              xmlns='http://www.w3.org/2000/svg'
-                            >
-                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
-                            </svg>
-                          </span>
-                        </Tooltip>
-                      )}
-                    </div>
-                    <div className='metric-item-subtitle'>{metric.subtitle}</div>
-                  </div>
-                </Tooltip>
-              ))}
+              {this.props.metric?.metric_id && this.createMetricElement(this.props.metric as any, -1)}
+              {metricList
+                .filter(item => item.metric_id !== this.props.metric?.metric_id)
+                .map((metric, i) => this.createMetricElement(metric, i))}
               {!metricList.length && (
                 <div className='empty-content'>
                   <div className='empty-content-icon'>
@@ -768,6 +776,28 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                   >
                     <span className='mitric-input-name'>
                       {needPlaceholder ? getEnByName('选择指标') : this.displayRender()}
+                      {this.props.metric?.metric_field
+                        ? [
+                            <svg
+                              width='16'
+                              height='16'
+                              className='copy-metric'
+                              version='1.1'
+                              viewBox='0 0 1024 1024'
+                              xmlns='http://www.w3.org/2000/svg'
+                              onClick={e => this.handleCopyMetric(this.props.metric as any, e)}
+                            >
+                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                            </svg>,
+                            <span
+                              id={this.props.metric.metric_id}
+                              style={{ fontSize: 0, opacity: 0 }}
+                              tabIndex={-1}
+                            >
+                              {this.props.metric.readable_name}
+                            </span>,
+                          ]
+                        : undefined}
                     </span>
                   </Tooltip>
                 </div>
