@@ -129,11 +129,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     scopedVars: ScopedVars,
     metric: IMetric,
     aliasData: IAliasData,
-    dimensions: Record<string, string>,
+    serie: Record<string, any>,
   ) {
     const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
-    const tagRegx = /(\$(tag_|dim_)\$[\w.]+)/gm;
+    const tagRegx = /(\$(tag_|dim_)\$[\w._]+)/gm;
     let aliasNew = alias;
+    const { dimensions, dimensions_translation } = serie || { dimensions: {}, dimensions_translation: {} };
     aliasNew = alias.replace(tagRegx, (match: any, g1: any, g2: any) => {
       const group = g1 || g2;
       let tag = group.replace('$tag_', '').replace('$dim_', '');
@@ -152,6 +153,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         if (/^(tag_|dim_)/im.test(group)) {
           const tag = group.replace('tag_', '').replace('dim_', '');
           return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
+        }
+        if (/^(trans_)/im.test(group)) {
+          const tag = group.replace('trans_', '');
+          return typeof dimensions_translation[tag] === 'undefined' ? match : dimensions_translation[tag];
         }
         if (/^(metric_)/im.test(group)) {
           const tag = group.replace('metric_', '');
@@ -323,7 +328,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       const newSerie = {
         ...serie,
         target: hasVariateAlias
-          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
+          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
           : alias || serie.target,
       };
       const fields: Field[] = [];
@@ -395,7 +400,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       const newSerie = {
         ...serie,
         target: hasVariateAlias
-          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
+          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
           : alias || serie.target,
       };
       ValueField.config.unit = newSerie.unit;
@@ -428,7 +433,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         delete serie.unit;
       }
       const target = hasVariateAlias
-        ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
+        ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
         : alias || serie.target;
       const newSerie = {
         ...serie,
