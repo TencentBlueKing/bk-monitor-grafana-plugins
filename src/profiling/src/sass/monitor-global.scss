@@ -1,0 +1,33 @@
+a {
+  color: #24292e;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  transition: color .3s;
+  text-decoration-skip: objects;
+}
+
+a:hover {
+  color: #24292e;
+}
+
+a:active {
+  color: #366fd9;
+}
+
+body {
+  color: #24292e;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: .5em;
+  color: #24292e;
+  font-weight: 500;
+}

@@ -207,6 +207,39 @@ importers:
         specifier: 2.5.3
         version: 2.5.3
 
+  src/profiling:
+    dependencies:
+      '@ant-design/icons':
+        specifier: 4.8.1
+        version: 4.8.1(react-dom@17.0.2)(react@17.0.2)
+      '@grafana/data':
+        specifier: 10.0.3
+        version: 10.0.3(react-dom@17.0.2)(react@17.0.2)
+      '@grafana/runtime':
+        specifier: 10.0.3
+        version: 10.0.3(@types/react@17.0.80)(react-dom@17.0.2)(react@17.0.2)
+      '@grafana/schema':
+        specifier: 10.0.3
+        version: 10.0.3
+      '@grafana/ui':
+        specifier: 10.0.3
+        version: 10.0.3(@types/react@17.0.80)(react-dom@17.0.2)(react@17.0.2)
+      antd:
+        specifier: ^4.20.0
+        version: 4.24.15(react-dom@17.0.2)(react@17.0.2)
+      postcss-scss:
+        specifier: ^4.0.9
+        version: 4.0.9(postcss@8.4.38)
+      react:
+        specifier: ^17.0.1
+        version: 17.0.2
+      react-dom:
+        specifier: ^17.0.1
+        version: 17.0.2(react@17.0.2)
+      tslib:
+        specifier: 2.5.3
+        version: 2.5.3
+
   src/timeseries:
     dependencies:
       '@ant-design/icons':
@@ -1396,6 +1429,7 @@ packages:
   /@humanwhocodes/config-array@0.11.14:
     resolution: {integrity: sha512-3T8LkOmg45BV5FICb15QQMsyUSWrQ8AygVfC7ZG32zOalnqrilm018ZVCw0eapXux8FtA33q8PSRSstjee3jSg==}
     engines: {node: '>=10.10.0'}
+    deprecated: Use @eslint/config-array instead
     dependencies:
       '@humanwhocodes/object-schema': 2.0.3
       debug: 4.3.4
