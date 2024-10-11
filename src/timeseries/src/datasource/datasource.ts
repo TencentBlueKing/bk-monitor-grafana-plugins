@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -34,6 +35,7 @@ import {
   DataSourceInstanceSettings,
   Field,
   FieldType,
+  ScopedVar,
   ScopedVars,
   TIME_SERIES_TIME_FIELD_NAME,
   TIME_SERIES_VALUE_FIELD_NAME,
@@ -103,7 +105,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public useToken: boolean;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
-    this.url = instanceSettings.url;
+    this.url = instanceSettings.url!;
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
@@ -124,60 +126,130 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       url: QueryUrl.add_custom_metric,
     });
   }
-  public buildAlaisVariables(
+  createScopedVariables(data: Record<string, any>, rawKey = '', keyPrefix = '') {
+    const monitorScopedVars: ScopedVars = {};
+    for (const [key, val] of Object.entries(data || [])) {
+      let text = '';
+      let value = '';
+      if (Array.isArray(val)) {
+        for (const item of val) {
+          if (typeof item === 'undefined' || item === null) {
+            continue;
+          }
+          if (typeof item === 'string' || typeof item === 'number') {
+            text += `${item},`;
+            value += `${item},`;
+            continue;
+          }
+          if (typeof item === 'object') {
+            if ('id' in item) {
+              value += `${item.id},`;
+            }
+            if ('value' in item) {
+              value += `${item.value},`;
+            }
+            if ('name' in item) {
+              text += `${item.name},`;
+            }
+            if ('label' in item) {
+              text += `${item.label},`;
+            }
+            continue;
+          }
+          text += `${item},`;
+          value += `${item},`;
+        }
+        text = val.length ? text.slice(0, -1) : JSON.stringify(val);
+        value = val.length ? value.slice(0, -1) : JSON.stringify(val);
+      } else if (typeof val === 'object' && val !== null) {
+        text = val.name || val.label || val.value || val.id || val;
+        value = val.id || val.value || val.name || val.label || val;
+      } else {
+        text = val;
+        value = val;
+      }
+      monitorScopedVars[`${keyPrefix}${key}`] = {
+        text,
+        value,
+      };
+    }
+    if (rawKey && !(rawKey in monitorScopedVars)) {
+      monitorScopedVars[rawKey] = {
+        text: {
+          ...data,
+        },
+        value: {
+          ...data,
+        },
+      };
+    }
+    return monitorScopedVars;
+  }
+  public buildAliasVariables(
     alias: string,
     scopedVars: ScopedVars,
     metric: IMetric,
     aliasData: IAliasData,
-    serie: Record<string, any>,
+    sere: Record<string, any>,
   ) {
-    const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
-    const tagRegx = /(\$(tag_|dim_)\$[\w._]+)/gm;
-    let aliasNew = alias;
-    const { dimensions, dimensions_translation } = serie || { dimensions: {}, dimensions_translation: {} };
-    aliasNew = alias.replace(tagRegx, (match: any, g1: any, g2: any) => {
-      const group = g1 || g2;
-      let tag = group.replace('$tag_', '').replace('$dim_', '');
-      if (regex.test(tag)) {
-        tag = getTemplateSrv().replace(tag, scopedVars);
-        return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
-      }
-      return match;
-    });
-    const aliasName = aliasNew.replace(regex, (match: any, g1: any, g2: any) => {
-      const group = g1 || g2;
-      if (aliasData) {
-        if (Object.keys(aliasData).includes(group)) {
-          return aliasData[group] || match;
-        }
-        if (/^(tag_|dim_)/im.test(group)) {
-          const tag = group.replace('tag_', '').replace('dim_', '');
-          return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
-        }
-        if (/^(trans_)/im.test(group)) {
-          const tag = group.replace('trans_', '');
-          return typeof dimensions_translation[tag] === 'undefined' ? match : dimensions_translation[tag];
-        }
-        if (/^(metric_)/im.test(group)) {
-          const tag = group.replace('metric_', '');
-          const matchList = tag.match(/(_[a-zA-Z])/g);
-          let newKey = tag;
-          if (matchList) {
-            matchList.forEach(set => {
-              newKey = newKey.replace(set, set.replace('_', '').toLocaleUpperCase());
-            });
-          }
-          if (typeof metric?.[newKey] === 'undefined') {
-            return metric?.[tag] || match;
-          }
-          return metric?.[newKey] || match;
-        }
-      }
-      const variables = this.buildWhereVariables([match], undefined);
-
-      return variables.length ? (variables.length === 1 ? variables.join('') : `(${variables.join(',')})`) : match;
-    });
-    return aliasName;
+    // const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
+    // const tagRegex = /(\$(tag_|dim_)\$[\w._]+)/gm;
+    // let aliasNew = alias;
+    const { dimensions, dimensions_translation } = sere || { dimensions: {}, dimensions_translation: {} };
+    // aliasNew = alias.replace(tagRegex, (match: any, g1: any, g2: any) => {
+    //   const group = g1 || g2;
+    //   let tag = group.replace('$tag_', '').replace('$dim_', '');
+    //   if (regex.test(tag)) {
+    //     tag = getTemplateSrv().replace(tag, scopedVars);
+    //     return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
+    //   }
+    //   return match;
+    // });
+    // const aliasName = aliasNew.replace(regex, (match: any, g1: any, g2: any) => {
+    //   const group = g1 || g2;
+    //   if (aliasData) {
+    //     if (Object.keys(aliasData).includes(group)) {
+    //       return aliasData[group] || match;
+    //     }
+    //     if (/^(tag_|dim_)/im.test(group)) {
+    //       const tag = group.replace('tag_', '').replace('dim_', '');
+    //       return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
+    //     }
+    //     if (/^(trans_)/im.test(group)) {
+    //       const tag = group.replace('trans_', '');
+    //       return typeof dimensions_translation[tag] === 'undefined' ? match : dimensions_translation[tag];
+    //     }
+    //     if (/^(metric_)/im.test(group)) {
+    //       const tag = group.replace('metric_', '');
+    //       const matchList = tag.match(/(_[a-zA-Z])/g);
+    //       let newKey = tag;
+    //       if (matchList) {
+    //         matchList.forEach(set => {
+    //           newKey = newKey.replace(set, set.replace('_', '').toLocaleUpperCase());
+    //         });
+    //       }
+    //       if (typeof metric?.[newKey] === 'undefined') {
+    //         return metric?.[tag] || match;
+    //       }
+    //       return metric?.[newKey] || match;
+    //     }
+    //   }
+    //   const variables = this.buildWhereVariables([match], undefined);
+    //   return variables.length ? (variables.length === 1 ? variables.join('') : `(${variables.join(',')})`) : match;
+    // });
+    const monitorScopedVars: { [key: string]: ScopedVar | undefined } = {
+      ...this.createScopedVariables({
+        ...metric,
+        ...aliasData,
+        ...scopedVars,
+      }),
+      ...this.createScopedVariables(dimensions || {}, '', 'tag_'),
+      ...this.createScopedVariables(dimensions || {}, 'dimensions', 'dim_'),
+      ...this.createScopedVariables(dimensions_translation || {}, 'dimensions_translation', 'trans_'),
+      ...this.createScopedVariables(metric || {}, 'metric', 'metric_'),
+    };
+    console.info(monitorScopedVars);
+    return getTemplateSrv().replace(alias, monitorScopedVars);
   }
   buildFetchSeries(
     { metrics = [], series = [] }: QueryFetchData,
@@ -188,7 +260,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     isExpression?: boolean,
   ) {
     const hasVariateAlias = String(alias).match(/\$/im);
-    let metric: IMetric;
+    let metric: IMetric | undefined = undefined;
     let aliasData: IAliasData = {};
     // 兼容老版本变量设置
     if (hasVariateAlias && !!config) {
@@ -209,19 +281,19 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         object_type: metric?.result_table_label,
       };
     }
-    if (query.format === 'heatmap') {
+    if (query?.format === 'heatmap') {
       return this.formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
     }
-    if (query.format === 'table') {
+    if (query?.format === 'table') {
       return this.formatTable(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
     }
-    return this.formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query.refId);
+    return this.formatTimeSeries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, query?.refId);
   }
   buildMetricFindParams(query: VariableQuery, scopedVars?: any) {
     if (query.queryType === VariableQueryType.Promql) {
       return {
         end_time: (getTemplateSrv() as any).timeRange.to.unix(),
-        promql: this.buildPromqlVariables(query.promql, scopedVars),
+        promql: this.buildPromqlVariables(query.promql!, scopedVars),
         start_time: (getTemplateSrv() as any).timeRange.from.unix(),
       };
     }
@@ -289,15 +361,15 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     return [];
   }
   public buildWhereVariables(values: string | string[], scopedVars: ScopedVars | undefined) {
-    const valList = [];
+    const valList: string[] = [];
     Array.isArray(values) &&
       values.forEach(val => {
         if (val === DIM_NULL_ID) {
           valList.push('');
         } else if (String(val).match(/^\$/)) {
           let isArrayVal = false;
-          const list = [];
-          getTemplateSrv().replace(val, scopedVars, v => {
+          const list: string[] = [];
+          getTemplateSrv().replace(val, scopedVars, (v: string | string[]) => {
             if (!isArrayVal) {
               isArrayVal = Array.isArray(v) && v.length > 1;
             }
@@ -316,44 +388,44 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   }
   formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
     const dataFrame: DataFrame[] = [];
-    series.forEach(serie => {
+    series.forEach(sere => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
-        aliasData.target_ip = serie.dimensions.bk_target_ip;
-        aliasData.target_instance = serie.dimensions.bk_inst_name;
+        aliasData.target_ip = sere.dimensions.bk_target_ip;
+        aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
-      if (!serie.unit || serie.unit === 'none') {
-        delete serie.unit;
+      if (!sere.unit || sere.unit === 'none') {
+        delete sere.unit;
       }
-      const newSerie = {
-        ...serie,
+      const newSere = {
+        ...sere,
         target: hasVariateAlias
-          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
-          : alias || serie.target,
+          ? this.buildAliasVariables(alias, scopedVars, metric, aliasData, sere)
+          : alias || sere.target,
       };
       const fields: Field[] = [];
       fields.push({
         config: {},
         name: TIME_SERIES_TIME_FIELD_NAME,
         type: FieldType.time,
-        values: new ArrayVector<number>(newSerie.datapoints.map(v => v[1])),
+        values: new ArrayVector<number>(newSere.datapoints.map(v => v[1])),
       });
       fields.push({
         config: {
-          displayNameFromDS: newSerie.target,
-          unit: newSerie.unit || undefined,
+          displayNameFromDS: newSere.target,
+          unit: newSere.unit || undefined,
         },
         // display: getDisplayProcessor(),
-        labels: serie.dimensions,
+        labels: sere.dimensions,
         name: TIME_SERIES_VALUE_FIELD_NAME,
         type: FieldType.number,
-        values: new ArrayVector<number>(newSerie.datapoints.map(v => v[0])),
+        values: new ArrayVector<number>(newSere.datapoints.map(v => v[0])),
       });
       dataFrame.push({
         fields,
         length: fields[0].values.length,
         meta: {},
-        name: newSerie.target,
+        name: newSere.target,
         refId,
       });
     });
@@ -373,13 +445,18 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       values: new ArrayVector(),
     };
 
-    const dimisionFields = [];
-    series.forEach(serie => {
-      if (serie.dimensions) {
-        Object.keys(serie.dimensions)
-          .filter(key => !dimisionFields.some(item => item.name === key))
+    const dimensionFields: Array<{
+      config: any;
+      name: string;
+      type: FieldType;
+      values: ArrayVector;
+    }> = [];
+    series.forEach(sere => {
+      if (sere.dimensions) {
+        Object.keys(sere.dimensions)
+          .filter(key => !dimensionFields.some(item => item.name === key))
           .forEach(key => {
-            dimisionFields.push({
+            dimensionFields.push({
               config: { filterable: true },
               name: key,
               type: FieldType.string,
@@ -388,55 +465,55 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           });
       }
     });
-    series.forEach(serie => {
+    series.forEach(sere => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
-        aliasData.target_ip = serie.dimensions.bk_target_ip;
-        aliasData.target_instance = serie.dimensions.bk_inst_name;
+        aliasData.target_ip = sere.dimensions.bk_target_ip;
+        aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
-      if (!serie.unit || serie.unit === 'none') {
-        delete serie.unit;
+      if (!sere.unit || sere.unit === 'none') {
+        delete sere.unit;
       }
-      const newSerie = {
-        ...serie,
+      const newSere = {
+        ...sere,
         target: hasVariateAlias
-          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
-          : alias || serie.target,
+          ? this.buildAliasVariables(alias, scopedVars, metric, aliasData, sere)
+          : alias || sere.target,
       };
-      ValueField.config.unit = newSerie.unit;
-      newSerie.datapoints.forEach(v => {
+      ValueField.config.unit = newSere.unit;
+      newSere.datapoints.forEach(v => {
         TimeField.values.add(v[1]);
         ValueField.values.add(v[0]);
-        dimisionFields?.forEach(dimisionFiled => {
-          const dimValue = newSerie.dimensions[dimisionFiled.name];
+        dimensionFields?.forEach(dimensionFiled => {
+          const dimValue = newSere.dimensions[dimensionFiled.name];
           if (typeof dimValue !== 'undefined') {
-            dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
+            dimensionFiled.values.add(newSere.dimensions[dimensionFiled.name]);
           }
         });
       });
     });
     const data: DataFrame = {
-      fields: [TimeField, ...dimisionFields, ValueField],
+      fields: [TimeField, ...dimensionFields, ValueField],
       length: TimeField.values.length,
       refId,
     };
     return [data];
   }
-  formatTimeseries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
-    return series.map(serie => {
+  formatTimeSeries(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
+    return series.map(sere => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
-        aliasData.target_ip = serie.dimensions.bk_target_ip;
-        aliasData.target_instance = serie.dimensions.bk_inst_name;
+        aliasData.target_ip = sere.dimensions.bk_target_ip;
+        aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
-      if (!serie.unit || serie.unit === 'none') {
-        delete serie.unit;
+      if (!sere.unit || sere.unit === 'none') {
+        delete sere.unit;
       }
       const target = hasVariateAlias
-        ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie)
-        : alias || serie.target;
-      const newSerie = {
-        ...serie,
+        ? this.buildAliasVariables(alias, scopedVars, metric, aliasData, sere)
+        : alias || sere.target;
+      const newSeries = {
+        ...sere,
         target,
       };
       const TimeField = {
@@ -445,7 +522,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         } as any,
         name: 'Time',
         type: FieldType.time,
-        values: new ArrayVector(newSerie.datapoints.map(v => v[1])),
+        values: new ArrayVector(newSeries.datapoints.map(v => v[1])),
       };
       const isGrafana9 = !!window.grafanaBootData?.settings?.buildInfo?.version?.toString()?.startsWith('9.');
       const nameConfig = isGrafana9
@@ -458,30 +535,16 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       const ValueField = {
         config: {
           ...nameConfig,
-          unit: newSerie.unit || undefined,
+          unit: newSeries.unit || undefined,
         },
-        labels: newSerie.dimensions || {},
+        labels: newSeries.dimensions || {},
         name: 'Value',
         type: FieldType.number,
-        values: new ArrayVector(newSerie.datapoints.map(v => v[0])),
+        values: new ArrayVector(newSeries.datapoints.map(v => v[0])),
       };
-      // let dimisionFields;
-      // if (newSerie.dimensions) {
-      //   dimisionFields = Object.keys(newSerie.dimensions).map(key => ({
-      //     name: key,
-      //     config: { filterable: true },
-      //     type: FieldType.string,
-      //     values: new ArrayVector(),
-      //   }));
-      //   newSerie.datapoints.forEach(() => {
-      //     dimisionFields.forEach((dimisionFiled) => {
-      //       dimisionFiled.values.add(newSerie.dimensions[dimisionFiled.name]);
-      //     });
-      //   });
-      // }
       const data: DataFrame = {
         fields: [TimeField, ValueField],
-        length: newSerie.datapoints.length,
+        length: newSeries.datapoints.length,
         refId,
       };
       return data;
@@ -510,7 +573,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       url: QueryUrl.get_metric_list,
     }).catch(() => []);
   }
-  // 新版获取condition dimensionlist
+  // 新版获取condition dimensions
   public async getNewDimensionValue(options) {
     const data = await this.request({
       data: {
@@ -607,7 +670,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   }
   handleGetPromqlConfig(config: IQueryConfig) {
     const logParam = config.data_source_label === 'bk_log_search' ? { index_set_id: config.index_set_id || '' } : {};
-    const interval = this.repalceInterval(config.interval, config.interval_unit);
+    const interval = this.replaceInterval(config.interval, config.interval_unit);
     return {
       agg_condition: config.where?.filter?.(item => item.key && item.value?.length) || [],
       agg_dimension: config.group_by,
@@ -637,7 +700,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           ?.filter?.(item => item.id)
           .map(func => ({
             ...func,
-            params: func.params.map(set => ({
+            params: func.params?.map(set => ({
               ...set,
               value:
                 typeof set.value === 'string'
@@ -650,7 +713,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             })),
           })) || [],
       group_by: (config.group_by || []).map(set => getTemplateSrv().replace(set, scopedVars)),
-      interval: this.repalceInterval(config.interval, config.interval_unit),
+      interval: this.replaceInterval(config.interval, config.interval_unit),
       interval_unit: 's',
       metrics: [{ alias: config.refId || 'a', field: config.metric_field, method: config.method }],
       table: config.result_table_id,
@@ -782,7 +845,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const promiseList: Array<Promise<any>> = [];
     let errorMsg = '';
     queryList.forEach((item: QueryData) => {
-      const configList = [];
+      const configList: Array<{
+        config: IQueryConfig;
+      }> = [];
       // 指标数据请求
       if (item?.mode !== 'code') {
         item.query_configs?.forEach(config => {
@@ -831,7 +896,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               down_sample_range,
               end_time: options.range.to.unix(),
               format: item.format,
-              promql: this.buildPromqlVariables(item.source, {
+              promql: this.buildPromqlVariables(item.source!, {
                 ...options.scopedVars,
                 ...this.getRangeScopedVars(options.range),
               }),
@@ -977,7 +1042,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    * @param unit 单位
    * @returns {number} 转换后的汇聚周期 单位固定 s
    */
-  repalceInterval(inter: IntervalType, unit: string) {
+  replaceInterval(inter: IntervalType, unit: string) {
     let interval: number | string = inter;
     if (typeof interval === 'string' && interval !== 'auto') {
       interval = +getTemplateSrv()
