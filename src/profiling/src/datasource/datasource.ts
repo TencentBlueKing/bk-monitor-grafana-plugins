@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -23,73 +24,48 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-/* eslint-disable @typescript-eslint/naming-convention */
+
 import {
   BootData,
   DataQueryRequest,
   DataQueryResponse,
   DataSourceApi,
   DataSourceInstanceSettings,
+  toDataFrame,
 } from '@grafana/data';
-import { BackendSrvRequest, getBackendSrv } from '@grafana/runtime';
+import {
+  BackendDataSourceResponse,
+  BackendSrvRequest,
+  getBackendSrv,
+  getTemplateSrv,
+  TemplateSrv,
+} from '@grafana/runtime';
+import { lastValueFrom, map, merge, Observable } from 'rxjs';
 
 import { QueryOption } from '../typings/config';
-import { IMetric } from '../typings/metric';
+import { ProfilingQuery } from '../typings/datasource';
+import { IProfileApp } from '../typings/profile';
 import { random } from '../utils/utils';
-export interface QueryFetchData {
-  metrics: IMetric[];
-  series: Array<{
-    datapoints: Array<[number, number]>;
-    dimensions: Record<string, string>;
-    target: string;
-    unit: string;
-  }>;
-}
-export type fieldType =
-  | 'formula'
-  | 'interval'
-  | 'metric_id'
-  | 'metric_item'
-  | 'metric_source'
-  | 'metric_type'
-  | 'object_id'
-  | 'object_name'
-  | 'object_type'
-  | 'target_instance'
-  | 'target_ip';
-export type IAliasData = Partial<Record<fieldType, string>>;
 export enum QueryUrl {
-  add_custom_metric = 'add_custom_metric/',
-  get_metric_list = 'get_metric_list/',
-  graph_promql_query = 'graph_promql_query/',
-  promql_to_query_config = 'promql_to_query_config/',
-  query = 'time_series/unify_query/',
-  query_async_task_result = 'query_async_task_result/',
-  query_config_to_promql = 'query_config_to_promql/',
-  queryDataUrl = 'time_series/query/',
-  queryDimensionValue = 'get_dimension_values/',
-  queryMetricFunction = 'time_series/functions/',
-  queryMetricLevel = 'time_series/metric_level/',
-  queryMetricUrl = 'time_series/metric/',
-  queryMonitorObjectUrl = 'get_label/',
-  queryMonitorTarget = 'topo_tree/',
-  queryVariableField = 'get_variable_field/',
-  queryVariableValue = 'get_variable_value/',
+  get_profile_application_service = 'get_profile_application_service ',
+  query_graph_profile = 'query_graph_profile',
   testAndSaveUrl = '',
-  update_metric_list_by_biz = 'update_metric_list_by_biz/',
 }
 declare global {
   interface Window {
     grafanaBootData?: BootData;
   }
 }
-export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
+export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, QueryOption> {
   public baseUrl: string;
-  public bizId: number | string;
+  public bizId?: number | string;
   public configData: QueryOption;
-  public url: string;
+  public url?: string;
   public useToken: boolean;
-  constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
+  constructor(
+    private instanceSettings: DataSourceInstanceSettings<QueryOption>,
+    private readonly templateSrv: TemplateSrv = getTemplateSrv(),
+  ) {
     super(instanceSettings);
     this.url = instanceSettings.url;
     this.configData = instanceSettings?.jsonData;
@@ -99,65 +75,56 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       ? instanceSettings?.jsonData?.bizId
       : process.env.NODE_ENV === 'development'
         ? 2
-        : (window as any).grafanaBootData.user.orgName;
+        : window?.grafanaBootData?.user.orgName;
   }
 
-  /**
-   * @description: panel query api
-   * @param {DataQueryRequest} options
-   * @return {*}
-   */
-  async query(options: DataQueryRequest<QueryData>): Promise<DataQueryResponse> {
-    const targetList = options.targets.filter(item => !item.hide);
-    const down_sample_range = options.interval;
-    if (!targetList?.length) {
-      return Promise.resolve({ data: [] });
-    }
-    return [];
-  }
-  request({
-    data = {},
-    method = 'GET',
-    params = {},
-    url,
-  }: {
-    data?: Record<string, any> | null;
-    method?: string;
-    params?: Record<string, any> | null;
-    url: string;
-  }) {
-    try {
-      const options: BackendSrvRequest = Object.assign(
-        {},
-        {
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest',
-            traceparent: `00-${random(32, 'abcdef0123456789')}-${random(16, 'abcdef0123456789')}-01`,
-          },
-          method,
-          showSuccessAlert: false,
-          url: this.useToken ? `${this.url}/profiling/${url}` : this.baseUrl + url,
-        },
-        method === 'GET'
-          ? { params: { ...(params || data), bk_biz_id: this.bizId } }
-          : { data: { ...(data || params), bk_biz_id: this.bizId } },
+  query(request: DataQueryRequest<ProfilingQuery>): Observable<DataQueryResponse> {
+    const filterTarget = {
+      ...request,
+      targets: request.targets.filter(t => t.hide !== true),
+    };
+    const streams: Array<Observable<DataQueryResponse>> = [];
+    for (const target of filterTarget.targets) {
+      streams.push(
+        new Observable(subscriber => {
+          this.queryProfilingGraph(filterTarget, target)
+            .then(events => subscriber.next({ data: [toDataFrame(events)] }))
+            .catch(err => subscriber.error(err))
+            .finally(() => subscriber.complete());
+        }),
       );
-      return getBackendSrv()
-        .datasourceRequest(options)
-        .then(res => {
-          if (res?.data?.result === false) {
-            return Promise.reject(res.data);
-          }
-          if (res.status === 200 && res?.data?.result) {
-            return res.data.data;
-          }
-          return [];
-        })
-        .catch(error => Promise.reject(error));
-    } catch (error) {
-      return Promise.reject(error);
     }
+    return merge(...streams);
   }
+  async queryProfilingGraph(options: DataQueryRequest, target: ProfilingQuery) {
+    return await lastValueFrom(
+      this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
+        data: {
+          bk_biz_id: this.bizId,
+          start: options.range.from.valueOf(),
+          end: options.range.to.valueOf(),
+          app_name: target.app_name,
+          service_name: target.service_name,
+          data_type: target.data_type,
+          profile_id: target.profile_id,
+          offset: target.offset,
+          filter_labels: target.filter_labels,
+        },
+        method: 'POST',
+      }),
+    );
+  }
+  async getProfileApplicationService() {
+    return await lastValueFrom(
+      this.request<IProfileApp>(QueryUrl.get_profile_application_service, {
+        data: {
+          bk_biz_id: this.bizId,
+        },
+        method: 'GET',
+      }),
+    ).catch(() => undefined);
+  }
+
   async testDatasource() {
     if (!this.baseUrl) {
       return {
@@ -171,9 +138,13 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         status: 'error',
       };
     }
-    return this.request({
-      url: QueryUrl.testAndSaveUrl,
-    })
+    return lastValueFrom(
+      this.request(QueryUrl.testAndSaveUrl, {
+        params: {
+          bk_biz_id: this.bizId,
+        },
+      }),
+    )
       .then(() => ({
         message: 'Successfully queried the Blueking Monitor service.',
         status: 'success',
@@ -184,5 +155,19 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         status: 'error',
         title: 'Error',
       }));
+  }
+  private request<T = any>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T> {
+    const url = `${this.useToken ? `${this.url}/profiling/${apiUrl}` : this.baseUrl + apiUrl}`;
+    const req = {
+      ...options,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        traceparent: `00-${random(32, 'abcdef0123456789')}-${random(16, 'abcdef0123456789')}-01`,
+      },
+      url,
+    };
+    return getBackendSrv()
+      .fetch<T>(req)
+      .pipe(map(res => res.data));
   }
 }
