@@ -1036,6 +1036,22 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       url: QueryUrl.query_config_to_promql,
     }).then(data => data.promql || '');
   }
+  public async addRelateStrategy(targets: QueryData) {
+    return new Promise(r => {
+      setTimeout(() => {
+        console.info('addRelateStrategy', targets, '+++++++++++++++');
+        r(targets);
+      }, 2000);
+    });
+  }
+  public async getRelateStrategy(targets: QueryData) {
+    return new Promise(r => {
+      setTimeout(() => {
+        console.info('getRelateStrategy', targets, '+++++++++++++++');
+        r(targets);
+      }, 2000);
+    });
+  }
   /**
    *
    * @param inter 汇聚周期
