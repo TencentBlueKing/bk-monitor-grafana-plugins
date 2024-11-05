@@ -39,7 +39,18 @@ export interface IIntervalInputProps {
   onIntervalUnitChange: (v: string) => void;
 }
 
-export default class IntervalInput extends React.PureComponent<IIntervalInputProps> {
+export default class IntervalInput extends React.PureComponent<
+  IIntervalInputProps,
+  {
+    value: string;
+  }
+> {
+  constructor(props: IIntervalInputProps) {
+    super(props);
+    this.state = {
+      value: props.metric ? props.metric.agg_interval?.toString() || 'auto' : 'auto',
+    };
+  }
   handlePeriodBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     let value: number | string = 10;
     if (typeof e.target.value === 'number' || /^[0-9]+$/.test(e.target.value)) {
@@ -52,6 +63,12 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
       }
     }
     this.props.metric.agg_interval !== value && this.props.onIntervalChange(value);
+  };
+  handlePressEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    this.handlePeriodBlur(e);
+  };
+  handleUnitChange = (value: string) => {
+    this.props.metric.agg_interval_unit !== value && this.props.onIntervalUnitChange(value);
   };
   render(): JSX.Element {
     const {
@@ -81,12 +98,30 @@ export default class IntervalInput extends React.PureComponent<IIntervalInputPro
         >
           <div style={{ position: 'relative' }}>
             <InputNumber
+              style={{
+                width: '100%',
+                minWidth: '70px',
+              }}
               className='interval-select'
               min={agg_interval_unit === 's' ? 10 : 1}
               precision={0}
               value={agg_interval as number}
               onBlur={this.handlePeriodBlur}
+              onInput={v => this.setState({ value: v || 'auto' })}
+              onPressEnter={this.handlePressEnter}
             />
+            <span
+              style={{
+                visibility: 'hidden',
+                height: '1px',
+                display: 'flex',
+                padding: '0 14px',
+                overflow: 'hidden',
+                width: 'fit-content',
+              }}
+            >
+              {this.state.value}
+            </span>
           </div>
         </Dropdown>
         <Select

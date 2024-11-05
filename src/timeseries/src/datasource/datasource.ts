@@ -248,7 +248,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       ...this.createScopedVariables(dimensions_translation || {}, 'dimensions_translation', 'trans_'),
       ...this.createScopedVariables(metric || {}, 'metric', 'metric_'),
     };
-    console.info(monitorScopedVars);
     return getTemplateSrv().replace(alias, monitorScopedVars);
   }
   buildFetchSeries(
@@ -713,7 +712,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             })),
           })) || [],
       group_by: (config.group_by || []).map(set => getTemplateSrv().replace(set, scopedVars)),
-      interval: this.replaceInterval(config.interval, config.interval_unit),
+      interval: this.replaceInterval(config.interval, config.interval_unit, scopedVars),
       interval_unit: 's',
       metrics: [{ alias: config.refId || 'a', field: config.metric_field, method: config.method }],
       table: config.result_table_id,
@@ -1042,32 +1041,35 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    * @param unit 单位
    * @returns {number} 转换后的汇聚周期 单位固定 s
    */
-  replaceInterval(inter: IntervalType, unit: string) {
+  replaceInterval(inter: IntervalType, unit: string, scopedVars: ScopedVars) {
     let interval: number | string = inter;
     if (typeof interval === 'string' && interval !== 'auto') {
-      interval = +getTemplateSrv()
-        .replace(interval)
-        .replace(/(\d+)(.*)/, (match: string, p1: string, p2: string) => {
-          let str: number | string = p1 || '10';
-          switch (p2) {
-            case 'm':
-              str = +p1 * 60;
-              break;
-            case 'h':
-              str = +p1 * 60 * 60;
-              break;
-            case 'd':
-              str = +p1 * 60 * 60 * 24;
-              break;
-            case 'w':
-              str = +p1 * 60 * 60 * 24 * 7;
-              break;
-            default:
-              str = (+p1 || 10) * (unit === 'm' ? 60 : 1);
-              break;
-          }
-          return str.toString();
-        });
+      const intervalStr = getTemplateSrv().replace(interval, scopedVars);
+      if (['$__interval_ms'].includes(interval)) {
+        // ms 转换为 s
+        return +intervalStr / 1000;
+      }
+      interval = +intervalStr.replace(/(\d+)(.*)/, (match: string, p1: string, p2: string) => {
+        let str: number | string = p1 || '10';
+        switch (p2) {
+          case 'm':
+            str = +p1 * 60;
+            break;
+          case 'h':
+            str = +p1 * 60 * 60;
+            break;
+          case 'd':
+            str = +p1 * 60 * 60 * 24;
+            break;
+          case 'w':
+            str = +p1 * 60 * 60 * 24 * 7;
+            break;
+          default:
+            str = (+p1 || 10) * (unit === 'm' ? 60 : 1);
+            break;
+        }
+        return str.toString();
+      });
     } else if (typeof interval === 'number') {
       if (unit === 'm') {
         interval = interval * 60;
