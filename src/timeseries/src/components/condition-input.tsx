@@ -390,7 +390,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   mode='tags'
                   placeholder={getEnByName('请选择', language)}
                   showArrow={false}
-                  tokenSeparators={[',', '|', '\n', ' ']}
+                  tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
                   onChange={v => this.handleValueChange(v, index)}
                   onInputKeyDown={v => this.handleValueConditionKeyDown(v)}
                 >
