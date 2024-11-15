@@ -332,22 +332,19 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                   onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
                 >
-                  {dimensions?.map(
-                    dim =>
-                      (
-                        <Option
-                          key={dim.id}
-                          value={dim.id}
-                        >
-                          <Tooltip
-                            placement='right'
-                            title={dim.id}
-                          >
-                            <div>{dim.name || dim.id}</div>
-                          </Tooltip>
-                        </Option>
-                      ) || undefined,
-                  )}
+                  {dimensions?.map(dim => (
+                    <Option
+                      key={dim.id}
+                      value={dim.id}
+                    >
+                      <Tooltip
+                        placement='right'
+                        title={dim.id}
+                      >
+                        <div>{dim.name || dim.id}</div>
+                      </Tooltip>
+                    </Option>
+                  ))}
                 </Select>
               ) : (
                 <span
