@@ -857,7 +857,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               this.request({
                 data: {
                   display: config.display,
-                  down_sample_range,
+                  down_sample_range: item.enableDownSampling !== false ? down_sample_range : undefined,
                   end_time: options.range.to.unix(),
                   expression: config.refId || '',
                   format: item.format,
@@ -892,7 +892,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         if (item.mode === 'code' || item.only_promql) {
           const params = {
             data: {
-              down_sample_range,
+              down_sample_range: item.enableDownSampling !== false ? down_sample_range : undefined,
               end_time: options.range.to.unix(),
               format: item.format,
               promql: this.buildPromqlVariables(item.source!, {
@@ -924,13 +924,13 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               }),
           );
         } else {
-          const { cluster, expressionList, host, module } = item;
+          const { cluster, expressionList, host, module, enableDownSampling } = item;
           expressionList?.forEach(exp => {
             if (exp.expression && exp.active) {
               const p = {
                 data: {
                   display: exp.active,
-                  down_sample_range,
+                  down_sample_range: enableDownSampling !== false ? down_sample_range : undefined,
                   end_time: options.range.to.unix(),
                   expression: exp.expression,
                   format: item.format,

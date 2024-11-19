@@ -626,6 +626,12 @@
       }
     }
   }
+  .down-sample-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0px 8px;
+    border: 1px solid #dcdee5;
+  }
 }
 
 .key-del {

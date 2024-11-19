@@ -93,6 +93,7 @@ interface IQueryEditorState {
   // onlyPromql: boolean;
   step: string;
   type: string;
+  enableDownSampling: boolean;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
@@ -116,6 +117,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       promqlAlias = '',
       source = '',
       step = '',
+      enableDownSampling = true,
     } = query;
     let expressions: IExpresionItem[] = expressionList;
     // 兼容旧版本
@@ -147,6 +149,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       searchState: SearcState.deafult,
       source,
       step,
+      enableDownSampling,
       type: query.type ?? 'range',
     };
     this.initState(query);
@@ -942,7 +945,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     return letter;
   }
   handleGetQueryData(metricList: MetricDetail[]) {
-    const { cluster, expressionList, host, module, promqlAlias } = this.state;
+    const { cluster, expressionList, host, module, promqlAlias, enableDownSampling } = this.state;
     // const curExpression = typeof expression === 'undefined' ? this.state.expression : expression;
     // const curDisplay = typeof display === 'undefined' ? this.state.display : display;
     return {
@@ -957,6 +960,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       host,
       module,
       promqlAlias,
+      enableDownSampling,
       query_configs: metricList
         .filter(item => item.metricMetaId)
         .map(item => {
@@ -1413,6 +1417,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 ) : undefined}
                 {
                   <AddvanceSetting
+                    enableDownSampling={this.state.enableDownSampling}
                     format={this.state.format}
                     mode={mode}
                     promqlAlias={promqlAlias}

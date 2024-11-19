@@ -68,6 +68,7 @@ export interface QueryData extends DataQuery {
   source?: string;
   step?: string;
   type?: string;
+  enableDownSampling?: boolean;
 }
 
 export const DIM_NULL_ID = '';
