@@ -67,4 +67,5 @@ export interface VariableQuery {
   valueField?: string;
   variables?: string;
   where?: IConditionItem[];
+  group_by: string[];
 }

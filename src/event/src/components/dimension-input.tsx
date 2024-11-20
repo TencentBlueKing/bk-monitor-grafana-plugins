@@ -63,7 +63,7 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
   render(): JSX.Element {
     const { variableQuery, dimension, dimensionList, onDimensionChange } = this.props;
     const selectProps: any = {};
-    !variableQuery && (selectProps.mode = 'multiple');
+    !variableQuery && (selectProps.mode = 'tags');
     return (
       <LanguageContext.Consumer>
         {({ language }) => (
@@ -79,7 +79,7 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
                     className='ant-select-selection-item-remove'
                     onClick={item.onClose}
                   >
-                    <CloseOutlined />
+                    <CloseOutlined rev={''} />
                   </span>
                 </span>
               </Tooltip>

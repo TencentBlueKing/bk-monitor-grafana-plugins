@@ -36,7 +36,18 @@ export interface IAliasInputProps {
   style?: React.CSSProperties;
 }
 
-export default class AliasInput extends React.PureComponent<IAliasInputProps> {
+export default class AliasInput extends React.PureComponent<
+  IAliasInputProps,
+  {
+    value: string;
+  }
+> {
+  constructor(props: IAliasInputProps) {
+    super(props);
+    this.state = {
+      value: props.metric ? props.metric.alias : props.inputProps?.defaultValue?.toString() || '',
+    };
+  }
   handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     this.props.onChange(e.target.value.toString().trim());
   };
@@ -44,13 +55,27 @@ export default class AliasInput extends React.PureComponent<IAliasInputProps> {
     return (
       <LanguageContext.Consumer>
         {({ language }) => (
-          <Input
-            style={{ minWidth: '100px', ...this.props.style }}
-            defaultValue={this.props.metric ? this.props.metric.alias : this.props.inputProps?.defaultValue}
-            placeholder={getEnByName('请输入', language)}
-            onBlur={this.handleBlur}
-            {...this.props.inputProps}
-          />
+          <div>
+            <Input
+              style={{ minWidth: '100px', ...this.props.style }}
+              defaultValue={this.props.metric ? this.props.metric.alias : this.props.inputProps?.defaultValue}
+              placeholder={getEnByName('请输入', language)}
+              onBlur={this.handleBlur}
+              onChange={e => this.setState({ value: e.target.value })}
+              {...this.props.inputProps}
+            />
+            <span
+              style={{
+                visibility: 'hidden',
+                height: '1px',
+                display: 'flex',
+                padding: '0 12px',
+                overflow: 'hidden',
+              }}
+            >
+              {this.state.value}
+            </span>
+          </div>
         )}
       </LanguageContext.Consumer>
     );

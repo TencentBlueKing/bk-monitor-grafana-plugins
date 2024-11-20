@@ -72,5 +72,8 @@
   "指标选择": "Metric selection",
   "- 空 -": "- empty -",
   "复制成功": "Copy Success",
-  "已选": "Selected"
+  "已选": "Selected",
+  "开启": "on",
+  "关闭": "off",
+  "降采样": "Down Sampling"
 }
