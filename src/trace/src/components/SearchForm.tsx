@@ -26,12 +26,15 @@ const allOperationsOption: SelectableValue<string> = {
 };
 
 export function SearchForm({ datasource, query, onChange }: Props) {
+  const [appOptions, setAppOptions] = useState<Array<SelectableValue<string>>>();
   const [serviceOptions, setServiceOptions] = useState<Array<SelectableValue<string>>>();
   const [operationOptions, setOperationOptions] = useState<Array<SelectableValue<string>>>();
   const [isLoading, setIsLoading] = useState<{
+    app: boolean;
     services: boolean;
     operations: boolean;
   }>({
+    app: false,
     services: false,
     operations: false,
   });
@@ -94,6 +97,34 @@ export function SearchForm({ datasource, query, onChange }: Props) {
 
   return (
     <div className={css({ maxWidth: '500px' })}>
+      <InlineFieldRow>
+        <InlineField
+          label='App Name'
+          labelWidth={14}
+          grow
+        >
+          <Select
+            allowCustomValue={true}
+            aria-label={'select-app-name'}
+            inputId='app'
+            isLoading={isLoading.app}
+            menuPlacement='bottom'
+            options={appOptions}
+            placeholder='Select a App'
+            value={appOptions?.find(v => v?.value === query.app) || undefined}
+            isClearable
+            onChange={v =>
+              onChange({
+                ...query,
+                app: v?.value!,
+                service: query.app !== v?.value ? undefined : query.service,
+                operation: query.app !== v?.value ? undefined : query.operation,
+              })
+            }
+            onOpenMenu={() => loadOptions('/api/services', 'services')}
+          />
+        </InlineField>
+      </InlineFieldRow>
       <InlineFieldRow>
         <InlineField
           label='Service Name'
