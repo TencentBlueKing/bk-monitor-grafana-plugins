@@ -46,4 +46,11 @@ module.exports = [
       'src/**/.config',
     ],
   },
+  {
+    files: ['src/trace/**/*.ts', 'src/trace/**/*.tsx', 'src/trace/**/*.js'],
+    ignores: [],
+    rules: {
+      'codecc/license': 'off',
+    },
+  },
 ];
