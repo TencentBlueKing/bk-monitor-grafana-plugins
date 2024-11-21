@@ -23,7 +23,29 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-export interface IProfileApp {
+export interface IService {
+  id: number;
+  last_check_time: string;
+  created_at: string;
+  updated_at: string;
+  bk_biz_id: number;
   app_name: string;
-  app_id: string;
+  name: string;
+  period: string;
+  period_type: string;
+  frequency: null | string;
+  data_type: string;
+  sample_type: string;
+  is_large: boolean;
 }
+
+export interface IApplication {
+  bk_biz_id: number;
+  application_id: number;
+  description: string;
+  app_name: string;
+  app_alias: string;
+  services: IService[];
+}
+
+export const DIM_NULL_ID = '';

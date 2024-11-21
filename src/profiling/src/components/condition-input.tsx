@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 /*
  * Tencent is pleased to support the open source community by making
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
  *
  * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
  *
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) is licensed under the MIT License.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
  *
- * License for 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition):
+ * License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
  *
  * ---------------------------------------------------
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -28,74 +29,63 @@ import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import Divider from 'antd/es/divider';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { map, merge, Observable } from 'rxjs';
 
 import DataSource from '../datasource/datasource';
-import { DIM_NULL_ID } from '../typings/datasource';
+import { ProfilingQuery } from '../typings/datasource';
 import { CONDITION, ICommonItem, IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
-import { LanguageContext } from '../utils/context';
+import { DIM_NULL_ID } from '../typings/profile';
 import { getEnByName } from '../utils/utils';
+
 const { Option } = Select;
+
 export interface IProps {
-  datasource?: DataSource; // datasource实例
+  datasource: DataSource;
   filterList: IConditionItem[];
   keyList: ICommonItem[];
-  // 监控条件变化
+  appName: ProfilingQuery['app_name'];
+  serviceName: ProfilingQuery['service_name'];
   onChange: (v: IConditionItem[], needQuery?: boolean) => void;
 }
-interface IState {
-  dimensionValueMap: Record<string, ICommonItem[]>;
-}
-export default class ConditionInput extends React.PureComponent<IProps, IState> {
-  constructor(props, context) {
-    super(props, context);
-    this.state = {
-      dimensionValueMap: {},
-    };
-    this.initDimensionValueMap();
-  }
-  /**
-   * @description: 获取维度数据
-   * @param {string} v 维度id
-   * @return {*} 维度列表数据
-   */
-  getDimensionValue = async (v: string): Promise<Record<string, ICommonItem[]>> => {
-    let list = [];
-    if (!v) return {};
-    if (this.props.datasource) {
-      // const { data_label, data_source_label, data_type_label, metric_field, result_table_id } = this.props.metric;
-      // list = await this.props.datasource.getNewDimensionValue({
-      //   dataLabel: data_label || undefined,
-      //   dataSourceLabel: data_source_label,
-      //   dataTypeLabel: data_type_label,
-      //   field: v,
-      //   metricField: metric_field,
-      //   resultTableId: result_table_id,
-      // });
+
+const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onChange, appName, serviceName }) => {
+  const [dimensionValueMap, setDimensionValueMap] = useState<Record<string, ICommonItem[]>>({});
+  useEffect(() => {
+    const list: Observable<Record<string, ICommonItem[]>>[] = [];
+    for (const { key } of filterList) {
+      if (key && !(key in dimensionValueMap)) {
+        list.push(
+          datasource
+            .getProfileValues({
+              app_name: appName,
+              service_name: serviceName,
+              label_key: key,
+            })
+            .pipe(map(data => ({ [key]: data || [] }))),
+        );
+      }
     }
-    return { [v]: list || [] };
-  };
-  /**
-   * @description: 监控条件方法列表
-   * @param {string} keyVal 维度
-   * @return {*}
-   */
-  getMethodList = () => {
-    return [...STRING_CONDITION_METHOD_LIST];
-  };
-  handleAddClick = (index: number) => {
-    const { filterList, onChange } = this.props;
-    const list = filterList.slice();
-    list.splice(index, 1, {
-      key: '',
+    if (!list.length) return;
+    merge(...list).subscribe(data => {
+      setDimensionValueMap({
+        ...dimensionValueMap,
+        ...data,
+      });
     });
+  }, [appName, serviceName, datasource, filterList]);
+
+  const handleAddClick = (index: number) => {
+    const list = filterList.slice();
+    list.splice(index, 1, { key: '' });
     onChange(list, false);
   };
-  handleConditionChange = (v: string, index: number) => {
-    this.handleCommonChange(index, 'condition', v);
+
+  const handleConditionChange = (v: string, index: number) => {
+    handleCommonChange(index, 'condition', v);
   };
-  handleConditionKeyDown = (e, index: number) => {
-    const { keyList } = this.props;
+
+  const handleConditionKeyDown = (e, index: number) => {
     if (
       e.key === 'Enter' &&
       e.target.value &&
@@ -103,11 +93,11 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     ) {
       const dimension = e.target.value;
       keyList.push({ id: dimension, name: dimension });
-      this.handleKeyChange(e.target.value, index);
+      handleKeyChange(e.target.value, index);
     }
   };
-  handleDeleteKey = (index: number) => {
-    const { filterList, onChange } = this.props;
+
+  const handleDeleteKey = (index: number) => {
     const list = filterList.slice();
     if (index === list.length - 1) {
       list.splice(index, 1, {});
@@ -120,72 +110,34 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     }
     onChange(list);
   };
-  /**
-   * @description: 维度变化触发事件
-   * @param {string} v 维度
-   * @param {number} index 索引
-   * @return {*}
-   */
-  handleKeyChange = async (v: string, index: number) => {
-    const { filterList } = this.props;
-    this.props.onChange(
-      filterList.map((item, i) => {
-        if (i === index) {
-          if (item.key !== v) {
-            return {
-              ...item,
-              key: v,
-              method: this.getMethodList()[0].id,
-              value: [],
-              ...(i > 0 ? { condition: 'and' } : {}),
-            };
-          }
+
+  const handleKeyChange = async (v: string, index: number) => {
+    const list = filterList.map((item, i) => {
+      if (i === index) {
+        if (item.key !== v) {
           return {
             ...item,
             key: v,
+            method: getMethodList()[0].id,
+            value: [],
+            ...(i > 0 ? { condition: 'and' } : {}),
           };
         }
-        return item;
-      }),
-    );
-    if (this.state.dimensionValueMap[v] || !v) return;
-    const data = await this.getDimensionValue(v);
-    this.setState({
-      dimensionValueMap: {
-        ...this.state.dimensionValueMap,
-        ...data,
-      },
+        return {
+          ...item,
+          key: v,
+        };
+      }
+      return item;
     });
+    onChange(list);
   };
-  handleKeyVisibleChange = (open: boolean, index: number) => {
-    if (!open) {
-      setTimeout(() => {
-        const { filterList } = this.props;
-        if (filterList[index].key === '') {
-          const list = filterList.slice();
-          list[index] = {};
-          this.props.onChange(list, false);
-        }
-      }, 20);
-    }
+
+  const handleMethodChange = (v: string, index: number) => {
+    handleCommonChange(index, 'method', v);
   };
-  /**
-   * @description: 监控条件方法触发
-   * @param {string} v 方法
-   * @param {number} index 索引
-   * @return {*}
-   */
-  handleMethodChange = (v: string, index: number) => {
-    this.handleCommonChange(index, 'method', v);
-  };
-  /**
-   * @description: 监控条件值变化触发
-   * @param {string} v 监控条件
-   * @param {number} index 索引
-   * @return {*}
-   */
-  handleValueChange = (v: string[], index: number) => {
-    const { filterList, onChange } = this.props;
+
+  const handleValueChange = (v: string[], index: number) => {
     const param = filterList.map((item, i) => {
       if (i === index) {
         return {
@@ -200,26 +152,14 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     }
     onChange(param);
   };
-  handleValueConditionKeyDown = (e: any) => {
+
+  const handleValueConditionKeyDown = e => {
     if (e.key === 'Enter') {
       e.preventDefault();
     }
   };
-  componentDidUpdate() {
-    // if (this.props.metric?.curMetricId && this.state.metricMetaId !== this.props.metric.curMetricId) {
-    //   this.setState({
-    //     dimensionValueMap: {},
-    //     metricMetaId: this.props.metric.curMetricId,
-    //   });
-    //   this.initDimensionValueMap();
-    // }
-  }
-  /**
-   * @description: 修改监控条件
-   * @param {number} index 索引
-   */
-  handleCommonChange<T extends IConditionItem, K extends keyof T>(index: number, name: K, v: T[K]) {
-    const { filterList, onChange } = this.props;
+
+  const handleCommonChange = <T extends IConditionItem, K extends keyof T>(index: number, name: K, v: T[K]) => {
     onChange(
       filterList.map((item, i) => {
         if (i === index) {
@@ -231,173 +171,153 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
         return item;
       }),
     );
-  }
-  /**
-   * @description: 初始化维度列表
-   * @param {*}
-   * @return {*}
-   */
-  async initDimensionValueMap() {
-    // const { agg_condition: condition } = this.props.metric;
-    // if (condition.length && condition[0].key) {
-    //   const promiseList = condition.filter(item => item.key).map(item => this.getDimensionValue(item.key));
-    //   const data = await Promise.all(promiseList);
-    //   this.setState({
-    //     dimensionValueMap: data.reduce((pre, cur) => ({ ...pre, ...cur }), {}),
-    //   });
-    // }
-  }
-  render(): JSX.Element {
-    const { dimensionValueMap } = this.state;
-    const { filterList, keyList } = this.props;
-    const needNUll = (key: string) => {
-      const item = keyList?.find(item => item.id === key);
-      if (!item) return true;
-      return typeof item.type === 'undefined' || item.type === 'string';
-    };
+  };
 
-    const getMaxWidth = (list: ICommonItem[]) =>
-      Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
-    return (
-      <div className='condition-input'>
-        <LanguageContext.Consumer>
-          {({ language }) =>
-            filterList?.map((item, index) => [
-              item?.condition && (
-                <Select
-                  key={`condition-${index}-${item.key}`}
-                  className='condition-input-condition'
-                  defaultValue={item.condition}
-                  dropdownMatchSelectWidth={100}
-                  showArrow={false}
-                  onChange={v => this.handleConditionChange(v, index)}
+  const getMethodList = () => {
+    return [...STRING_CONDITION_METHOD_LIST].filter(item => item.id === 'eq');
+  };
+
+  const needNUll = (key: string) => {
+    const item = keyList?.find(item => item.id === key);
+    if (!item) return true;
+    return typeof item.type === 'undefined' || item.type === 'string';
+  };
+
+  const getMaxWidth = (list: ICommonItem[]) =>
+    Math.max(list?.reduce((max, cur) => Math.max(max, +cur?.name?.length), 1) * 10, 100);
+
+  return (
+    <div className='condition-input'>
+      {filterList?.map((item, index) => (
+        <React.Fragment key={JSON.stringify(item)}>
+          {item?.condition && (
+            <Select
+              className='condition-input-condition'
+              defaultValue={item.condition}
+              dropdownMatchSelectWidth={100}
+              showArrow={false}
+              onChange={v => handleConditionChange(v, index)}
+            >
+              {CONDITION?.map(dim => (
+                <Option
+                  key={dim.id}
+                  value={dim.id}
                 >
-                  {CONDITION?.map(dim => (
-                    <Option
-                      key={dim.id}
-                      value={dim.id}
+                  {dim.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+          {typeof item.key !== 'undefined' ? (
+            <Select
+              dropdownRender={menu =>
+                item.value ? (
+                  <div>
+                    {menu}
+                    <Divider style={{ margin: '0' }} />
+                    <div
+                      className='key-del'
+                      onClick={() => handleDeleteKey(index)}
                     >
-                      {dim.name}
-                    </Option>
-                  ))}
-                </Select>
-              ),
-              typeof item.key !== 'undefined' ? (
-                <Select
-                  key={`key-${JSON.stringify(item || {})}-${item.key}`}
-                  dropdownRender={(menu): JSX.Element =>
-                    item.value ? (
-                      <div>
-                        {menu}
-                        <Divider style={{ margin: '0' }} />
-                        <div
-                          className='key-del'
-                          onClick={(): void => this.handleDeleteKey(index)}
-                        >
-                          <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                          {getEnByName('删除', language)}
-                        </div>
-                      </div>
-                    ) : (
-                      menu
-                    )
-                  }
-                  autoFocus={true}
-                  className='condition-input-key'
-                  defaultOpen={item.key === ''}
-                  defaultValue={item.key || ''}
-                  dropdownMatchSelectWidth={140}
-                  placeholder={getEnByName('请选择', language)}
-                  showArrow={false}
-                  showSearch
-                  onChange={(v: string) => this.handleKeyChange(v, index)}
-                  onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
-                  onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
+                      <CloseCircleOutlined style={{ marginRight: '5px' }} />
+                      {getEnByName('删除')}
+                    </div>
+                  </div>
+                ) : (
+                  menu
+                )
+              }
+              autoFocus={true}
+              className='condition-input-key'
+              defaultOpen={item.key === ''}
+              defaultValue={item.key || undefined}
+              dropdownMatchSelectWidth={140}
+              placeholder={getEnByName('请选择')}
+              showArrow={false}
+              showSearch
+              onChange={v => handleKeyChange(v, index)}
+              onInputKeyDown={v => handleConditionKeyDown(v, index)}
+            >
+              {keyList?.map(dim => (
+                <Option
+                  key={dim.id}
+                  value={dim.id}
                 >
-                  {keyList?.map(
-                    dim =>
-                      (
-                        <Option
-                          key={dim.id}
-                          value={dim.id}
-                        >
-                          <Tooltip
-                            placement='right'
-                            title={dim.id}
-                          >
-                            <div>{dim.name || dim.id}</div>
-                          </Tooltip>
-                        </Option>
-                      ) || undefined,
-                  )}
-                </Select>
-              ) : (
-                <span
-                  key={`add-${index}`}
-                  className='condition-input-add'
-                  onClick={() => this.handleAddClick(index)}
-                >
-                  <PlusOutlined className='add-icon' />
-                </span>
-              ),
-              item?.key && [
-                <Select
-                  key={`method-${JSON.stringify(item || {})}-${item.key}`}
-                  className='condition-input-method'
-                  defaultValue={item.method}
-                  dropdownMatchSelectWidth={80}
-                  showArrow={false}
-                  onChange={v => this.handleMethodChange(v, index)}
-                >
-                  {this.getMethodList(item.key).map(dim => (
-                    <Option
-                      key={dim.id}
-                      value={dim.id}
-                    >
-                      {dim.name}
-                    </Option>
-                  ))}
-                </Select>,
-                <Select
-                  key={`value-${JSON.stringify(item || {})}-${item.key}`}
-                  dropdownStyle={{
-                    display: dimensionValueMap[item.key]?.length < 1 ? 'none' : '',
-                    minWidth: `${getMaxWidth(dimensionValueMap[item.key])}px`,
-                    width: `${getMaxWidth(dimensionValueMap[item.key])}px`,
-                  }}
-                  autoFocus={true}
-                  className='condition-input-value'
-                  defaultValue={item.value}
-                  dropdownMatchSelectWidth={true}
-                  mode='tags'
-                  placeholder={getEnByName('请选择', language)}
-                  showArrow={false}
-                  tokenSeparators={[',', '|', '\n', ' ']}
-                  onChange={v => this.handleValueChange(v, index)}
-                  onInputKeyDown={v => this.handleValueConditionKeyDown(v)}
-                >
-                  {needNUll(item.key) && (
-                    <Option
-                      key={DIM_NULL_ID}
-                      value={DIM_NULL_ID}
-                    >
-                      {getEnByName('- 空 -')}
-                    </Option>
-                  )}
-                  {dimensionValueMap[item.key]?.map?.(dim => (
-                    <Option
-                      key={dim.id}
-                      value={dim.id}
-                    >
-                      {dim.name}
-                    </Option>
-                  ))}
-                </Select>,
-              ],
-            ])
-          }
-        </LanguageContext.Consumer>
-      </div>
-    );
-  }
-}
+                  <Tooltip
+                    placement='right'
+                    title={dim.id}
+                  >
+                    <div>{dim.name || dim.id}</div>
+                  </Tooltip>
+                </Option>
+              ))}
+            </Select>
+          ) : (
+            <span
+              className='condition-input-add'
+              onClick={() => handleAddClick(index)}
+            >
+              <PlusOutlined className='add-icon' />
+            </span>
+          )}
+          {item?.key && (
+            <>
+              <Select
+                className='condition-input-method'
+                defaultValue={item.method}
+                dropdownMatchSelectWidth={80}
+                showArrow={false}
+                onChange={v => handleMethodChange(v, index)}
+              >
+                {getMethodList().map(dim => (
+                  <Option
+                    key={dim.id}
+                    value={dim.id}
+                  >
+                    {dim.name}
+                  </Option>
+                ))}
+              </Select>
+              <Select
+                dropdownStyle={{
+                  display: dimensionValueMap[item.key]?.length < 1 ? 'none' : '',
+                  minWidth: `${getMaxWidth(dimensionValueMap[item.key])}px`,
+                  width: `${getMaxWidth(dimensionValueMap[item.key])}px`,
+                }}
+                autoFocus={true}
+                className='condition-input-value'
+                defaultValue={item.value}
+                dropdownMatchSelectWidth={true}
+                mode='tags'
+                placeholder={getEnByName('请输入')}
+                showArrow={false}
+                tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
+                onChange={v => handleValueChange(v, index)}
+                onInputKeyDown={v => handleValueConditionKeyDown(v)}
+              >
+                {needNUll(item.key) && (
+                  <Option
+                    key={DIM_NULL_ID}
+                    value={DIM_NULL_ID}
+                  >
+                    {getEnByName('- 空 -')}
+                  </Option>
+                )}
+                {dimensionValueMap[item.key]?.map?.(dim => (
+                  <Option
+                    key={dim.id}
+                    value={dim.id}
+                  >
+                    {dim.name}
+                  </Option>
+                ))}
+              </Select>
+            </>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+};
+
+export default ConditionInput;

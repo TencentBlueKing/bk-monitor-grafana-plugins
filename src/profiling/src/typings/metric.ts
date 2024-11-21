@@ -24,14 +24,6 @@
  * IN THE SOFTWARE.
  */
 
-// 汇聚方法列表
-
-export type IntervalType = 'auto' | number | string;
-export interface IIntervalItem {
-  id: IntervalType;
-  name: number | string;
-}
-
 // 监控条件
 export const CONDITION_METHOD_LIST = [
   { id: 'eq', name: '=' },
@@ -77,7 +69,7 @@ export const STRING_CONDITION_METHOD_LIST = [
 
 // 监控条件 设置条件
 export const CONDITION = [
-  { id: 'or', name: 'OR' },
+  // { id: 'or', name: 'OR' },
   { id: 'and', name: 'AND' },
 ];
 
@@ -98,6 +90,7 @@ export interface IConditionMethodItem {
 }
 // 通用列表item
 export interface ICommonItem {
+  type?: string;
   id: string;
   name: string;
 }

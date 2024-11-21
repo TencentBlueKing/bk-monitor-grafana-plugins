@@ -33,22 +33,20 @@ import {
   DataSourceInstanceSettings,
   toDataFrame,
 } from '@grafana/data';
-import {
-  BackendDataSourceResponse,
-  BackendSrvRequest,
-  getBackendSrv,
-  getTemplateSrv,
-  TemplateSrv,
-} from '@grafana/runtime';
-import { lastValueFrom, map, merge, Observable } from 'rxjs';
+import { BackendDataSourceResponse, BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { catchError, lastValueFrom, map, merge, Observable, of } from 'rxjs';
 
 import { QueryOption } from '../typings/config';
 import { ProfilingQuery } from '../typings/datasource';
-import { IProfileApp } from '../typings/profile';
+import { ICommonItem } from '../typings/metric';
+import { type IApplication } from '../typings/profile';
 import { random } from '../utils/utils';
 export enum QueryUrl {
-  get_profile_application_service = 'get_profile_application_service ',
-  query_graph_profile = 'query_graph_profile',
+  get_profile_application_service = 'get_profile_application_service/',
+  get_profile_labels = 'get_profile_label/',
+  get_profile_type = 'get_profile_type/',
+  get_profile_values = 'get_profile_label_values/',
+  query_graph_profile = 'query_graph_profile/',
   testAndSaveUrl = '',
 }
 declare global {
@@ -62,10 +60,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
   public configData: QueryOption;
   public url?: string;
   public useToken: boolean;
-  constructor(
-    private instanceSettings: DataSourceInstanceSettings<QueryOption>,
-    private readonly templateSrv: TemplateSrv = getTemplateSrv(),
-  ) {
+  constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
     this.url = instanceSettings.url;
     this.configData = instanceSettings?.jsonData;
@@ -81,7 +76,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
   query(request: DataQueryRequest<ProfilingQuery>): Observable<DataQueryResponse> {
     const filterTarget = {
       ...request,
-      targets: request.targets.filter(t => t.hide !== true),
+      targets: request.targets.filter(t => t.hide !== true && t.app_name && t.service_name && t.profile_type),
     };
     const streams: Array<Observable<DataQueryResponse>> = [];
     for (const target of filterTarget.targets) {
@@ -97,34 +92,122 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
     return merge(...streams);
   }
   async queryProfilingGraph(options: DataQueryRequest, target: ProfilingQuery) {
+    const filterLabel: Record<string, string[]> = {};
+    for (const item of target.filter_labels) {
+      if (!item.value?.length || !item.key) {
+        continue;
+      }
+      filterLabel[item.key] = item.value;
+    }
     return await lastValueFrom(
       this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
         data: {
           bk_biz_id: this.bizId,
-          start: options.range.from.valueOf(),
-          end: options.range.to.valueOf(),
+          start: options.range.from.unix(),
+          end: options.range.to.unix(),
           app_name: target.app_name,
           service_name: target.service_name,
-          data_type: target.data_type,
+          data_type: target.profile_type,
           profile_id: target.profile_id,
           offset: target.offset,
-          filter_labels: target.filter_labels,
+          filter_labels: filterLabel,
         },
         method: 'POST',
       }),
     );
   }
-  async getProfileApplicationService() {
-    return await lastValueFrom(
-      this.request<IProfileApp>(QueryUrl.get_profile_application_service, {
-        data: {
-          bk_biz_id: this.bizId,
-        },
-        method: 'GET',
-      }),
-    ).catch(() => undefined);
+  getTimeRange(): { start_time: number; end_time: number } {
+    const range = (getTemplateSrv() as any).timeRange;
+    return {
+      start_time: range.from.unix(),
+      end_time: range.to.unix(),
+    };
   }
-
+  getProfileTypes(params: Pick<ProfilingQuery, 'app_name' | 'service_name'>) {
+    return this.request<{
+      bk_biz_id: number;
+      app_name: string;
+      name: string;
+      create_time: string;
+      last_check_time: string;
+      data_types: Array<{
+        key: string;
+        name: string;
+        is_large: boolean;
+      }>;
+    }>(QueryUrl.get_profile_type, {
+      params: {
+        bk_biz_id: this.bizId,
+        ...params,
+        ...this.getTimeRange(),
+      },
+      method: 'GET',
+    }).pipe(
+      map(data =>
+        (data?.data_types || []).map(item => ({
+          label: item.name,
+          value: item.key,
+        })),
+      ),
+      catchError(() => {
+        return of([]);
+      }),
+    );
+  }
+  getProfileApplicationService() {
+    return this.request<{
+      normal?: IApplication[];
+      no_data?: IApplication[];
+    }>(QueryUrl.get_profile_application_service, {
+      params: {
+        bk_biz_id: this.bizId,
+        ...this.getTimeRange(),
+      },
+      method: 'GET',
+    }).pipe(
+      map(data => {
+        if (!data) return [];
+        return [...(data?.normal || []), ...(data?.no_data || [])];
+      }),
+      catchError(() => {
+        return of([] as any[]);
+      }),
+    );
+  }
+  getProfileLabels(params: Pick<ProfilingQuery, 'app_name' | 'service_name'>) {
+    return this.request<{
+      label_keys: string[];
+    }>(QueryUrl.get_profile_labels, {
+      params: {
+        bk_biz_id: this.bizId,
+        ...params,
+        ...this.getTimeRange(),
+      },
+      method: 'GET',
+    }).pipe(
+      map(data => (data?.label_keys || []).map<ICommonItem>(key => ({ id: key, name: key }))),
+      catchError(() => {
+        return of([] as ICommonItem[]);
+      }),
+    );
+  }
+  getProfileValues(params: Pick<ProfilingQuery, 'app_name' | 'service_name'> & { label_key: string }) {
+    return this.request<{
+      label_values: string[];
+    }>(QueryUrl.get_profile_values, {
+      params: {
+        bk_biz_id: this.bizId,
+        ...params,
+        ...this.getTimeRange(),
+      },
+      method: 'GET',
+    }).pipe(
+      map(data => (data?.label_values || []).map<ICommonItem>(key => ({ id: key, name: key }))),
+      catchError(() => {
+        return of([] as ICommonItem[]);
+      }),
+    );
+  }
   async testDatasource() {
     if (!this.baseUrl) {
       return {
@@ -156,7 +239,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
         title: 'Error',
       }));
   }
-  private request<T = any>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T> {
+  private request<T = any>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T | undefined> {
     const url = `${this.useToken ? `${this.url}/profiling/${apiUrl}` : this.baseUrl + apiUrl}`;
     const req = {
       ...options,
@@ -167,7 +250,20 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       url,
     };
     return getBackendSrv()
-      .fetch<T>(req)
-      .pipe(map(res => res.data));
+      .fetch<{
+        data: T;
+        result: boolean;
+      }>(req)
+      .pipe(
+        map(res => {
+          if (res?.data?.result === false) {
+            throw res.data;
+          }
+          if (res.status === 200 && res?.data?.result) {
+            return res.data.data;
+          }
+          throw res.data;
+        }),
+      );
   }
 }

@@ -1,12 +1,13 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Tencent is pleased to support the open source community by making
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
  *
  * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
  *
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) is licensed under the MIT License.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
  *
- * License for 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition):
+ * License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
  *
  * ---------------------------------------------------
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -25,168 +26,168 @@
  */
 import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { LegacyForms, TagsInput } from '@grafana/ui';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { QueryOption, SecureOption } from '../typings/config';
 import { getEnByName } from '../utils/utils';
+
 const { FormField, Input, Switch } = LegacyForms;
-export default class ConfigEditor extends React.PureComponent<
-  DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>,
-  { useToken: boolean }
-> {
-  constructor(props) {
-    super(props);
-    this.state = {
-      useToken: props.options?.jsonData?.useToken ?? false,
-    };
-  }
-  handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
-    this.props.onOptionsChange({
-      ...this.props.options,
+
+const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>> = ({
+  options,
+  onOptionsChange,
+}) => {
+  const [useToken, setUseToken] = useState<boolean>(options?.jsonData?.useToken ?? false);
+
+  const handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
       jsonData: {
-        ...this.props.options.jsonData,
+        ...options.jsonData,
         [type]: e.target.value.trim(),
       },
     });
   };
-  handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
-    this.props.onOptionsChange({
-      ...this.props.options,
+
+  const handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
       secureJsonData: {
-        ...this.props.options.secureJsonData,
+        ...options.secureJsonData,
         token: e.target.value.trim(),
       },
     });
   };
-  handleUseTokenChange = e => {
-    const useToken = e.target.checked;
-    this.setState({ useToken });
-    this.props.onOptionsChange({
-      ...this.props.options,
+
+  const handleUseTokenChange = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
+    const newUseToken = (e.target as any).checked;
+    setUseToken(newUseToken);
+    onOptionsChange({
+      ...options,
       jsonData: {
-        ...this.props.options.jsonData,
-        useToken,
+        ...options.jsonData,
+        useToken: newUseToken,
       },
     });
   };
-  render() {
-    const { onOptionsChange, options } = this.props;
-    const tagProps: any = {
-      style: { width: '500px' },
-    };
-    return (
-      <>
-        <h3 className='page-heading'>BlueKing Monitor API Details</h3>
-        <div className='gf-form-group'>
-          <div
-            style={{ width: '100%' }}
-            className='gf-form'
-          >
-            <FormField
-              inputEl={
-                <Input
-                  style={{ width: '500px' }}
-                  defaultValue={options.jsonData.baseUrl}
-                  placeholder={getEnByName('蓝鲸监控API路径')}
-                  spellCheck={false}
-                  onBlur={e => this.handleChange('baseUrl', e)}
-                />
-              }
-              label='Base Url'
-              labelWidth={10}
-              tooltip={getEnByName('蓝鲸监控API路径')}
-            />
-          </div>
-          <div
-            style={{ width: '100%' }}
-            className='gf-form'
-          >
-            <FormField
-              inputEl={
-                <Switch
-                  checked={this.state.useToken}
-                  label=''
-                  onChange={this.handleUseTokenChange}
-                />
-              }
-              label={getEnByName('是否启用token')}
-              labelWidth={10}
-              tooltip={getEnByName('是否启用token')}
-            />
-          </div>
-          {this.state.useToken && (
-            <>
-              <div className='gf-form'>
-                <FormField
-                  inputEl={
-                    <TagsInput
-                      {...tagProps}
-                      width={500}
-                      tags={options.jsonData.keepCookies}
-                      // style={{ width: '500px' }}
-                      onChange={cookies =>
-                        onOptionsChange({
-                          ...this.props.options,
-                          jsonData: {
-                            ...this.props.options.jsonData,
-                            keepCookies: cookies,
-                          },
-                        })
-                      }
-                    />
-                  }
-                  label='Allowed cookies'
-                  labelWidth={10}
-                  tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
-                />
-              </div>
-              <div
-                style={{ width: '100%' }}
-                className='gf-form'
-              >
-                <FormField
-                  inputEl={
-                    <Input
-                      style={{ width: '500px' }}
-                      defaultValue={options.jsonData.bizId}
-                      placeholder={getEnByName('蓝鲸监控业务ID')}
-                      spellCheck={false}
-                      onBlur={e => this.handleChange('bizId', e)}
-                    />
-                  }
-                  label='业务ID'
-                  labelWidth={10}
-                  tooltip={getEnByName('蓝鲸监控业务ID')}
-                />
-              </div>
-              <div
-                style={{ width: '100%' }}
-                className='gf-form'
-              >
-                <FormField
-                  inputEl={
-                    <Input
-                      style={{ width: '500px' }}
-                      placeholder={
-                        options.secureJsonFields?.token
-                          ? getEnByName('已设置免登入Token')
-                          : getEnByName('蓝鲸监控当前业务免登入Token')
-                      }
-                      defaultValue={options.secureJsonData?.token ?? ''}
-                      spellCheck={false}
-                      type='password'
-                      onBlur={this.handleTokenChange}
-                    />
-                  }
-                  label='Token'
-                  labelWidth={10}
-                  tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
-                />
-              </div>
-            </>
-          )}
+
+  const tagProps = {
+    style: { width: '500px' },
+  };
+
+  return (
+    <>
+      <h3 className='page-heading'>BlueKing Monitor API Details</h3>
+      <div className='gf-form-group'>
+        <div
+          style={{ width: '100%' }}
+          className='gf-form'
+        >
+          <FormField
+            inputEl={
+              <Input
+                style={{ width: '500px' }}
+                defaultValue={options.jsonData.baseUrl}
+                placeholder={getEnByName('蓝鲸监控API路径')}
+                spellCheck={false}
+                onBlur={e => handleChange('baseUrl', e)}
+              />
+            }
+            label='Base Url'
+            labelWidth={10}
+            tooltip={getEnByName('蓝鲸监控API路径')}
+          />
         </div>
-      </>
-    );
-  }
-}
+        <div
+          style={{ width: '100%' }}
+          className='gf-form'
+        >
+          <FormField
+            inputEl={
+              <Switch
+                checked={useToken}
+                label=''
+                onChange={e => handleUseTokenChange(e)}
+              />
+            }
+            label={getEnByName('是否启用token')}
+            labelWidth={10}
+            tooltip={getEnByName('是否启用token')}
+          />
+        </div>
+        {useToken && (
+          <>
+            <div className='gf-form'>
+              <FormField
+                inputEl={
+                  <TagsInput
+                    {...tagProps}
+                    width={500}
+                    tags={options.jsonData.keepCookies}
+                    onChange={cookies =>
+                      onOptionsChange({
+                        ...options,
+                        jsonData: {
+                          ...options.jsonData,
+                          keepCookies: cookies,
+                        },
+                      })
+                    }
+                  />
+                }
+                label='Allowed cookies'
+                labelWidth={10}
+                tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
+              />
+            </div>
+            <div
+              style={{ width: '100%' }}
+              className='gf-form'
+            >
+              <FormField
+                inputEl={
+                  <Input
+                    style={{ width: '500px' }}
+                    defaultValue={options.jsonData.bizId}
+                    placeholder={getEnByName('蓝鲸监控业务ID')}
+                    spellCheck={false}
+                    onBlur={e => handleChange('bizId', e)}
+                  />
+                }
+                label='业务ID'
+                labelWidth={10}
+                tooltip={getEnByName('蓝鲸监控业务ID')}
+              />
+            </div>
+            <div
+              style={{ width: '100%' }}
+              className='gf-form'
+            >
+              <FormField
+                inputEl={
+                  <Input
+                    style={{ width: '500px' }}
+                    placeholder={
+                      options.secureJsonFields?.token
+                        ? getEnByName('已设置免登入Token')
+                        : getEnByName('蓝鲸监控当前业务免登入Token')
+                    }
+                    defaultValue={options.secureJsonData?.token ?? ''}
+                    spellCheck={false}
+                    type='password'
+                    onBlur={handleTokenChange}
+                  />
+                }
+                label='Token'
+                labelWidth={10}
+                tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </>
+  );
+};
+
+export default ConfigEditor;

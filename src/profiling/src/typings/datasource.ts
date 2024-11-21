@@ -25,10 +25,10 @@
  */
 import { DataQuery } from '@grafana/schema';
 export interface ProfilingQuery extends DataQuery {
-  app_name: string;
-  service_name: string;
-  data_type: string;
+  app_name: number | string;
+  service_name: number | string;
+  profile_type: string;
   profile_id: number;
   offset: number;
-  filter_labels: Record<string, string>;
+  filter_labels: Array<Record<string, any>>;
 }

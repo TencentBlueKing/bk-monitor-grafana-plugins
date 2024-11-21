@@ -1,12 +1,12 @@
 /*
  * Tencent is pleased to support the open source community by making
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
  *
  * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
  *
- * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) is licensed under the MIT License.
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
  *
- * License for 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition):
+ * License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
  *
  * ---------------------------------------------------
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
@@ -24,9 +24,10 @@
  * IN THE SOFTWARE.
  */
 import Tooltip from 'antd/es/tooltip';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import { LanguageContext } from '../utils/context';
+
 export interface IEditorFormProps {
   labelStyle?: React.CSSProperties;
   renderTitle?: () => Element;
@@ -35,39 +36,36 @@ export interface IEditorFormProps {
   title?: string;
 }
 
-export default class EditorForm extends React.PureComponent<IEditorFormProps> {
-  render(): JSX.Element {
-    const { labelStyle, renderTitle, style, tips, title } = this.props;
-    return (
-      <LanguageContext.Consumer>
-        {({ language }) => (
-          <div
-            style={style}
-            className='editor-form'
+const EditorForm: React.FC<IEditorFormProps> = ({ labelStyle, renderTitle, style, tips, title, children }) => {
+  const { language } = useContext(LanguageContext);
+
+  return (
+    <div
+      style={style}
+      className='editor-form'
+    >
+      <span
+        style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
+        className='editor-form-label'
+      >
+        {renderTitle ? renderTitle() : title}
+        {tips && (
+          <Tooltip
+            mouseEnterDelay={0.2}
+            overlayClassName='monitor-tooltip'
+            placement='right'
+            title={tips}
           >
-            <span
-              style={{ minWidth: !tips ? '56px' : '80px', ...labelStyle }}
-              className='editor-form-label'
-            >
-              {renderTitle ? renderTitle() : title}
-              {tips && (
-                <Tooltip
-                  mouseEnterDelay={0.2}
-                  overlayClassName='monitor-tooltip'
-                  placement='right'
-                  title={tips}
-                >
-                  <i
-                    style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
-                    className='fa fa-info-circle label-tip'
-                  />
-                </Tooltip>
-              )}
-            </span>
-            <div className='editor-form-content'>{this.props?.children}</div>
-          </div>
+            <i
+              style={{ marginLeft: language !== 'en' ? 'auto' : '8px' }}
+              className='fa fa-info-circle label-tip'
+            />
+          </Tooltip>
         )}
-      </LanguageContext.Consumer>
-    );
-  }
-}
+      </span>
+      <div className='editor-form-content'>{children}</div>
+    </div>
+  );
+};
+
+export default EditorForm;

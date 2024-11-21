@@ -27,10 +27,10 @@ import { DataSourceJsonData } from '@grafana/data';
 
 // config editor 数据
 export interface QueryOption extends DataSourceJsonData {
-  baseUrl: string; // api base url
-  bizId: string;
+  baseUrl?: string; // api base url
+  bizId?: string;
   keepCookies?: string[];
-  useToken: boolean;
+  useToken?: boolean;
 }
 
 export interface SecureOption {

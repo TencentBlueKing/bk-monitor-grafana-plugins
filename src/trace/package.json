@@ -21,12 +21,11 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@ant-design/icons": "4.8.1",
     "@emotion/css": "11.10.6",
-    "@grafana/data": "10.0.3",
-    "@grafana/runtime": "10.0.3",
-    "@grafana/schema": "10.0.3",
-    "@grafana/ui": "10.0.3",
+    "@grafana/data": "10.4.2",
+    "@grafana/runtime": "10.4.2",
+    "@grafana/schema": "10.4.2",
+    "@grafana/ui": "10.4.2",
     "logfmt": "^1.4.0",
     "postcss-scss": "^4.0.9",
     "react": "^17.0.1",
