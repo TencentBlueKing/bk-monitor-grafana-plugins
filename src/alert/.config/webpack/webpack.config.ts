@@ -8,6 +8,8 @@ import { Configuration } from 'webpack';
 import { getPackageJson, getPluginJson, hasReadme, getEntries, isWSL } from './utils';
 import { SOURCE_DIR, DIST_DIR } from './constants';
 import { getThemeVariables } from 'antd/dist/theme';
+import darkVariables from 'common/style/dark/antd-variables';
+import lightVariables from 'common/style/light/antd-variables';
 const pluginJson = getPluginJson();
 
 const config = async (env): Promise<Configuration> => {
@@ -114,7 +116,8 @@ const config = async (env): Promise<Configuration> => {
               options: {
                 lessOptions: {
                   modifyVars: {
-                    hack: 'true; @import "common/style/light/custom-antd-theme.less";',
+                    // hack: 'true; @import "common/style/light/custom-antd-theme.less";',
+                    ...lightVariables,
                   },
                   javascriptEnabled: true,
                 },
@@ -131,10 +134,12 @@ const config = async (env): Promise<Configuration> => {
               loader: 'less-loader',
               options: {
                 lessOptions: {
-                  modifyVars: getThemeVariables({
-                    dark: true,
-                    compact: true,
-                  }),
+                  modifyVars: {
+                    ...getThemeVariables({
+                      dark: true,
+                    }),
+                    ...darkVariables,
+                  },
                   javascriptEnabled: true,
                 },
               },
