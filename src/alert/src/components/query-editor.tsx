@@ -228,7 +228,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const { data } = this.props;
     return (
       <LanguageContext.Provider value={{ language }}>
-        <div className='monitor-grafana'>
+        <div className='monitor-grafana-alert'>
           <Spin
             spinning={loading}
             tip='Loading...'
