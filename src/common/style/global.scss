@@ -659,6 +659,63 @@
 .ant-message {
   z-index: 99999 !important;
 }
+.#{$plugin-name} {
+  .addvance-setting {
+    display: flex;
+    flex-direction: column;
+
+    &-title {
+      display: flex;
+      flex: 0 0 16px;
+      align-items: center;
+      height: 16px;
+      margin: 12px 0;
+
+      .fa-angle-down {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 6px;
+        font-size: 16px;
+        transition: all ease-in-out 0.3s;
+        transform: rotate(-90deg);
+
+        &.is-open {
+          transform: rotate(0deg);
+        }
+      }
+
+      .header-content {
+        display: flex;
+        align-items: center;
+        color: #979ba5;
+
+        &-item {
+          margin-left: 24px;
+        }
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+
+    &-content {
+      flex: 1;
+
+      &.is-hidden {
+        display: none;
+      }
+    }
+  }
+
+  .down-sample-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 0px 8px;
+    border: 1px solid #dcdee5;
+  }
+}
 
 body {
   &.theme-dark {

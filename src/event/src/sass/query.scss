@@ -8,4 +8,8 @@
   color: #63656e;
 
   @include query-editor();
+
+  .query-editor {
+    flex-wrap: wrap;
+  }
 }
