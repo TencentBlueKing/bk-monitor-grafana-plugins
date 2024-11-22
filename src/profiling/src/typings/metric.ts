@@ -81,8 +81,6 @@ export type IConditionItem = {
   value?: string[]; // 值
 };
 
-// 监控函数参数
-
 // 监控条件列表item
 export interface IConditionMethodItem {
   label: string;

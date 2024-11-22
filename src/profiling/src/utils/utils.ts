@@ -52,7 +52,7 @@ export const getCookie = (name: string): string => {
   }
   return '';
 };
-const language = getCookie('blueking_language');
+export const language = getCookie('blueking_language');
 /**
  * @description: 获取翻译
  * @param {string} name 翻译字符

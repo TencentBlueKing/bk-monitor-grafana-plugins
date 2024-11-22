@@ -170,7 +170,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
         return [...(data?.normal || []), ...(data?.no_data || [])];
       }),
       catchError(() => {
-        return of([] as any[]);
+        return of([] as IApplication[]);
       }),
     );
   }

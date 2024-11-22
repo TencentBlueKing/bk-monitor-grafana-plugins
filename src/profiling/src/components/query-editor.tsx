@@ -33,7 +33,7 @@ import ProfilingDatasource from '../datasource/datasource';
 import { ProfilingQuery } from '../typings/datasource';
 import { ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getEnByName, language } from '../utils/utils';
 import ConditionInput from './condition-input';
 import EditorForm from './editor-form';
 
@@ -43,11 +43,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
   const [appList, setAppList] = useState<BaseOptionType[]>([]);
   const [profileTypeList, setProfileTypeList] = useState<BaseOptionType[]>([]);
   const [labels, setLabels] = useState<ICommonItem[]>([]);
-  const [isLoading, setIsLoading] = useState<{
-    types: boolean;
-    labels: boolean;
-    app: boolean;
-  }>({
+  const [isLoading, setIsLoading] = useState({
     types: false,
     labels: false,
     app: false,
@@ -133,9 +129,9 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           setIsLoading(v => ({ ...v, labels: false }));
         },
       });
-  }, [query.app_name, query.service_name, datasource]);
+  }, [query.app_name, query.service_name]);
   return (
-    <LanguageContext.Provider value={{ language: getCookie('blueking_language') || 'zh-cn' }}>
+    <LanguageContext.Provider value={{ language }}>
       <div className='monitor-profiling'>
         <div className='query-editor-content'>
           <EditorForm title={getEnByName('应用/服务')}>

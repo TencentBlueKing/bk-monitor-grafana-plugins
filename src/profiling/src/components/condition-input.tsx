@@ -228,8 +228,8 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                 )
               }
               autoFocus={true}
-              className='condition-input-key'
-              defaultOpen={item.key === ''}
+              className={`condition-input-key-${index}`}
+              defaultOpen={item.key === '' && !!keyList.length}
               defaultValue={item.key || undefined}
               dropdownMatchSelectWidth={140}
               placeholder={getEnByName('请选择')}

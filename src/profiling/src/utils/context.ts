@@ -24,8 +24,10 @@
  * IN THE SOFTWARE.
  */
 import React from 'react';
+
+import { language } from './utils';
 export const LanguageContext = React.createContext({
-  language: 'zh-cn',
+  language,
 });
 
 export default {

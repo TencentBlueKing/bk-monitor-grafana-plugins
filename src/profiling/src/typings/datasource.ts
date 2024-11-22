@@ -24,11 +24,13 @@
  * IN THE SOFTWARE.
  */
 import { DataQuery } from '@grafana/schema';
+
+import { IConditionItem } from './metric';
 export interface ProfilingQuery extends DataQuery {
   app_name: number | string;
   service_name: number | string;
   profile_type: string;
   profile_id: number;
   offset: number;
-  filter_labels: Array<Record<string, any>>;
+  filter_labels: IConditionItem[];
 }
