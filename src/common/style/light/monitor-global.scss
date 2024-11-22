@@ -1,21 +1,25 @@
 a {
-  color: #ccccdc;
+  color: #24292e;
   text-decoration: none;
+  cursor: pointer;
   background-color: transparent;
   outline: none;
-  cursor: pointer;
   transition: color 0.3s;
-  -webkit-text-decoration-skip: objects;
+  text-decoration-skip: objects;
 }
+
 a:hover {
-  color: #ccccdc;
+  color: #24292e;
 }
+
 a:active {
   color: #366fd9;
 }
+
 body {
-  color: #ccccdc;
+  color: #24292e;
 }
+
 h1,
 h2,
 h3,
@@ -24,6 +28,6 @@ h5,
 h6 {
   margin-top: 0;
   margin-bottom: 0.5em;
-  color: #ccccdc;
   font-weight: 500;
+  color: #24292e;
 }

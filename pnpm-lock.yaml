@@ -171,6 +171,8 @@ importers:
         specifier: 2.5.3
         version: 2.5.3
 
+  src/common: {}
+
   src/event:
     dependencies:
       '@ant-design/icons':
@@ -239,6 +241,10 @@ importers:
       tslib:
         specifier: 2.5.3
         version: 2.5.3
+    devDependencies:
+      common:
+        specifier: workspace:*
+        version: link:../common
 
   src/timeseries:
     dependencies:

@@ -71,7 +71,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
             })),
           })) || [];
         setAppList(appList);
-        if (data.length) {
+        if (data.length && (!query.app_name || !query.service_name)) {
           onChange({
             ...query,
             app_name: data[0].app_name,
