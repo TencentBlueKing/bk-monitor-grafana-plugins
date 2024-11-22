@@ -1,4 +1,6 @@
 /* stylelint-disable declaration-no-important */
+@import './mixin.scss';
+
 .funciton-menu-list {
   .ant-dropdown-menu-item,
   .ant-dropdown-menu-submenu-title {
@@ -666,8 +668,7 @@ body {
     $monitor-label-bg-color: #22252b;
     $monitor-metric-bg-color: #282b31;
 
-    .variable-editor,
-    .#{$plugin-name} {
+    @mixin common-global-variables() {
       color: $monitor-font-color !important;
       background-color: $monitor-bg-color !important;
 
@@ -731,6 +732,15 @@ body {
       .funtion-input {
         border-color: $monitor-border-color !important;
       }
+    }
+    @if variable-exists(plugin-variable-name) {
+      .#{$plugin-variable-name} {
+        @include common-global-variables();
+      }
+    }
+    .variable-editor,
+    .#{$plugin-name} {
+      @include common-global-variables();
     }
 
     .metric-dropdown-tag .tab-tag {
