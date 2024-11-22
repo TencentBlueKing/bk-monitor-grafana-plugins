@@ -42,12 +42,12 @@ import {
   getDisplayProcessor,
 } from '@grafana/data';
 import { getBackendSrv, BackendSrvRequest, getTemplateSrv } from '@grafana/runtime';
+import apiCacheInstance from 'common/utils/api-cache';
 
 import { QueryOption } from '../typings/config';
 import { DIM_NULL_ID, IQueryConfig, QueryData } from '../typings/datasource';
 import { IMetric, ITargetData, EditMode, IntervalType } from '../typings/metric';
 import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
-import apiCacheInstance from '../utils/api-cache';
 import { handleTransformOldVariableQuery } from '../utils/common';
 import { random } from '../utils/utils';
 interface QueryFetchData {

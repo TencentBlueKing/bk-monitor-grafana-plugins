@@ -34,12 +34,12 @@ import {
   ScopedVars,
 } from '@grafana/data';
 import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import apiCacheInstance from 'common/utils/api-cache';
 
 import { QueryOption } from '../typings/config';
 import { IQueryConfig, QueryData } from '../typings/datasource';
 import { IMetric } from '../typings/metric';
 import { VariableQuery, VariableQueryType } from '../typings/variable';
-import apiCacheInstance from '../utils/api-cache';
 import { random } from '../utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];

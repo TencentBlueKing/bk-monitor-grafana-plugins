@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /*
  * Tencent is pleased to support the open source community by making
  * 蓝鲸智云PaaS平台社区版 (BlueKing PaaS Community Edition) available.
@@ -24,13 +25,13 @@
  * IN THE SOFTWARE.
  */
 class ApiCache {
-  public cacheMap: Map<string, any> = new Map();
-
+  public cacheMap: Map<string, Record<string, any>> = new Map();
+  // 获取缓存
   public getCache(key: string) {
     return this.cacheMap.get(key);
   }
-
-  public setCache(key: string, data: any) {
+  // 设置api缓存
+  public setCache(key: string, data: Record<string, any>) {
     this.cacheMap.set(key, data);
     setTimeout(() => {
       this.cacheMap.delete(key);
