@@ -129,7 +129,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           setIsLoading(v => ({ ...v, labels: false }));
         },
       });
-  }, [query.app_name, query.service_name]);
+  }, [query.app_name, query.service_name, datasource]);
   return (
     <LanguageContext.Provider value={{ language }}>
       <div className='monitor-profiling'>

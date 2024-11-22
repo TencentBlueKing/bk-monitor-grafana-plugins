@@ -97,7 +97,16 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       if (!item.value?.length || !item.key) {
         continue;
       }
-      filterLabel[item.key] = item.value;
+      const values: string[] = [];
+      for (const value of item.value) {
+        const result = getTemplateSrv().replace(value, options.scopedVars);
+        if (Array.isArray(result)) {
+          values.push(...result);
+          continue;
+        }
+        values.push(result);
+      }
+      filterLabel[item.key] = Array.from(new Set(values));
     }
     return await lastValueFrom(
       this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
