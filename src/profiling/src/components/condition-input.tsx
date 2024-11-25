@@ -52,6 +52,7 @@ export interface IProps {
 
 const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onChange, appName, serviceName }) => {
   const [dimensionValueMap, setDimensionValueMap] = useState<Record<string, ICommonItem[]>>({});
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const list: Observable<Record<string, ICommonItem[]>>[] = [];
     for (const { key } of filterList) {

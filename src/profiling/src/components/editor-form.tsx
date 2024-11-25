@@ -30,10 +30,11 @@ import { LanguageContext } from '../utils/context';
 
 export interface IEditorFormProps {
   labelStyle?: React.CSSProperties;
-  renderTitle?: () => Element;
+  renderTitle?: () => React.ReactNode;
   style?: React.CSSProperties;
   tips?: string;
   title?: string;
+  children: React.ReactNode;
 }
 
 const EditorForm: React.FC<IEditorFormProps> = ({ labelStyle, renderTitle, style, tips, title, children }) => {

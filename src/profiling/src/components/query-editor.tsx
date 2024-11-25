@@ -49,6 +49,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     labels: false,
     app: false,
   });
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     setIsLoading(v => ({
       ...v,
@@ -89,6 +90,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       },
     });
   }, [datasource]);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (!query.app_name || !query.service_name) return;
     setIsLoading(v => ({
