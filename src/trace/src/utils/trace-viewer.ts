@@ -14,7 +14,7 @@
 
 import { memoize } from 'lodash';
 
-import { type TraceSpan } from '../types/trace';
+import type { TraceSpan } from '../types/trace';
 
 export function _getTraceNameImpl(spans: TraceSpan[]) {
   // Use a span with no references to another span in given array
@@ -25,7 +25,7 @@ export function _getTraceNameImpl(spans: TraceSpan[]) {
 
   for (let i = 0; i < spans.length; i++) {
     const hasInternalRef = spans[i].references?.some(
-      ({ traceID, spanID }) => traceID === spans[i].traceID && allIDs.has(spanID),
+      ({ traceID, spanID }) => traceID === spans[i].traceID && allIDs.has(spanID)
     );
     if (hasInternalRef) {
       continue;

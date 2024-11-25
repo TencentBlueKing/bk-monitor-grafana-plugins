@@ -7,9 +7,9 @@
 
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 import LiveReloadPlugin from 'webpack-livereload-plugin';
-import path from 'path';
+import path from 'node:path';
 import ReplaceInFileWebpackPlugin from 'replace-in-file-webpack-plugin';
-import { Configuration } from 'webpack';
+import type { Configuration } from 'webpack';
 
 import { getPackageJson, getPluginJson, hasReadme, getEntries, isWSL } from './utils';
 import { SOURCE_DIR, DIST_DIR } from './constants';
@@ -59,8 +59,8 @@ const config = async (env): Promise<Configuration> => {
       // Mark legacy SDK imports as external if their name starts with the "grafana/" prefix
       ({ request }, callback) => {
         const prefix = 'grafana/';
-        const hasPrefix = (request) => request.indexOf(prefix) === 0;
-        const stripPrefix = (request) => request.substr(prefix.length);
+        const hasPrefix = request => request.indexOf(prefix) === 0;
+        const stripPrefix = request => request.substr(prefix.length);
 
         if (hasPrefix(request)) {
           return callback(undefined, stripPrefix(request));
@@ -101,7 +101,7 @@ const config = async (env): Promise<Configuration> => {
             // Keep publicPath relative for host.com/grafana/ deployments
             publicPath: `public/plugins/${pluginJson.id}/img/`,
             outputPath: 'img/',
-            filename: Boolean(env.production) ? '[hash][ext]' : '[file]',
+            filename: env.production ? '[hash][ext]' : '[file]',
           },
         },
         {
@@ -111,7 +111,7 @@ const config = async (env): Promise<Configuration> => {
             // Keep publicPath relative for host.com/grafana/ deployments
             publicPath: `public/plugins/${pluginJson.id}/fonts/`,
             outputPath: 'fonts/',
-            filename: Boolean(env.production) ? '[hash][ext]' : '[name][ext]',
+            filename: env.production ? '[hash][ext]' : '[name][ext]',
           },
         },
       ],
@@ -119,9 +119,9 @@ const config = async (env): Promise<Configuration> => {
 
     output: {
       clean: {
-        keep: new RegExp(`(.*?_(amd64|arm(64)?)(.exe)?|go_plugin_build_manifest)`),
+        keep: /(.*?_(amd64|arm(64)?)(.exe)?|go_plugin_build_manifest)/,
       },
-      filename: `[name].js`,
+      filename: '[name].js',
       path: path.resolve(process.cwd(), DIST_DIR),
       publicPath: `public/plugins/${pluginJson.id}/`,
       libraryTarget: 'amd',

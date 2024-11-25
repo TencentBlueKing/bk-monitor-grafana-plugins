@@ -24,9 +24,9 @@
  * IN THE SOFTWARE.
  */
 
-import { type DataQuery } from '@grafana/data';
+import type { DataQuery } from '@grafana/data';
 
-import { type IConditionItem } from './metric';
+import type { IConditionItem } from './metric';
 export interface IQueryConfig {
   data_source_label: string;
   data_type_label: string;

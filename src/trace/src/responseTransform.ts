@@ -9,7 +9,7 @@ import {
 // import { transformTraceData } from 'grafana/app/features/explore/TraceView/components';
 
 import transformTraceData from './transform-trace-data';
-import { type JaegerResponse, type Span, type TraceProcess, type TraceResponse } from './types';
+import type { JaegerResponse, Span, TraceProcess, TraceResponse } from './types';
 
 export function createTraceFrame(data: TraceResponse): DataFrame {
   const spans = data.spans.map(s => toSpanRow(s, data.processes));
@@ -121,13 +121,13 @@ function transformToTraceData(data: TraceResponse) {
 }
 
 export function transformToJaeger(data: MutableDataFrame): JaegerResponse {
-  let traceResponse: TraceResponse = {
+  const traceResponse: TraceResponse = {
     traceID: '',
     spans: [],
     processes: {},
     warnings: null,
   };
-  let processes: string[] = [];
+  const processes: string[] = [];
 
   for (let i = 0; i < data.length; i++) {
     const span = data.get(i);
@@ -168,7 +168,7 @@ export function transformToJaeger(data: MutableDataFrame): JaegerResponse {
       operationName: span.operationName,
       processID:
         Object.keys(traceResponse.processes).find(
-          key => traceResponse.processes[key].serviceName === span.serviceName,
+          key => traceResponse.processes[key].serviceName === span.serviceName
         ) || '',
       startTime: span.startTime * 1000,
       tags: span.tags,

@@ -41,10 +41,10 @@ import {
 } from '@grafana/runtime';
 import { catchError, lastValueFrom, map, merge, Observable, of } from 'rxjs';
 
-import { type QueryOption } from '../typings/config';
-import { type ProfilingQuery } from '../typings/datasource';
-import { type ICommonItem } from '../typings/metric';
-import { type IApplication } from '../typings/profile';
+import type { QueryOption } from '../typings/config';
+import type { ProfilingQuery } from '../typings/datasource';
+import type { ICommonItem } from '../typings/metric';
+import type { IApplication } from '../typings/profile';
 import { random } from '../utils/utils';
 export enum QueryUrl {
   get_profile_application_service = 'get_profile_application_service/',
@@ -91,7 +91,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
             .then(events => subscriber.next({ data: [toDataFrame(events)] }))
             .catch(err => subscriber.error(err))
             .finally(() => subscriber.complete());
-        }),
+        })
       );
     }
     return merge(...streams);
@@ -127,7 +127,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
           filter_labels: filterLabel,
         },
         method: 'POST',
-      }),
+      })
     );
   }
   getTimeRange(): { start_time: number; end_time: number } {
@@ -161,11 +161,11 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
         (data?.data_types || []).map(item => ({
           label: item.name,
           value: item.key,
-        })),
+        }))
       ),
       catchError(() => {
         return of([]);
-      }),
+      })
     );
   }
   getProfileApplicationService() {
@@ -185,7 +185,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       }),
       catchError(() => {
         return of([] as IApplication[]);
-      }),
+      })
     );
   }
   getProfileLabels(params: Pick<ProfilingQuery, 'app_name' | 'service_name'>) {
@@ -202,7 +202,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       map(data => (data?.label_keys || []).map<ICommonItem>(key => ({ id: key, name: key }))),
       catchError(() => {
         return of([] as ICommonItem[]);
-      }),
+      })
     );
   }
   getProfileValues(params: Pick<ProfilingQuery, 'app_name' | 'service_name'> & { label_key: string }) {
@@ -219,7 +219,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       map(data => (data?.label_values || []).map<ICommonItem>(key => ({ id: key, name: key }))),
       catchError(() => {
         return of([] as ICommonItem[]);
-      }),
+      })
     );
   }
   async testDatasource() {
@@ -240,7 +240,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
         params: {
           bk_biz_id: this.bizId,
         },
-      }),
+      })
     )
       .then(() => ({
         message: 'Successfully queried the Blueking Monitor service.',
@@ -277,7 +277,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
             return res.data.data;
           }
           throw res.data;
-        }),
+        })
       );
   }
 }

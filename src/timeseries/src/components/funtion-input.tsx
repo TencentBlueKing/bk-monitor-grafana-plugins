@@ -32,7 +32,7 @@ import Menu from 'antd/es/menu';
 import Popover from 'antd/es/popover';
 import React from 'react';
 
-import { type IFunctionItem, type IFunctionParam } from '../typings/metric';
+import type { IFunctionItem, IFunctionParam } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export const EMPTY_VALUE = '-空-';
@@ -150,7 +150,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                       defaultValue={param.value === '' ? '-空-' : param.value}
                       autoFocus
                       onBlur={e => this.handleParamBlur(e, param)}
-                    ></Input>
+                    />
                   </Dropdown>
                 );
               }

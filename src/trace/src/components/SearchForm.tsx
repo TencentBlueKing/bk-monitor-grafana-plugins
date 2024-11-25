@@ -7,8 +7,8 @@ import { fuzzyMatch, InlineField, InlineFieldRow, Input, Select } from '@grafana
 // import { dispatch } from 'grafana/app/store/store';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { type JaegerDatasource } from '../datasource';
-import { type JaegerQuery } from '../types';
+import type { JaegerDatasource } from '../datasource';
+import type { JaegerQuery } from '../types';
 import { transformToLogfmt } from '../util';
 
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';
@@ -65,7 +65,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
         setIsLoading(prevValue => ({ ...prevValue, [loaderOfType]: false }));
       }
     },
-    [datasource],
+    [datasource]
   );
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
     const getOperations = async () => {
       const operations = await loadOptions(
         `/api/services/${encodeURIComponent(getTemplateSrv().replace(query.service!))}/operations`,
-        'operations',
+        'operations'
       );
       if (query.operation && getTemplateSrv().containsTemplate(query.operation)) {
         operations.push(toOption(query.operation));
@@ -178,7 +178,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
             onOpenMenu={() =>
               loadOptions(
                 `/api/services/${encodeURIComponent(getTemplateSrv().replace(query.service!))}/operations`,
-                'operations',
+                'operations'
               )
             }
           />
@@ -259,7 +259,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
             onChange={v =>
               onChange({
                 ...query,
-                limit: v.currentTarget.value ? parseInt(v.currentTarget.value, 10) : undefined,
+                limit: v.currentTarget.value ? Number.parseInt(v.currentTarget.value, 10) : undefined,
               })
             }
           />

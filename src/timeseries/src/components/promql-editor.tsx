@@ -119,7 +119,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
         //   remote: { url: 'http://demo.robustperception.io:9090' },
         // }),
         newCompleteStrategy(),
-        [],
+        []
       ),
     });
     const dynamicConfig = [promqlHighlighter, promqlExtension.asExtension()];
@@ -181,7 +181,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
                 key: 'Shift-Enter',
                 run: insertNewlineAndIndent,
               },
-            ]),
+            ])
           ),
           EditorView.updateListener.of((update: ViewUpdate): void => {
             this.props.onChange?.(update.state.doc.toString());
@@ -199,7 +199,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
       view.dispatch(
         view.state.update({
           effects: dynamicConfigCompartment.reconfigure(dynamicConfig),
-        }),
+        })
       );
     }
   }
@@ -210,7 +210,7 @@ export default class PromqlEditor extends React.PureComponent<IPromqlEditorProps
           ref={this.containerRef}
           style={this.props.style}
           className='promql-editor-instance'
-        ></div>
+        />
       </div>
     );
   }

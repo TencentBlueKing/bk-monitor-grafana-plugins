@@ -40,7 +40,7 @@ import Tabs from 'antd/es/tabs';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { type IMetric, type MetricDetail } from '../typings/metric';
+import type { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { createMetricTitleTooltips, t, random } from '../utils/utils';
 
@@ -169,8 +169,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       subtitle: [
         metric.result_table_label_name,
         data_source_list.find(
-          item =>
-            item.data_source_label === metric.data_source_label && item.data_type_label === metric.data_type_label,
+          item => item.data_source_label === metric.data_source_label && item.data_type_label === metric.data_type_label
         )?.name,
         metric.related_name,
       ]
@@ -194,7 +193,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     if (datasourceLabel?.length) {
       if (data_source_list.length) {
         datasources = data_source_list.filter(
-          item => item.count > 0 || datasourceLabel.some(set => set.id === item.id),
+          item => item.count > 0 || datasourceLabel.some(set => set.id === item.id)
         );
       } else {
         datasources = dataSourceList.filter(item => datasourceLabel.some(set => set.id === item.id));
@@ -311,7 +310,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         loading: true,
         page: 1,
       },
-      () => this.getMetricList(true),
+      () => this.getMetricList(true)
     );
   };
   /**
@@ -408,7 +407,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           moreLoading: true,
           page: this.state.page + 1,
         },
-        this.getMetricList,
+        this.getMetricList
       );
     }
   };
@@ -429,7 +428,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         setTimeout(() => {
           this.setState({ timer });
         });
-      },
+      }
     );
   };
   handleTagChange = (activeKey: string) => {
@@ -440,7 +439,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         page: 1,
         tag: activeKey === tag?.id ? null : tagList.find(item => item.id === activeKey),
       },
-      () => this.getMetricList(true),
+      () => this.getMetricList(true)
     );
   };
   handleVisibleChange = v => {
@@ -467,7 +466,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           setTimeout(() => {
             this.inputRef.current.focus();
           }, 300);
-        },
+        }
       );
     } else if (!v) {
       document.removeEventListener('keydown', this.handleKeyDown);
@@ -538,7 +537,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     viewBox='0 0 1024 1024'
                     xmlns='http://www.w3.org/2000/svg'
                   >
-                    <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                    <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z' />
                   </svg>
                 </span>
               </Tooltip>
@@ -584,7 +583,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 <TabPane
                   key={item.id}
                   tab={<span className='tab-tag'>{item.name}</span>}
-                ></TabPane>
+                />
               ))}
             </Tabs>
           )}
@@ -625,16 +624,16 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                           cy='33'
                           rx='32'
                           ry='7'
-                        ></ellipse>
+                        />
                         <g
                           className='ant-empty-img-simple-g'
                           fillRule='nonzero'
                         >
-                          <path d='M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z'></path>
+                          <path d='M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z' />
                           <path
                             className='ant-empty-img-simple-path'
                             d='M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z'
-                          ></path>
+                          />
                         </g>
                       </g>
                     </svg>
@@ -663,7 +662,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     />
                   }
                   className='more-loading'
-                ></Spin>
+                />
               )}
             </ul>
             <div className='content-tag'>
@@ -785,7 +784,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                               xmlns='http://www.w3.org/2000/svg'
                               onClick={e => this.handleCopyMetric(this.props.metric as any, e)}
                             >
-                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z' />
                             </svg>,
                             <span
                               id={this.props.metric.metric_id}

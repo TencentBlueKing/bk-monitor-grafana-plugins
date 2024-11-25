@@ -33,8 +33,8 @@ import Message from 'antd/es/message';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import { type QueryOption } from '../typings/config';
-import { type IQueryConfig, type QueryData } from '../typings/datasource';
+import type { QueryOption } from '../typings/config';
+import type { IQueryConfig, QueryData } from '../typings/datasource';
 import {
   type EditMode,
   type EditorStatus,
@@ -70,9 +70,9 @@ const refLetters = 'abcdefghijklmnopqrstuvwxyz';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 export enum SearcState {
-  'auto' = 'auto',
-  'deafult' = 'deafult',
-  'loading' = 'loading',
+  auto = 'auto',
+  deafult = 'deafult',
+  loading = 'loading',
 }
 interface IQueryEditorState {
   cluster: ITargetItem[];
@@ -163,7 +163,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       () => {
         this.handleQuery();
         this.state.searchState !== SearcState.auto && this.props.onRunQuery();
-      },
+      }
     );
   };
   expressionListComp = language => {
@@ -238,9 +238,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             onClick={() => this.handleExpressionChecked(index)}
           >
             {item.active ? (
-              <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
+              <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z' />
             ) : (
-              <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z'></path>
+              <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z' />
             )}
           </svg>
           <svg
@@ -288,7 +288,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           promqlAlias: alias,
         },
-        this.handleQuery,
+        this.handleQuery
       );
     }
   };
@@ -305,7 +305,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList: list,
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleDeleteExpression = (index: number) => {
@@ -316,7 +316,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: list,
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleDeleteExpressionFuntion = async (index: number, funcIndex: number) => {
@@ -329,7 +329,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleDeleteFuntion = async (metricIndex: number, funcIndex: number) => {
@@ -348,7 +348,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList,
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleDimensionChange = async (v: string[], metricIndex: number) => {
@@ -364,7 +364,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      needQuery ? this.handleQuery : undefined,
+      needQuery ? this.handleQuery : undefined
     );
   };
   handleEditFuntion = (func: IFunctionItem, metricIndex: number, funcIndex: number, needQuery: boolean) => {
@@ -388,7 +388,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           let promqlAlias = params?.expressionList?.find(item => item.active)?.expression;
           if (!promqlAlias) {
             promqlAlias = params?.query_configs?.find(
-              item => item.alias && (item.display || typeof item.display === undefined),
+              item => item.alias && (item.display || typeof item.display === undefined)
             )?.alias;
           }
           source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(e => {
@@ -406,7 +406,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 promqlAlias: promqlAlias || params.promqlAlias,
                 source,
               },
-              this.handleQuery,
+              this.handleQuery
             );
         } else {
           !hasError &&
@@ -416,7 +416,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 promqlAlias: '',
                 source,
               },
-              this.handleQuery,
+              this.handleQuery
             );
         }
       } else {
@@ -444,7 +444,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               metricList: list,
               mode: 'ui',
             },
-            this.handleQuery,
+            this.handleQuery
           );
         } else {
           !hasError &&
@@ -454,7 +454,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 metricList: [{ refId: 'a' } as any],
                 mode: 'ui',
               },
-              this.handleQuery,
+              this.handleQuery
             );
         }
       }
@@ -473,7 +473,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           expressionList: expressionList.slice(),
         },
-        this.handleQuery,
+        this.handleQuery
       );
     }
   };
@@ -486,7 +486,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           expressionList: expressionList.slice(),
         },
-        this.handleQuery,
+        this.handleQuery
       );
     }
   };
@@ -502,7 +502,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleExpressionFuncitonSelected = async (v: IFunctionItem, index: number) => {
@@ -516,7 +516,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
   handleFuncitonSelected = async (v: IFunctionItem, metricIndex: number) => {
@@ -562,14 +562,14 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               alias: item.alias || '',
               functions: item.functions || [],
             } as any)
-          : item,
+          : item
       );
       metricList = this.handleResetMetricDimension(metricList);
       this.setState(
         {
           metricList,
         },
-        this.handleQuery,
+        this.handleQuery
       );
     } else {
       // 清空当前指标
@@ -615,7 +615,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 {
                   metricList: list,
                 },
-                () => this.handleQuery(list),
+                () => this.handleQuery(list)
               );
             }
           } else {
@@ -702,7 +702,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               () => {
                 this.handleQuery();
                 immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
-              },
+              }
             );
           } else {
             const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
@@ -742,7 +742,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         ...data,
       },
-      this.handleQuery,
+      this.handleQuery
     );
   };
 
@@ -769,7 +769,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               // display: false,
               metricList: [{ refId: this.handleGetNewRefId(this.state.metricList) } as any],
             },
-            this.handleQuery,
+            this.handleQuery
           );
           return;
         }
@@ -796,7 +796,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               //     : data.expression
               //       || (!this.state.expression && metricList.length === 2 ? 'a + b' : this.state.expression),
             },
-            this.handleQuery,
+            this.handleQuery
           );
         } else {
           hasError = true;
@@ -835,7 +835,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               isTranform: false,
               metricList: list,
             },
-            this.handleQuery,
+            this.handleQuery
           );
           return;
         }
@@ -855,7 +855,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               // display: list.length > 1,
               // expression: list.length < 2 ? '' : this.state.expression,
             },
-            this.handleQuery,
+            this.handleQuery
           );
         } else {
           hasError = true;
@@ -918,7 +918,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     metricIndex: number,
     name: K,
     value: T[K],
-    needQuery = true,
+    needQuery = true
   ) {
     const list = this.state.metricList.map((item, index) => {
       if (index === metricIndex) {
@@ -931,7 +931,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList: list,
       },
-      needQuery ? this.handleQuery : undefined,
+      needQuery ? this.handleQuery : undefined
     );
   }
   handleGetNewRefId(metricList: MetricDetail[]) {
@@ -1006,7 +1006,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleInitFuntions(functionList: IFunctionItem[], functions: IFunctionItem[]) {
     const funcList: IFunctionItem[] = functionList.reduce(
       (pre, cur) => (cur?.children?.length ? [...pre, ...cur.children] : pre),
-      [],
+      []
     ) as any;
     return functions.map(func => {
       const funcItem = funcList.find(set => set.id === func.id);
@@ -1088,7 +1088,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             new MetricDetail({
               ...item,
               ...commonData,
-            } as any),
+            } as any)
         );
     });
     return await Promise.all(promiseList);
@@ -1096,7 +1096,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleResetMetricDimension(metricList: MetricDetail[]) {
     const longDimension = metricList.reduce(
       (pre, cur) => (cur?.agg_dimension?.length > pre?.length ? cur.agg_dimension : pre),
-      [] as any,
+      [] as any
     );
     return metricList.map((item, index) => {
       if (item.metricMetaId) {
@@ -1317,9 +1317,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               onClick={() => this.handleSetMetricDisplay(index)}
                             >
                               {item.display ? (
-                                <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
+                                <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z' />
                               ) : (
-                                <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z'></path>
+                                <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z' />
                               )}
                             </svg>
                             <svg
@@ -1330,7 +1330,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               // style={{ display: metricList.length < 2 ? 'none' : 'flex' }}
                               onClick={() => this.handleCopyMetric(index)}
                             >
-                              <path d='M21,8.94a1.31,1.31,0,0,0-.06-.27l0-.09a1.07,1.07,0,0,0-.19-.28h0l-6-6h0a1.07,1.07,0,0,0-.28-.19.32.32,0,0,0-.09,0A.88.88,0,0,0,14.05,2H10A3,3,0,0,0,7,5V6H6A3,3,0,0,0,3,9V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V18h1a3,3,0,0,0,3-3V9S21,9,21,8.94ZM15,5.41,17.59,8H16a1,1,0,0,1-1-1ZM15,19a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9A1,1,0,0,1,6,8H7v7a3,3,0,0,0,3,3h5Zm4-4a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1V5a1,1,0,0,1,1-1h3V7a3,3,0,0,0,3,3h3Z'></path>
+                              <path d='M21,8.94a1.31,1.31,0,0,0-.06-.27l0-.09a1.07,1.07,0,0,0-.19-.28h0l-6-6h0a1.07,1.07,0,0,0-.28-.19.32.32,0,0,0-.09,0A.88.88,0,0,0,14.05,2H10A3,3,0,0,0,7,5V6H6A3,3,0,0,0,3,9V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V18h1a3,3,0,0,0,3-3V9S21,9,21,8.94ZM15,5.41,17.59,8H16a1,1,0,0,1-1-1ZM15,19a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9A1,1,0,0,1,6,8H7v7a3,3,0,0,0,3,3h5Zm4-4a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1V5a1,1,0,0,1,1-1h3V7a3,3,0,0,0,3,3h3Z' />
                             </svg>
                             <svg
                               width='200'

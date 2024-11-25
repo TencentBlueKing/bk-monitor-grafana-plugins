@@ -23,11 +23,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { type DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { LegacyForms, TagsInput } from '@grafana/ui';
 import React from 'react';
 
-import { type QueryOption, type SecureOption } from '../typings/config';
+import type { QueryOption, SecureOption } from '../typings/config';
 import { t } from '../utils/utils';
 const { FormField, Input, Switch } = LegacyForms;
 export default class ConfigEditor extends React.PureComponent<

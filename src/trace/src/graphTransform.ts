@@ -1,7 +1,7 @@
 import { type DataFrame, NodeGraphDataFrameFieldNames as Fields } from '@grafana/data';
 import { getNonOverlappingDuration, getStats, makeFrames, makeSpanMap } from '@grafana/o11y-ds-frontend';
 
-import { type Span, type TraceResponse } from './types';
+import type { Span, TraceResponse } from './types';
 
 interface Node {
   [Fields.id]: string;
@@ -91,7 +91,7 @@ function convertTraceToGraph(data: TraceResponse): { nodes: Node[]; edges: Edge[
  */
 function findTraceDuration(spans: Span[]): number {
   let traceEndTime = 0;
-  let traceStartTime = Infinity;
+  let traceStartTime = Number.POSITIVE_INFINITY;
 
   for (const span of spans) {
     if (span.startTime < traceStartTime) {

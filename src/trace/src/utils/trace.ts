@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { type TraceResponse, type TraceSpanData } from '../types/trace';
+import type { TraceResponse, TraceSpanData } from '../types/trace';
 import TreeNode from './TreeNode';
 
 export const getTraceSpans = (trace: TraceResponse) => trace.spans;

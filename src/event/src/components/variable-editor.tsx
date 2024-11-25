@@ -29,7 +29,7 @@ import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import { type ICommonItem, type IConditionItem, type MetricType, type IDataItem } from '../typings/metric';
+import type { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
 import { VariableQueryType, type VariableQuery } from '../typings/variable';
 import { LanguageContext } from '../utils/context';
 // import { CascaderOptionType } from 'antd/es/cascader';
@@ -164,7 +164,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
               variables: this.handleGetVariables(condition),
             }
           : {},
-        definition,
+        definition
       );
     } else {
       const { typeId, dataId, dimension, condition, queryString } = this.state.dimensionData;
@@ -184,7 +184,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
               },
             }
           : {},
-        definition,
+        definition
       );
     }
   }
@@ -209,7 +209,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
           valueField: undefined,
           condition: [{} as any],
         },
-        this.handleQuery,
+        this.handleQuery
       );
       this.handleGetFiledList(v);
     } else {
@@ -222,7 +222,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             typeId: this.state.dimensionData.typeId || 'bk_monitor|log',
           },
         },
-        this.handleQuery,
+        this.handleQuery
       );
     }
   };
@@ -231,7 +231,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         showField: v,
       },
-      this.state.valueField ? this.handleQuery : undefined,
+      this.state.valueField ? this.handleQuery : undefined
     );
   };
   handleValueFieldChange = async (v: string) => {
@@ -239,7 +239,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         valueField: v,
       },
-      this.state.showField ? this.handleQuery : undefined,
+      this.state.showField ? this.handleQuery : undefined
     );
   };
   handleConditionChange = async (condition: IConditionItem[], needQuery = true) => {
@@ -247,7 +247,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         condition,
       },
-      needQuery ? this.handleQuery : undefined,
+      needQuery ? this.handleQuery : undefined
     );
   };
   handleDimensionChange = (dimension: string[]) => {
@@ -293,9 +293,9 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             () => {
               needQuery && this.handleQuery();
               resolve(undefined);
-            },
+            }
           );
-        },
+        }
       );
     });
   };

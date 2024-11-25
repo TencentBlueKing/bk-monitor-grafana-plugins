@@ -7,7 +7,7 @@ import {
   NodeGraphDataFrameFieldNames as Fields,
 } from '@grafana/data';
 
-import { type JaegerServiceDependency } from './types';
+import type { JaegerServiceDependency } from './types';
 
 interface Node {
   [Fields.id]: string;

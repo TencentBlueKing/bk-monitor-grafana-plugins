@@ -29,7 +29,7 @@ import Input from 'antd/es/input';
 import Popover from 'antd/es/popover';
 import React from 'react';
 
-import { type IFunctionItem, type MetricDetail } from '../typings/metric';
+import type { IFunctionItem, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export interface IFunctionMenuProps {
@@ -80,7 +80,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
       },
       () => {
         this.handleFuncTypeMouseenter(this.filterList[0]);
-      },
+      }
     );
   };
   handleSelectFunc = (item: IFunctionItem) => {
@@ -118,7 +118,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                     suffix={<SearchOutlined style={{ color: '#c4c6cc', fontSize: '16px' }} />}
                     value={keyword}
                     onChange={this.handleKeywordChange}
-                  ></Input>
+                  />
                   <div className='panel-list'>
                     {this.filterList?.length > 0 && (
                       <ul className='panel-item'>
@@ -129,7 +129,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                             onMouseEnter={() => this.handleFuncTypeMouseenter(item)}
                           >
                             {item.name}
-                            <i className='icon-monitor icon-arrow-right arrow-icon'></i>
+                            <i className='icon-monitor icon-arrow-right arrow-icon' />
                           </li>
                         ))}
                       </ul>
@@ -149,15 +149,15 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                                 <span style={{ color: '#FF9C00' }}>
                                   {item.name.slice(
                                     item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()),
-                                    item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
+                                    item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length
                                   )}
                                 </span>
                                 {item.name.slice(
                                   item.name.toLocaleLowerCase().indexOf(keyword.toLocaleLowerCase()) + keyword.length,
-                                  item.name.length,
+                                  item.name.length
                                 )}
                               </li>
-                            ),
+                            )
                         )}
                       </ul>
                     )}
@@ -210,7 +210,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
   get filterList() {
     if (!this.state.keyword) return this.filterFucList;
     return this.filterFucList.filter(func =>
-      func?.children?.some(item => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase())),
+      func?.children?.some(item => item.name.toLocaleLowerCase().includes(this.state.keyword.toLocaleLowerCase()))
     );
   }
 }

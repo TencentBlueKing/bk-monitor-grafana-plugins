@@ -123,7 +123,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
           };
         }
         return item;
-      }),
+      })
     );
   }
   /**
@@ -152,7 +152,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
           };
         }
         return item;
-      }),
+      })
     );
     if (this.state.dimensionValueMap[v] || !v) return;
     const data = await this.getDimensionValue(v);

@@ -30,9 +30,10 @@ import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { type ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
+
+import type { ICommonItem } from '../typings/metric';
 const { Option } = Select;
 export interface IDimensionInputProps {
   agg_dimension: string[];

@@ -14,13 +14,7 @@
 
 import { isEqual as _isEqual } from 'lodash';
 
-import {
-  type TraceKeyValuePair,
-  type TraceSpan,
-  type Trace,
-  type TraceResponse,
-  type TraceProcess,
-} from './types/trace';
+import type { TraceKeyValuePair, TraceSpan, Trace, TraceResponse, TraceProcess } from './types/trace';
 import { getConfigValue } from './utils/get-config';
 import { getTraceSpanIdsAsTree } from './utils/trace';
 import { getTraceName } from './utils/trace-viewer';

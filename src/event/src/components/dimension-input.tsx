@@ -29,7 +29,7 @@ import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { type ICommonItem } from '../typings/metric';
+import type { ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 const { Option } = Select;

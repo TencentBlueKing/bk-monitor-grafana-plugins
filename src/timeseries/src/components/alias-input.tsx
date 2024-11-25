@@ -26,7 +26,7 @@
 import Input, { type InputProps } from 'antd/es/input';
 import React from 'react';
 
-import { type MetricDetail } from '../typings/metric';
+import type { MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export interface IAliasInputProps {

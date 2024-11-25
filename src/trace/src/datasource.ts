@@ -13,18 +13,18 @@ import {
   type ScopedVars,
   urlUtil,
 } from '@grafana/data';
-import { type NodeGraphOptions, type SpanBarOptions } from '@grafana/o11y-ds-frontend';
+import type { NodeGraphOptions, SpanBarOptions } from '@grafana/o11y-ds-frontend';
 import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import { identity, omit, pick, pickBy } from 'lodash';
 import { lastValueFrom, type Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ALL_OPERATIONS_KEY } from './components/SearchForm';
-import { type TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
+import type { TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
 import { mapJaegerDependenciesResponse } from './dependencyGraphTransform';
 import { createGraphFrames } from './graphTransform';
 import { createTableFrame, createTraceFrame } from './responseTransform';
-import { type JaegerQuery } from './types';
+import type { JaegerQuery } from './types';
 import { convertTagsLogfmt } from './util';
 
 export interface JaegerJsonData extends DataSourceJsonData {
@@ -73,7 +73,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
       return of({ error: { message: 'You must select a service.' }, data: [] });
     }
 
-    let { start, end } = this.getTimeRange();
+    const { start, end } = this.getTimeRange();
 
     if (target.queryType !== 'search' && target.query) {
       let url = `/api/traces/${encodeURIComponent(getTemplateSrv().replace(target.query, options.scopedVars))}`;
@@ -87,14 +87,14 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
           if (!traceData) {
             return { data: [emptyTraceDataFrame] };
           }
-          let data = [createTraceFrame(traceData)];
+          const data = [createTraceFrame(traceData)];
           if (this.nodeGraph?.enabled) {
             data.push(...createGraphFrames(traceData));
           }
           return {
             data,
           };
-        }),
+        })
       );
     }
 
@@ -105,7 +105,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
 
       try {
         const traceData = JSON.parse(this.uploadedJson as string).data[0];
-        let data = [createTraceFrame(traceData)];
+        const data = [createTraceFrame(traceData)];
         if (this.nodeGraph?.enabled) {
           data.push(...createGraphFrames(traceData));
         }
@@ -115,7 +115,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
       }
     }
 
-    let jaegerInterpolated = pick(this.applyVariables(target, options.scopedVars), [
+    const jaegerInterpolated = pick(this.applyVariables(target, options.scopedVars), [
       'service',
       'operation',
       'tags',
@@ -138,7 +138,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
     }
 
     // TODO: this api is internal, used in jaeger ui. Officially they have gRPC api that should be used.
-    return this._request(`/api/traces`, {
+    return this._request('/api/traces', {
       ...jaegerQuery,
       ...this.getTimeRange(),
       lookback: 'custom',
@@ -147,7 +147,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
         return {
           data: [createTableFrame(response.data.data, this.instanceSettings)],
         };
-      }),
+      })
     );
   }
 
@@ -216,8 +216,8 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
             message += `. ${JSON.stringify(err.data)}`;
           }
           return of({ status: 'error', message: message });
-        }),
-      ),
+        })
+      )
     );
   }
 
@@ -236,7 +236,7 @@ export class JaegerDatasource extends DataSourceApi<JaegerQuery, JaegerJsonData>
   private _request(
     apiUrl: string,
     data?: Record<string, unknown>,
-    options?: Partial<BackendSrvRequest>,
+    options?: Partial<BackendSrvRequest>
   ): Observable<Record<string, any>> {
     const params = data ? urlUtil.serializeParams(data) : '';
     const url = `${this.instanceSettings.url}${apiUrl}${params.length ? `?${params}` : ''}`;

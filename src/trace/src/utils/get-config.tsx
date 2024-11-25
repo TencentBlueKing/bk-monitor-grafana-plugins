@@ -37,7 +37,7 @@ export const defaultConfig = Object.defineProperty(
   },
   // fields that should be individually merged vs wholesale replaced
   '__mergeFields',
-  { value: ['dependencies', 'search', 'tracking'] },
+  { value: ['dependencies', 'search', 'tracking'] }
 );
 /**
  * Merge the embedded config from the query service (if present) with the

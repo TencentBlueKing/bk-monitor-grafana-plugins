@@ -35,7 +35,7 @@ export const random = (n: number, str = 'abcdefghijklmnopqrstuvwxyz0123456789'):
   // 生成n位长度的字符串
   let result = '';
   for (let i = 0; i < n; i++) {
-    result += str[parseInt(String(Math.random() * str.length))];
+    result += str[Number.parseInt(String(Math.random() * str.length))];
   }
   return result;
 };

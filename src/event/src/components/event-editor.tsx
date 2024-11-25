@@ -25,13 +25,13 @@
  * IN THE SOFTWARE.
  */
 
-import { type QueryEditorProps } from '@grafana/data';
+import type { QueryEditorProps } from '@grafana/data';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import { type QueryOption } from '../typings/config';
-import { type QueryData } from '../typings/datasource';
-import { type ICommonItem, type IConditionItem, type MetricType, type IDataItem } from '../typings/metric';
+import type { QueryOption } from '../typings/config';
+import type { QueryData } from '../typings/datasource';
+import type { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
 import { getCookie, t } from '../utils/utils';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
@@ -201,9 +201,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             dimension: [],
             condition: [{}] as any,
           },
-          this.handleQuery,
+          this.handleQuery
         );
-      },
+      }
     );
   };
   handleQueryStringChange = async (queryString: string) => {

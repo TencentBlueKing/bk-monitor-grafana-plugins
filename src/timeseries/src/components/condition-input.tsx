@@ -163,7 +163,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
           };
         }
         return item;
-      }),
+      })
     );
     if (this.state.dimensionValueMap[v] || !v) return;
     const data = await this.getDimensionValue(v);
@@ -246,7 +246,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
           };
         }
         return item;
-      }),
+      })
     );
   }
   /**

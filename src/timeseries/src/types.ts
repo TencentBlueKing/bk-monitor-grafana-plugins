@@ -23,8 +23,8 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { type DataSourceJsonData } from '@grafana/data';
-import { type DataQuery } from '@grafana/schema';
+import type { DataSourceJsonData } from '@grafana/data';
+import type { DataQuery } from '@grafana/schema';
 
 export interface MyQuery extends DataQuery {
   constant: number;

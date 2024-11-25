@@ -23,8 +23,8 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { type QueryData } from '../typings/datasource';
-import { type VariableQuery } from '../typings/variable';
+import type { QueryData } from '../typings/datasource';
+import type { VariableQuery } from '../typings/variable';
 /**
  * @description: 转换旧版本查询
  * @param {any} data 旧版本数据
@@ -57,10 +57,10 @@ export const handleTransformOldQuery = (data: any) => {
         item.reduce((pre, cur) => {
           pre[cur.type] = cur.value;
           return pre;
-        }, {}),
+        }, {})
       ),
     },
-    dataSourceLabel === 'bk_log_search' ? { index_set_id } : {},
+    dataSourceLabel === 'bk_log_search' ? { index_set_id } : {}
   );
   const newQuery: QueryData = {
     alias: '',
@@ -99,7 +99,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
         item.reduce((pre, cur) => {
           pre[cur.type] = cur.value;
           return pre;
-        }, {}),
+        }, {})
       ),
     };
   }
@@ -114,7 +114,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
         item.reduce((pre, cur) => {
           pre[cur.type] = cur.value;
           return pre;
-        }, {}),
+        }, {})
       ) || [],
   };
   return newQuery;
