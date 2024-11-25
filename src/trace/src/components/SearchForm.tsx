@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import { SelectableValue, toOption } from '@grafana/data';
+import { type SelectableValue, toOption } from '@grafana/data';
 import { getTemplateSrv } from '@grafana/runtime';
 import { fuzzyMatch, InlineField, InlineFieldRow, Input, Select } from '@grafana/ui';
 // import { notifyApp } from 'grafana/app/core/actions';
@@ -7,8 +7,8 @@ import { fuzzyMatch, InlineField, InlineFieldRow, Input, Select } from '@grafana
 // import { dispatch } from 'grafana/app/store/store';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { JaegerDatasource } from '../datasource';
-import { JaegerQuery } from '../types';
+import { type JaegerDatasource } from '../datasource';
+import { type JaegerQuery } from '../types';
 import { transformToLogfmt } from '../util';
 
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';

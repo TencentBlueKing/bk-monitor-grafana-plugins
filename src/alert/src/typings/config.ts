@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { DataSourceJsonData } from '@grafana/data';
+import { type DataSourceJsonData } from '@grafana/data';
 
 // config editor 数据
 export interface QueryOption extends DataSourceJsonData {

@@ -23,7 +23,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { CompletionContext, CompletionResult, autocompletion, completionKeymap } from '@codemirror/autocomplete';
+import {
+  type CompletionContext,
+  type CompletionResult,
+  autocompletion,
+  completionKeymap,
+} from '@codemirror/autocomplete';
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/closebrackets';
 import { defaultKeymap, insertNewlineAndIndent } from '@codemirror/commands';
 import { commentKeymap } from '@codemirror/comment';
@@ -33,9 +38,9 @@ import { lintKeymap } from '@codemirror/lint';
 import { bracketMatching } from '@codemirror/matchbrackets';
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search';
 import { Compartment, EditorState, Prec } from '@codemirror/state';
-import { EditorView, ViewUpdate, highlightSpecialChars, keymap, placeholder } from '@codemirror/view';
+import { EditorView, type ViewUpdate, highlightSpecialChars, keymap, placeholder } from '@codemirror/view';
 import { PromQLExtension } from 'codemirror-promql';
-import { CompleteStrategy, newCompleteStrategy } from 'codemirror-promql/dist/esm/complete';
+import { type CompleteStrategy, newCompleteStrategy } from 'codemirror-promql/dist/esm/complete';
 import React from 'react';
 
 import { promqlHighlighter, theme } from './theme';

@@ -1,15 +1,15 @@
 import {
-  DataFrame,
-  DataSourceInstanceSettings,
+  type DataFrame,
+  type DataSourceInstanceSettings,
   FieldType,
   MutableDataFrame,
-  TraceLog,
-  TraceSpanRow,
+  type TraceLog,
+  type TraceSpanRow,
 } from '@grafana/data';
 // import { transformTraceData } from 'grafana/app/features/explore/TraceView/components';
 
 import transformTraceData from './transform-trace-data';
-import { JaegerResponse, Span, TraceProcess, TraceResponse } from './types';
+import { type JaegerResponse, type Span, type TraceProcess, type TraceResponse } from './types';
 
 export function createTraceFrame(data: TraceResponse): DataFrame {
   const spans = data.spans.map(s => toSpanRow(s, data.processes));

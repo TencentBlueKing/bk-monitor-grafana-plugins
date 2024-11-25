@@ -32,8 +32,8 @@ import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
 import {
-  ICommonItem,
-  IConditionItem,
+  type ICommonItem,
+  type IConditionItem,
   CONDITION,
   NUMBER_CONDITION_METHOD_LIST,
   STRING_CONDITION_METHOD_LIST,
@@ -232,22 +232,19 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   onChange={(v: string) => this.handleKeyChange(v, index)}
                   onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                 >
-                  {dimensionList?.map(
-                    dim =>
-                      (
-                        <Option
-                          key={dim.id}
-                          value={dim.id}
-                        >
-                          <Tooltip
-                            placement='right'
-                            title={dim.id}
-                          >
-                            <div>{dim.name || dim.id}</div>
-                          </Tooltip>
-                        </Option>
-                      ) || undefined,
-                  )}
+                  {dimensionList?.map(dim => (
+                    <Option
+                      key={dim.id}
+                      value={dim.id}
+                    >
+                      <Tooltip
+                        placement='right'
+                        title={dim.id}
+                      >
+                        <div>{dim.name || dim.id}</div>
+                      </Tooltip>
+                    </Option>
+                  ))}
                 </Select>
               ) : (
                 <span

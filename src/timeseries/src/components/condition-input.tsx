@@ -31,19 +31,20 @@ import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import DataSource from '../datasource/datasource';
 import { DIM_NULL_ID } from '../typings/datasource';
 import {
   CONDITION,
-  ICommonItem,
-  IConditionItem,
+  type ICommonItem,
+  type IConditionItem,
   LOG_CONDITION_METHOD_LIST,
-  MetricDetail,
+  type MetricDetail,
   NUMBER_CONDITION_METHOD_LIST,
   STRING_CONDITION_METHOD_LIST,
 } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
+
+import type DataSource from '../datasource/datasource';
 const { Option } = Select;
 export interface IProps {
   datasource?: DataSource; // datasource实例

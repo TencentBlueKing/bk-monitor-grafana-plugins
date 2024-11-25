@@ -29,9 +29,8 @@ import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import Datasource from '../datasource/datasource';
-import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
-import { VariableQueryType, VariableQuery } from '../typings/variable';
+import { type ICommonItem, type IConditionItem, type MetricType, type IDataItem } from '../typings/metric';
+import { VariableQueryType, type VariableQuery } from '../typings/variable';
 import { LanguageContext } from '../utils/context';
 // import { CascaderOptionType } from 'antd/es/cascader';
 import { getCookie, t } from '../utils/utils';
@@ -41,6 +40,8 @@ import DataInput from './data-input';
 import DimensionInput from './dimension-input';
 import TypeInput from './type-iput';
 import VariableLine from './variable-line';
+
+import type Datasource from '../datasource/datasource';
 interface IVariableEditorProps {
   datasource: Datasource;
   query?: VariableQuery;

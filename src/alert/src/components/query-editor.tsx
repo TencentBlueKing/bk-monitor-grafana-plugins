@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -25,15 +26,14 @@
  * IN THE SOFTWARE.
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import { LoadingState, QueryEditorProps } from '@grafana/data';
+import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Spin from 'antd/es/spin';
 import React from 'react';
-import { ICommonItem, IConditionItem, IntervalType } from 'typings/metric';
 
-import QueryDataSource from '../datasource/datasource';
-import { QueryOption } from '../typings/config';
-import { IQueryConfig, QueryData } from '../typings/datasource';
+import { type QueryOption } from '../typings/config';
+import { type IQueryConfig, type QueryData } from '../typings/datasource';
+import { type ICommonItem, type IConditionItem, type IntervalType } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { getCookie, t } from '../utils/utils';
 import AlertAliasInput from './alert-alias-input';
@@ -42,6 +42,8 @@ import AlertDimensionInput from './alert-dimension-input';
 import AlertIntervalInput from './alert-interval-input';
 import AlertQueryFormula from './alert-query-formula';
 import EditorForm from './editor-form';
+
+import type QueryDataSource from '../datasource/datasource';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 export enum SearcState {
@@ -76,7 +78,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       inited: false,
       interval: interval || 'auto',
       interval_unit: interval_unit || 'h',
-      language: getCookie('blueking_language'),
+      language: getCookie('blueking_language') || 'zh-cn',
       loading: true,
       searchState: SearcState.deafult,
       where: where?.length ? where : [{} as any],

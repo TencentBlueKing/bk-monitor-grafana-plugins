@@ -23,19 +23,20 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { QueryEditorProps } from '@grafana/data';
-import Cascader, { BaseOptionType } from 'antd/es/cascader';
+import { type QueryEditorProps } from '@grafana/data';
+import Cascader, { type BaseOptionType } from 'antd/es/cascader';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React, { useEffect, useState } from 'react';
 
-import ProfilingDatasource from '../datasource/datasource';
-import { ProfilingQuery } from '../typings/datasource';
-import { ICommonItem } from '../typings/metric';
+import { type ProfilingQuery } from '../typings/datasource';
+import { type ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t, language } from '../utils/utils';
 import ConditionInput from './condition-input';
 import EditorForm from './editor-form';
+
+import type ProfilingDatasource from '../datasource/datasource';
 
 type Props = QueryEditorProps<ProfilingDatasource, ProfilingQuery>;
 

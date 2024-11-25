@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  DataFrame,
-  DataQueryResponse,
+  type DataFrame,
+  type DataQueryResponse,
   FieldType,
   MutableDataFrame,
   NodeGraphDataFrameFieldNames as Fields,
 } from '@grafana/data';
 
-import { JaegerServiceDependency } from './types';
+import { type JaegerServiceDependency } from './types';
 
 interface Node {
   [Fields.id]: string;

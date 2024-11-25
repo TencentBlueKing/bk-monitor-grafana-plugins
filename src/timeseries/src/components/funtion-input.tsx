@@ -32,7 +32,7 @@ import Menu from 'antd/es/menu';
 import Popover from 'antd/es/popover';
 import React from 'react';
 
-import { IFunctionItem, IFunctionParam } from '../typings/metric';
+import { type IFunctionItem, type IFunctionParam } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export const EMPTY_VALUE = '-空-';

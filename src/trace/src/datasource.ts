@@ -1,30 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import {
-  DataQueryRequest,
-  DataQueryResponse,
+  type DataQueryRequest,
+  type DataQueryResponse,
   DataSourceApi,
-  DataSourceInstanceSettings,
-  DataSourceJsonData,
+  type DataSourceInstanceSettings,
+  type DataSourceJsonData,
   dateMath,
-  DateTime,
+  type DateTime,
   FieldType,
   MutableDataFrame,
-  ScopedVars,
+  type ScopedVars,
   urlUtil,
 } from '@grafana/data';
-import { NodeGraphOptions, SpanBarOptions } from '@grafana/o11y-ds-frontend';
-import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { type NodeGraphOptions, type SpanBarOptions } from '@grafana/o11y-ds-frontend';
+import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import { identity, omit, pick, pickBy } from 'lodash';
-import { lastValueFrom, Observable, of } from 'rxjs';
+import { lastValueFrom, type Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { ALL_OPERATIONS_KEY } from './components/SearchForm';
-import { TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
+import { type TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
 import { mapJaegerDependenciesResponse } from './dependencyGraphTransform';
 import { createGraphFrames } from './graphTransform';
 import { createTableFrame, createTraceFrame } from './responseTransform';
-import { JaegerQuery } from './types';
+import { type JaegerQuery } from './types';
 import { convertTagsLogfmt } from './util';
 
 export interface JaegerJsonData extends DataSourceJsonData {

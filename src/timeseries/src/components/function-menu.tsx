@@ -29,7 +29,7 @@ import Input from 'antd/es/input';
 import Popover from 'antd/es/popover';
 import React from 'react';
 
-import { IFunctionItem, MetricDetail } from '../typings/metric';
+import { type IFunctionItem, type MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export interface IFunctionMenuProps {

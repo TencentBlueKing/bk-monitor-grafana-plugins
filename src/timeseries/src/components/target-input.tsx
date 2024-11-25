@@ -29,7 +29,7 @@ import Spin from 'antd/es/spin';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { ITargetData, ITargetItem, TARGET_TYPE } from '../typings/metric';
+import { type ITargetData, type ITargetItem, TARGET_TYPE } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 const { Option } = Select;
@@ -355,7 +355,6 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
             </Select>
             <Select
               style={{ marginRight: 0 }}
-              placeholder={targetType === TARGET_TYPE.SERVICE_INSTANCE ? t('服务实例', language) : t('主机', language)}
               className='target-input-host'
               dropdownClassName='target-input-cluster-dropdown'
               dropdownRender={menu => handleHostDropdownRender(menu, 'host')}
@@ -363,6 +362,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               maxTagPlaceholder={handleMaxTagPlaceholder}
               mode='multiple'
               options={hostList}
+              placeholder={targetType === TARGET_TYPE.SERVICE_INSTANCE ? t('服务实例', language) : t('主机', language)}
               searchValue={searchValue}
               value={hostValue}
               onChange={this.handleHostChange}

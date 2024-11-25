@@ -27,32 +27,31 @@
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
-import { LoadingState, QueryEditorProps } from '@grafana/data';
+import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Message from 'antd/es/message';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import QueryDataSource from '../datasource/datasource';
-import { QueryOption } from '../typings/config';
-import { IQueryConfig, QueryData } from '../typings/datasource';
+import { type QueryOption } from '../typings/config';
+import { type IQueryConfig, type QueryData } from '../typings/datasource';
 import {
-  EditMode,
-  EditorStatus,
-  IConditionItem,
-  IExpresionItem,
-  IFunctionItem,
-  IMetric,
-  ITargetData,
-  ITargetItem,
-  IntervalType,
+  type EditMode,
+  type EditorStatus,
+  type IConditionItem,
+  type IExpresionItem,
+  type IFunctionItem,
+  type IMetric,
+  type ITargetData,
+  type ITargetItem,
+  type IntervalType,
   MetricDetail,
   TARGET_TYPE,
 } from '../typings/metric';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
 import { getCookie, t } from '../utils/utils';
-import AddvanceSetting, { AddvanceSettingKey } from './addvance-setting';
+import AddvanceSetting, { type AddvanceSettingKey } from './addvance-setting';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
 import DimensionInput from './dimension-input';
@@ -64,6 +63,8 @@ import MetricInput, { MetricInputMode } from './metirc-input';
 import PromqlEditor from './promql-editor';
 import QueryFormula from './query-formula';
 import TargetInput from './target-input';
+
+import type QueryDataSource from '../datasource/datasource';
 
 const refLetters = 'abcdefghijklmnopqrstuvwxyz';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };

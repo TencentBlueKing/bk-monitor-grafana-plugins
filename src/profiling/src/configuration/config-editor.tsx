@@ -24,11 +24,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { type DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { LegacyForms, TagsInput } from '@grafana/ui';
 import React, { useState } from 'react';
 
-import { QueryOption, SecureOption } from '../typings/config';
+import { type QueryOption, type SecureOption } from '../typings/config';
 import { t } from '../utils/utils';
 
 const { FormField, Input, Switch } = LegacyForms;

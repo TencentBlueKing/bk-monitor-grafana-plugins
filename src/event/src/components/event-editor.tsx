@@ -25,14 +25,13 @@
  * IN THE SOFTWARE.
  */
 
-import { QueryEditorProps } from '@grafana/data';
+import { type QueryEditorProps } from '@grafana/data';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import QueryDataSource from '../datasource/datasource';
-import { QueryOption } from '../typings/config';
-import { QueryData } from '../typings/datasource';
-import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
+import { type QueryOption } from '../typings/config';
+import { type QueryData } from '../typings/datasource';
+import { type ICommonItem, type IConditionItem, type MetricType, type IDataItem } from '../typings/metric';
 import { getCookie, t } from '../utils/utils';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
@@ -42,6 +41,8 @@ import EditorForm from './editor-form';
 import IntervalInput from './interval-input';
 import QueryFormula from './query-formula';
 import TypeInput from './type-iput';
+
+import type QueryDataSource from '../datasource/datasource';
 
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 interface IQueryEditorState {

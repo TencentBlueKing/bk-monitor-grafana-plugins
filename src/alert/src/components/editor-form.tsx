@@ -26,7 +26,7 @@
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { MetricDetail } from '../typings/metric';
+import { type MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 export interface IEditorFormProps {
   metricList?: MetricDetail[];

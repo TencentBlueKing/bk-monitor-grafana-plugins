@@ -28,9 +28,14 @@ import Select from 'antd/es/select';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import Datasource from '../datasource/datasource';
-import { EditorStatus, ICommonItem, IConditionItem, IMetric, MetricDetail } from '../typings/metric';
-import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
+import {
+  type EditorStatus,
+  type ICommonItem,
+  type IConditionItem,
+  type IMetric,
+  MetricDetail,
+} from '../typings/metric';
+import { K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 // import { CascaderOptionType } from 'antd/es/cascader';
 import { handleTransformOldVariableQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
@@ -40,6 +45,8 @@ import DimensionInput from './dimension-input';
 import MetricInput from './metirc-input';
 import PromqlEditor from './promql-editor';
 import VariableLine from './variable-line';
+
+import type Datasource from '../datasource/datasource';
 interface IVariableEditorProps {
   datasource: Datasource;
   onChange: (query: VariableQuery, definition?: string) => void;

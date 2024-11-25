@@ -26,8 +26,8 @@
 import Select from 'antd/es/select';
 import Switch from 'antd/es/switch';
 import React from 'react';
-import { EditMode } from 'typings/metric';
 
+import { type EditMode } from '../typings/metric';
 import { t } from '../utils/utils';
 import AliasInput from './alias-input';
 import EditorForm from './editor-form';

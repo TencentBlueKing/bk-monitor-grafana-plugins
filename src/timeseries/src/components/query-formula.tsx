@@ -26,7 +26,7 @@
 import Select from 'antd/es/select';
 import React from 'react';
 
-import { ICommonItem, MetricDetail } from '../typings/metric';
+import { type ICommonItem, type MetricDetail } from '../typings/metric';
 const { Option } = Select;
 export interface IQueryFormulaProps {
   metric: MetricDetail;

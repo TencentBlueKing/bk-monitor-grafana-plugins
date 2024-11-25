@@ -23,9 +23,9 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { DataQuery } from '@grafana/schema';
+import { type DataQuery } from '@grafana/schema';
 
-import { IConditionItem } from './metric';
+import { type IConditionItem } from './metric';
 export interface ProfilingQuery extends DataQuery {
   app_name: number | string;
   service_name: number | string;

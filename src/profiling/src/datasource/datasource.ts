@@ -26,19 +26,24 @@
  */
 
 import {
-  BootData,
-  DataQueryRequest,
-  DataQueryResponse,
+  type BootData,
+  type DataQueryRequest,
+  type DataQueryResponse,
   DataSourceApi,
-  DataSourceInstanceSettings,
+  type DataSourceInstanceSettings,
   toDataFrame,
 } from '@grafana/data';
-import { BackendDataSourceResponse, BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import {
+  type BackendDataSourceResponse,
+  type BackendSrvRequest,
+  getBackendSrv,
+  getTemplateSrv,
+} from '@grafana/runtime';
 import { catchError, lastValueFrom, map, merge, Observable, of } from 'rxjs';
 
-import { QueryOption } from '../typings/config';
-import { ProfilingQuery } from '../typings/datasource';
-import { ICommonItem } from '../typings/metric';
+import { type QueryOption } from '../typings/config';
+import { type ProfilingQuery } from '../typings/datasource';
+import { type ICommonItem } from '../typings/metric';
 import { type IApplication } from '../typings/profile';
 import { random } from '../utils/utils';
 export enum QueryUrl {

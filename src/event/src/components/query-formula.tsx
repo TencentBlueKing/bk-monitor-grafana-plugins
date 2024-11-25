@@ -26,7 +26,7 @@
 import Select from 'antd/es/select';
 import React from 'react';
 
-import { METHOD_LIST, MetricType } from '../typings/metric';
+import { METHOD_LIST, type MetricType } from '../typings/metric';
 const { Option } = Select;
 export interface IQueryFormulaProps {
   onMethodChange: (v: string) => void;

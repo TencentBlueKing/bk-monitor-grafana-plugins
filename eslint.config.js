@@ -23,6 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+const ERROR = 2;
 module.exports = [
   ...require('@blueking/bkui-lint/eslint'),
   {
@@ -51,6 +52,19 @@ module.exports = [
     ignores: [],
     rules: {
       'codecc/license': 'off',
+    },
+  },
+  {
+    files: ['src/**/*.ts', 'src/**/*.tsx'],
+    rules: {
+      '@typescript-eslint/consistent-type-imports': [
+        ERROR,
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: true,
+          fixStyle: 'inline-type-imports',
+        },
+      ],
     },
   },
 ];

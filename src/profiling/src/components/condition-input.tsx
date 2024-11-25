@@ -30,13 +30,14 @@ import Divider from 'antd/es/divider';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React, { useState, useEffect } from 'react';
-import { map, merge, Observable } from 'rxjs';
+import { map, merge, type Observable } from 'rxjs';
 
-import DataSource from '../datasource/datasource';
-import { ProfilingQuery } from '../typings/datasource';
-import { CONDITION, ICommonItem, IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
+import { type ProfilingQuery } from '../typings/datasource';
+import { CONDITION, type ICommonItem, type IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
 import { DIM_NULL_ID } from '../typings/profile';
 import { t } from '../utils/utils';
+
+import type DataSource from '../datasource/datasource';
 
 const { Option } = Select;
 

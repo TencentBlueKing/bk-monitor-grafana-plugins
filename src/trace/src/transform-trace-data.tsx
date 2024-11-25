@@ -14,11 +14,18 @@
 
 import { isEqual as _isEqual } from 'lodash';
 
-import { TraceKeyValuePair, TraceSpan, Trace, TraceResponse, TraceProcess } from './types/trace';
-import TreeNode from './utils/TreeNode';
+import {
+  type TraceKeyValuePair,
+  type TraceSpan,
+  type Trace,
+  type TraceResponse,
+  type TraceProcess,
+} from './types/trace';
 import { getConfigValue } from './utils/get-config';
 import { getTraceSpanIdsAsTree } from './utils/trace';
 import { getTraceName } from './utils/trace-viewer';
+
+import type TreeNode from './utils/TreeNode';
 
 // exported for tests
 export function deduplicateTags(tags: TraceKeyValuePair[]) {

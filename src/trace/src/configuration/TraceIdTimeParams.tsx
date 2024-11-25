@@ -1,7 +1,7 @@
 import { css } from '@emotion/css';
 import {
-  DataSourceJsonData,
-  DataSourcePluginOptionsEditorProps,
+  type DataSourceJsonData,
+  type DataSourcePluginOptionsEditorProps,
   updateDatasourcePluginJsonDataOption,
 } from '@grafana/data';
 import { InlineField, InlineFieldRow, InlineSwitch } from '@grafana/ui';

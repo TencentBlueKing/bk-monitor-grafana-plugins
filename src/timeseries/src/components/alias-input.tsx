@@ -23,10 +23,10 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Input, { InputProps } from 'antd/es/input';
+import Input, { type InputProps } from 'antd/es/input';
 import React from 'react';
 
-import { MetricDetail } from '../typings/metric';
+import { type MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { t } from '../utils/utils';
 export interface IAliasInputProps {

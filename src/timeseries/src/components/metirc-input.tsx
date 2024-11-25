@@ -30,7 +30,6 @@
 import CloseCircleFilled from '@ant-design/icons/CloseCircleFilled';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import SyncOutlined from '@ant-design/icons/SyncOutlined';
-import Button from 'antd/es/button';
 import Checkbox from 'antd/es/checkbox';
 import Input from 'antd/es/input';
 import Message from 'antd/es/message';
@@ -39,12 +38,13 @@ import Popover from 'antd/es/popover';
 import Spin from 'antd/es/spin';
 import Tabs from 'antd/es/tabs';
 import Tooltip from 'antd/es/tooltip';
-import DashboardDatasource from 'datasource/datasource';
 import React from 'react';
 
-import { IMetric, MetricDetail } from '../typings/metric';
+import { type IMetric, type MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { createMetricTitleTooltips, t, random } from '../utils/utils';
+
+import type DashboardDatasource from 'datasource/datasource';
 let interval: any = null;
 const { TabPane } = Tabs;
 export enum MetricInputMode {
