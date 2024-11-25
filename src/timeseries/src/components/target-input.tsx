@@ -31,7 +31,7 @@ import React from 'react';
 
 import { type ITargetData, type ITargetItem, TARGET_TYPE } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Option } = Select;
 
 const clusterParams = {

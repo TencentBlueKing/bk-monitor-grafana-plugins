@@ -25,7 +25,7 @@
  */
 import React from 'react';
 
-import { language } from './utils';
+import { language } from 'common/utils/utils';
 export const LanguageContext = React.createContext({
   language,
 });

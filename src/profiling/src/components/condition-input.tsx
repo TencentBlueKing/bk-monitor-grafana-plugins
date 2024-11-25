@@ -35,7 +35,7 @@ import { map, merge, type Observable } from 'rxjs';
 import type { ProfilingQuery } from '../typings/datasource';
 import { CONDITION, type ICommonItem, type IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
 import { DIM_NULL_ID } from '../typings/profile';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 
 import type DataSource from '../datasource/datasource';
 
@@ -63,7 +63,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
               service_name: serviceName,
               label_key: key,
             })
-            .pipe(map(data => ({ [key]: data || [] })))
+            .pipe(map(data => ({ [key]: data || [] }))),
         );
       }
     }
@@ -170,7 +170,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
           };
         }
         return item;
-      })
+      }),
     );
   };
 

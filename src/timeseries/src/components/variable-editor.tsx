@@ -39,7 +39,7 @@ import { K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryTy
 // import { CascaderOptionType } from 'antd/es/cascader';
 import { handleTransformOldVariableQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
-import { getCookie, t } from '../utils/utils';
+import { getCookie, t } from 'common/utils/utils';
 import ConditionIput from './condition-input';
 import DimensionInput from './dimension-input';
 import MetricInput from './metirc-input';
@@ -126,7 +126,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         condition,
       },
-      needQuery ? this.handleQuery : undefined
+      needQuery ? this.handleQuery : undefined,
     );
   };
   handleDimensionChange = (dimensions: string[]) => {
@@ -136,7 +136,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         metricDetail: new MetricDetail(metricDetail),
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleDimensionConditionChange = async (condition: IConditionItem[], needQuery = true) => {
@@ -146,7 +146,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         metricDetail: new MetricDetail(metricDetail),
       },
-      needQuery ? this.handleQuery : undefined
+      needQuery ? this.handleQuery : undefined,
     );
   };
   handleMetricChange = async (metric: IMetric) => {
@@ -156,7 +156,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
         {
           metricDetail: new MetricDetail(metric),
         },
-        this.handleQuery
+        this.handleQuery,
       );
     } else {
       // 清空当前指标
@@ -175,7 +175,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
           showField: undefined,
           valueField: undefined,
         },
-        !needLoading ? undefined : this.handleQuery
+        !needLoading ? undefined : this.handleQuery,
       );
       needLoading && this.handleGetFiledList(v);
     } else {
@@ -192,7 +192,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         showField: v,
       },
-      this.state.valueField ? this.handleQuery : undefined
+      this.state.valueField ? this.handleQuery : undefined,
     );
   };
   handleSourceBlur = async (v: string, hasError = false) => {
@@ -202,7 +202,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
           {
             promql: v,
           },
-          this.handleQuery
+          this.handleQuery,
         );
       } else {
         this.setState({ editorStatus: 'error' });
@@ -214,7 +214,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         valueField: v,
       },
-      this.state.showField ? this.handleQuery : undefined
+      this.state.showField ? this.handleQuery : undefined,
     );
   };
   handleDeleteMetric() {
@@ -222,7 +222,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       {
         metricDetail: {} as any,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   }
   async handleGetFiledList(v: K8sVariableQueryType | VariableQueryType) {
@@ -296,7 +296,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
               variables: this.handleGetVariables(agg_condition),
             }
           : {},
-        definition
+        definition,
       );
     }
   }
@@ -335,7 +335,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       const metric = data.find(
         metric =>
           metric_field === metric.metric_field &&
-          ((data_label && data_label === metric.data_label) || result_table_id === metric.result_table_id)
+          ((data_label && data_label === metric.data_label) || result_table_id === metric.result_table_id),
       );
       this.setState({
         loading: false,

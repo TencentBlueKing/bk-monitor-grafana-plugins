@@ -35,7 +35,7 @@ import type { QueryOption } from '../typings/config';
 import type { IQueryConfig, QueryData } from '../typings/datasource';
 import type { ICommonItem, IConditionItem, IntervalType } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getCookie, t } from '../utils/utils';
+import { getCookie, t } from 'common/utils/utils';
 import AlertAliasInput from './alert-alias-input';
 import AlertConditionInput from './alert-condition-input';
 import AlertDimensionInput from './alert-dimension-input';
@@ -90,7 +90,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         alias: v,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleClickQuery = () => {
@@ -112,7 +112,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         where: v,
       },
-      () => needQuery !== false && this.handleQuery()
+      () => needQuery !== false && this.handleQuery(),
     );
   };
   handleDimensionChange = async (v: string[]) => {
@@ -120,7 +120,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         group_by: v,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleIntervalChange = async (v: number) => {
@@ -128,7 +128,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         interval: v,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleIntervalUnitChange = async (v: string) => {
@@ -136,7 +136,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         interval_unit: v,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleMethodChange = async (v: string) => {
@@ -144,7 +144,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         agg_method: v,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleQuery = () => {

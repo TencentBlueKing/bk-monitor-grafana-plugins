@@ -36,7 +36,7 @@ import React from 'react';
 import { DIM_NULL_ID } from '../typings/datasource';
 import { type ICommonItem, type IConditionItem, CONDITION, ALERT_CONDITION_METHOD_LIST } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 
 import type DataSource from '../datasource/datasource';
 const { Option } = Select;
@@ -123,7 +123,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
           };
         }
         return item;
-      })
+      }),
     );
   }
   /**
@@ -152,7 +152,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
           };
         }
         return item;
-      })
+      }),
     );
     if (this.state.dimensionValueMap[v] || !v) return;
     const data = await this.getDimensionValue(v);

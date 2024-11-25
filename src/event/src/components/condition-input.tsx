@@ -39,7 +39,7 @@ import {
   STRING_CONDITION_METHOD_LIST,
 } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Option } = Select;
 export interface IProps {
   dimensionList: ICommonItem[];
@@ -89,7 +89,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
           };
         }
         return item;
-      })
+      }),
     );
   }
   handleKeyChange = async (v: string, index: number) => {
@@ -111,7 +111,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
           };
         }
         return item;
-      })
+      }),
     );
     if (this.state.dimensionValueMap[v] || !v || !this.props.getDimensionValue) return;
     const data = await this.props.getDimensionValue(v);

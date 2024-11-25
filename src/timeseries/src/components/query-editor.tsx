@@ -50,7 +50,7 @@ import {
 } from '../typings/metric';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
-import { getCookie, t } from '../utils/utils';
+import { getCookie, t } from 'common/utils/utils';
 import AddvanceSetting, { type AddvanceSettingKey } from './addvance-setting';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
@@ -163,7 +163,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       () => {
         this.handleQuery();
         this.state.searchState !== SearcState.auto && this.props.onRunQuery();
-      }
+      },
     );
   };
   expressionListComp = language => {
@@ -288,7 +288,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           promqlAlias: alias,
         },
-        this.handleQuery
+        this.handleQuery,
       );
     }
   };
@@ -305,7 +305,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList: list,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleDeleteExpression = (index: number) => {
@@ -316,7 +316,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: list,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleDeleteExpressionFuntion = async (index: number, funcIndex: number) => {
@@ -329,7 +329,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleDeleteFuntion = async (metricIndex: number, funcIndex: number) => {
@@ -348,7 +348,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleDimensionChange = async (v: string[], metricIndex: number) => {
@@ -364,7 +364,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      needQuery ? this.handleQuery : undefined
+      needQuery ? this.handleQuery : undefined,
     );
   };
   handleEditFuntion = (func: IFunctionItem, metricIndex: number, funcIndex: number, needQuery: boolean) => {
@@ -388,7 +388,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           let promqlAlias = params?.expressionList?.find(item => item.active)?.expression;
           if (!promqlAlias) {
             promqlAlias = params?.query_configs?.find(
-              item => item.alias && (item.display || typeof item.display === undefined)
+              item => item.alias && (item.display || typeof item.display === undefined),
             )?.alias;
           }
           source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(e => {
@@ -406,7 +406,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 promqlAlias: promqlAlias || params.promqlAlias,
                 source,
               },
-              this.handleQuery
+              this.handleQuery,
             );
         } else {
           !hasError &&
@@ -416,7 +416,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 promqlAlias: '',
                 source,
               },
-              this.handleQuery
+              this.handleQuery,
             );
         }
       } else {
@@ -444,7 +444,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               metricList: list,
               mode: 'ui',
             },
-            this.handleQuery
+            this.handleQuery,
           );
         } else {
           !hasError &&
@@ -454,7 +454,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 metricList: [{ refId: 'a' } as any],
                 mode: 'ui',
               },
-              this.handleQuery
+              this.handleQuery,
             );
         }
       }
@@ -473,7 +473,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           expressionList: expressionList.slice(),
         },
-        this.handleQuery
+        this.handleQuery,
       );
     }
   };
@@ -486,7 +486,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         {
           expressionList: expressionList.slice(),
         },
-        this.handleQuery
+        this.handleQuery,
       );
     }
   };
@@ -502,7 +502,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleExpressionFuncitonSelected = async (v: IFunctionItem, index: number) => {
@@ -516,7 +516,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         expressionList: expressionList.slice(),
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
   handleFuncitonSelected = async (v: IFunctionItem, metricIndex: number) => {
@@ -562,14 +562,14 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               alias: item.alias || '',
               functions: item.functions || [],
             } as any)
-          : item
+          : item,
       );
       metricList = this.handleResetMetricDimension(metricList);
       this.setState(
         {
           metricList,
         },
-        this.handleQuery
+        this.handleQuery,
       );
     } else {
       // 清空当前指标
@@ -615,7 +615,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 {
                   metricList: list,
                 },
-                () => this.handleQuery(list)
+                () => this.handleQuery(list),
               );
             }
           } else {
@@ -702,7 +702,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               () => {
                 this.handleQuery();
                 immediateQuery && this.state.searchState !== SearcState.auto && this.props.onRunQuery();
-              }
+              },
             );
           } else {
             const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
@@ -742,7 +742,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         ...data,
       },
-      this.handleQuery
+      this.handleQuery,
     );
   };
 
@@ -769,7 +769,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               // display: false,
               metricList: [{ refId: this.handleGetNewRefId(this.state.metricList) } as any],
             },
-            this.handleQuery
+            this.handleQuery,
           );
           return;
         }
@@ -796,7 +796,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               //     : data.expression
               //       || (!this.state.expression && metricList.length === 2 ? 'a + b' : this.state.expression),
             },
-            this.handleQuery
+            this.handleQuery,
           );
         } else {
           hasError = true;
@@ -835,7 +835,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               isTranform: false,
               metricList: list,
             },
-            this.handleQuery
+            this.handleQuery,
           );
           return;
         }
@@ -855,7 +855,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               // display: list.length > 1,
               // expression: list.length < 2 ? '' : this.state.expression,
             },
-            this.handleQuery
+            this.handleQuery,
           );
         } else {
           hasError = true;
@@ -918,7 +918,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     metricIndex: number,
     name: K,
     value: T[K],
-    needQuery = true
+    needQuery = true,
   ) {
     const list = this.state.metricList.map((item, index) => {
       if (index === metricIndex) {
@@ -931,7 +931,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       {
         metricList: list,
       },
-      needQuery ? this.handleQuery : undefined
+      needQuery ? this.handleQuery : undefined,
     );
   }
   handleGetNewRefId(metricList: MetricDetail[]) {
@@ -1006,7 +1006,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleInitFuntions(functionList: IFunctionItem[], functions: IFunctionItem[]) {
     const funcList: IFunctionItem[] = functionList.reduce(
       (pre, cur) => (cur?.children?.length ? [...pre, ...cur.children] : pre),
-      []
+      [],
     ) as any;
     return functions.map(func => {
       const funcItem = funcList.find(set => set.id === func.id);
@@ -1088,7 +1088,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             new MetricDetail({
               ...item,
               ...commonData,
-            } as any)
+            } as any),
         );
     });
     return await Promise.all(promiseList);
@@ -1096,7 +1096,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleResetMetricDimension(metricList: MetricDetail[]) {
     const longDimension = metricList.reduce(
       (pre, cur) => (cur?.agg_dimension?.length > pre?.length ? cur.agg_dimension : pre),
-      [] as any
+      [] as any,
     );
     return metricList.map((item, index) => {
       if (item.metricMetaId) {

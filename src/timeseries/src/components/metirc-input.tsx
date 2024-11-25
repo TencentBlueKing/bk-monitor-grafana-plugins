@@ -42,7 +42,7 @@ import React from 'react';
 
 import type { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { createMetricTitleTooltips, t, random } from '../utils/utils';
+import { createMetricTitleTooltips, t, random } from 'common/utils/utils';
 
 import type DashboardDatasource from 'datasource/datasource';
 let interval: any = null;
@@ -169,7 +169,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       subtitle: [
         metric.result_table_label_name,
         data_source_list.find(
-          item => item.data_source_label === metric.data_source_label && item.data_type_label === metric.data_type_label
+          item =>
+            item.data_source_label === metric.data_source_label && item.data_type_label === metric.data_type_label,
         )?.name,
         metric.related_name,
       ]
@@ -193,7 +194,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     if (datasourceLabel?.length) {
       if (data_source_list.length) {
         datasources = data_source_list.filter(
-          item => item.count > 0 || datasourceLabel.some(set => set.id === item.id)
+          item => item.count > 0 || datasourceLabel.some(set => set.id === item.id),
         );
       } else {
         datasources = dataSourceList.filter(item => datasourceLabel.some(set => set.id === item.id));
@@ -310,7 +311,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         loading: true,
         page: 1,
       },
-      () => this.getMetricList(true)
+      () => this.getMetricList(true),
     );
   };
   /**
@@ -407,7 +408,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           moreLoading: true,
           page: this.state.page + 1,
         },
-        this.getMetricList
+        this.getMetricList,
       );
     }
   };
@@ -428,7 +429,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         setTimeout(() => {
           this.setState({ timer });
         });
-      }
+      },
     );
   };
   handleTagChange = (activeKey: string) => {
@@ -439,7 +440,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         page: 1,
         tag: activeKey === tag?.id ? null : tagList.find(item => item.id === activeKey),
       },
-      () => this.getMetricList(true)
+      () => this.getMetricList(true),
     );
   };
   handleVisibleChange = v => {
@@ -466,7 +467,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
           setTimeout(() => {
             this.inputRef.current.focus();
           }, 300);
-        }
+        },
       );
     } else if (!v) {
       document.removeEventListener('keydown', this.handleKeyDown);

@@ -28,7 +28,7 @@ import Switch from 'antd/es/switch';
 import React from 'react';
 
 import type { EditMode } from '../typings/metric';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 import AliasInput from './alias-input';
 import EditorForm from './editor-form';
 export type AddvanceSettingKey = 'enableDownSampling' | 'format' | 'promqlAlias' | 'step' | 'type';

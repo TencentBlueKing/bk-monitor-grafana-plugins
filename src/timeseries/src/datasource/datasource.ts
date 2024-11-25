@@ -49,7 +49,7 @@ import { DIM_NULL_ID, type IQueryConfig, type QueryData } from '../typings/datas
 import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
 import { type K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
-import { random } from '../utils/utils';
+import { random } from 'common/utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
   series: Array<{
@@ -190,7 +190,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     scopedVars: ScopedVars,
     metric: IMetric,
     aliasData: IAliasData,
-    sere: Record<string, any>
+    sere: Record<string, any>,
   ) {
     // const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
     // const tagRegex = /(\$(tag_|dim_)\$[\w._]+)/gm;
@@ -256,7 +256,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     alias: string,
     config?: IQueryConfig,
     query?: QueryData,
-    isExpression?: boolean
+    isExpression?: boolean,
   ) {
     const hasVariateAlias = String(alias).match(/\$/im);
     let metric: IMetric | undefined = undefined;
@@ -266,7 +266,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       metric = isExpression
         ? metrics[0]
         : metrics.find(
-            item => item.metric_field === config.metric_field && item.result_table_id === config.result_table_id
+            item => item.metric_field === config.metric_field && item.result_table_id === config.result_table_id,
           );
       aliasData = {
         formula: config.method,
@@ -639,7 +639,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     apiCacheInstance.setCache(
       cacheKey,
-      this.request(params).catch(() => [])
+      this.request(params).catch(() => []),
     );
     const data = await apiCacheInstance.getCache(cacheKey);
     return data;
@@ -662,7 +662,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     apiCacheInstance.setCache(
       cacheKey,
-      this.request(params).catch(() => [])
+      this.request(params).catch(() => []),
     );
     const res = await apiCacheInstance.getCache(cacheKey);
     return res;
@@ -871,13 +871,13 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 url: QueryUrl.query,
               })
                 .then((data: QueryFetchData) =>
-                  this.buildFetchSeries(data, options.scopedVars, config.alias, config, item)
+                  this.buildFetchSeries(data, options.scopedVars, config.alias, config, item),
                 )
                 .catch(e => {
                   console.error(e);
                   errorMsg += e.data?.message || 'query error';
                   return [];
-                })
+                }),
             );
           }
           configList.push(queryConfig);
@@ -914,14 +914,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                   options.scopedVars,
                   item.mode === 'code' ? item.promqlAlias || item.alias : item.alias,
                   null,
-                  item
-                )
+                  item,
+                ),
               )
               .catch(e => {
                 console.error(e);
                 errorMsg += e.data?.message || 'query error';
                 return [];
-              })
+              }),
           );
         } else {
           const { cluster, expressionList, host, module, enableDownSampling } = item;
@@ -951,7 +951,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                     console.error(e);
                     errorMsg += e.data?.message || 'query error';
                     return [];
-                  })
+                  }),
               );
             }
           });
@@ -961,7 +961,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const needUnit = promiseList.length < 2;
     const data: any = await Promise.all(promiseList)
       .then(list =>
-        list.reduce((pre, cur) => (cur?.length ? ((pre.data = [...pre.data, ...cur]), pre) : pre), { data: [] })
+        list.reduce((pre, cur) => (cur?.length ? ((pre.data = [...pre.data, ...cur]), pre) : pre), { data: [] }),
       )
       .catch(e => {
         console.error(e);
@@ -979,7 +979,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               status: 'error',
             },
           }
-        : {}
+        : {},
     );
     if (list.data?.length > 1) {
       const tableRefId = options.targets.filter(item => item.format === 'table').map(item => item.refId);
@@ -1102,7 +1102,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         },
         method === 'GET'
           ? { params: { ...(params || data), bk_biz_id: this.bizId } }
-          : { data: { ...(data || params), bk_biz_id: this.bizId } }
+          : { data: { ...(data || params), bk_biz_id: this.bizId } },
       );
       return getBackendSrv()
         .datasourceRequest(options)

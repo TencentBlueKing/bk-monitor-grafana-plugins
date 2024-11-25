@@ -31,7 +31,7 @@ import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 
 import type { ICommonItem } from '../typings/metric';
 const { Option } = Select;

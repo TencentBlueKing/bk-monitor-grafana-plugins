@@ -28,7 +28,7 @@ import { LegacyForms, TagsInput } from '@grafana/ui';
 import React from 'react';
 
 import type { QueryOption, SecureOption } from '../typings/config';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Input, FormField, Switch } = LegacyForms;
 export default class ConfigEditor extends React.PureComponent<
   DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>,

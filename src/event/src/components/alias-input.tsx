@@ -27,7 +27,7 @@ import Input, { type InputProps } from 'antd/es/input';
 import React from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 export interface IAliasInputProps {
   style?: React.CSSProperties;
   inputProps?: InputProps;

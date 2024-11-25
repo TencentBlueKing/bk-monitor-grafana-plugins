@@ -34,7 +34,7 @@ import React from 'react';
 
 import type { IFunctionItem, IFunctionParam } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 export const EMPTY_VALUE = '-空-';
 export interface IFunctionInputProps {
   funtion: IFunctionItem;

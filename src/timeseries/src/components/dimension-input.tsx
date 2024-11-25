@@ -31,7 +31,7 @@ import React from 'react';
 
 import type { MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Option } = Select;
 export interface IDimensionInputProps {
   metric: MetricDetail;

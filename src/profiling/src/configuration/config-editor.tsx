@@ -29,7 +29,7 @@ import { LegacyForms, TagsInput } from '@grafana/ui';
 import React, { useState } from 'react';
 
 import type { QueryOption, SecureOption } from '../typings/config';
-import { t } from '../utils/utils';
+import { t } from 'common/utils/utils';
 
 const { FormField, Input, Switch } = LegacyForms;
 

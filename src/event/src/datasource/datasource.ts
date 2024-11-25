@@ -40,7 +40,7 @@ import type { QueryOption } from '../typings/config';
 import type { IQueryConfig, QueryData } from '../typings/datasource';
 import type { IMetric } from '../typings/metric';
 import { type VariableQuery, VariableQueryType } from '../typings/variable';
-import { random } from '../utils/utils';
+import { random } from 'common/utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
   series: {
@@ -104,7 +104,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     scopedVars: ScopedVars,
     metric: IMetric,
     aliasData: IAliasData,
-    dimensions: Record<string, string>
+    dimensions: Record<string, string>,
   ) {
     const regex = /\$(\w+)|\[\[([\s\S]+?)\]\]/g;
     const aliasName = alias.replace(regex, (match: any, g1: any, g2: any) => {
@@ -138,7 +138,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     { metrics = [], series = [] }: QueryFetchData,
     scopedVars: ScopedVars,
     alias: string,
-    config?: IQueryConfig
+    config?: IQueryConfig,
   ) {
     const hasVariateAlias = String(alias).match(/\$/im);
     let metric: IMetric;
@@ -146,7 +146,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     // 兼容老版本变量设置
     if (hasVariateAlias && !!config) {
       metric = metrics.find(
-        item => item.metric_field === config.metric_field && item.result_table_id === config.result_table_id
+        item => item.metric_field === config.metric_field && item.result_table_id === config.result_table_id,
       );
       aliasData = {
         formula: config.method,
@@ -290,7 +290,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     apiCacheInstance.setCache(
       cacheKey,
-      this.request(params).catch(() => [])
+      this.request(params).catch(() => []),
     );
     const data = await apiCacheInstance.getCache(cacheKey);
     return data;
@@ -313,7 +313,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     apiCacheInstance.setCache(
       cacheKey,
-      this.request(params).catch(() => [])
+      this.request(params).catch(() => []),
     );
     const res = await apiCacheInstance.getCache(cacheKey);
     return res;
@@ -402,9 +402,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             url,
           })
             .then((data: QueryFetchData) =>
-              isTableQuery ? data : this.buildFetchSeries(data, options.scopedVars, config.alias, config)
+              isTableQuery ? data : this.buildFetchSeries(data, options.scopedVars, config.alias, config),
             )
-            .catch(() => [])
+            .catch(() => []),
         );
         configList.push(queryConfig);
       });
@@ -412,7 +412,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     const needUnit = promiseList.length < 2;
     const data: any = await Promise.all(promiseList)
       .then(list =>
-        list.reduce((pre, cur) => (cur?.length ? ((pre.data = [...pre.data, ...cur]), pre) : pre), { data: [] })
+        list.reduce((pre, cur) => (cur?.length ? ((pre.data = [...pre.data, ...cur]), pre) : pre), { data: [] }),
       )
       .catch(e => {
         console.error(e);
@@ -449,7 +449,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         },
         method === 'GET'
           ? { params: { ...(params || data), bk_biz_id: this.bizId } }
-          : { data: { ...(data || params), bk_biz_id: this.bizId } }
+          : { data: { ...(data || params), bk_biz_id: this.bizId } },
       );
       return getBackendSrv()
         .datasourceRequest(options)

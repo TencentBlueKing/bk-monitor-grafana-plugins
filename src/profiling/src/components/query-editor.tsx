@@ -29,7 +29,7 @@ import Tooltip from 'antd/es/tooltip';
 import React, { useEffect, useState } from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { t, language } from '../utils/utils';
+import { t, language } from 'common/utils/utils';
 import ConditionInput from './condition-input';
 import EditorForm from './editor-form';
 

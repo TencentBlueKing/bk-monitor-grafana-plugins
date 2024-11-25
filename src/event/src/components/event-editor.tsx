@@ -32,7 +32,7 @@ import React from 'react';
 import type { QueryOption } from '../typings/config';
 import type { QueryData } from '../typings/datasource';
 import type { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
-import { getCookie, t } from '../utils/utils';
+import { getCookie, t } from 'common/utils/utils';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
 import DataInput from './data-input';
@@ -201,9 +201,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             dimension: [],
             condition: [{}] as any,
           },
-          this.handleQuery
+          this.handleQuery,
         );
-      }
+      },
     );
   };
   handleQueryStringChange = async (queryString: string) => {
