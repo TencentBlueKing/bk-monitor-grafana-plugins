@@ -41,4 +41,4 @@ export const getCookie = (name: string): null | string => {
   }
   return null;
 };
-export const getEnByName = (name: string, lang?: string): string => (lang === 'en' ? enData[name] || name : name);
+export const t = (name: string, lang?: string): string => (lang === 'en' ? enData[name] || name : name);

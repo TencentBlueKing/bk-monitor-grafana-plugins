@@ -28,7 +28,7 @@ import { LegacyForms, TagsInput } from '@grafana/ui';
 import React from 'react';
 
 import { QueryOption, SecureOption } from '../typings/config';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 const { FormField, Input, Switch } = LegacyForms;
 export default class ConfigEditor extends React.PureComponent<
   DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>,
@@ -87,14 +87,14 @@ export default class ConfigEditor extends React.PureComponent<
                 <Input
                   style={{ width: '500px' }}
                   defaultValue={options.jsonData.baseUrl}
-                  placeholder={getEnByName('蓝鲸监控API路径')}
+                  placeholder={t('蓝鲸监控API路径')}
                   spellCheck={false}
                   onBlur={e => this.handleChange('baseUrl', e)}
                 />
               }
               label='Base Url'
               labelWidth={10}
-              tooltip={getEnByName('蓝鲸监控API路径')}
+              tooltip={t('蓝鲸监控API路径')}
             />
           </div>
           <div
@@ -109,9 +109,9 @@ export default class ConfigEditor extends React.PureComponent<
                   onChange={this.handleUseTokenChange}
                 />
               }
-              label={getEnByName('是否启用token')}
+              label={t('是否启用token')}
               labelWidth={10}
-              tooltip={getEnByName('是否启用token')}
+              tooltip={t('是否启用token')}
             />
           </div>
           {this.state.useToken && (
@@ -137,7 +137,7 @@ export default class ConfigEditor extends React.PureComponent<
                   }
                   label='Allowed cookies'
                   labelWidth={10}
-                  tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
+                  tooltip={t('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
                 />
               </div>
               <div
@@ -149,14 +149,14 @@ export default class ConfigEditor extends React.PureComponent<
                     <Input
                       style={{ width: '500px' }}
                       defaultValue={options.jsonData.bizId}
-                      placeholder={getEnByName('蓝鲸监控业务ID')}
+                      placeholder={t('蓝鲸监控业务ID')}
                       spellCheck={false}
                       onBlur={e => this.handleChange('bizId', e)}
                     />
                   }
                   label='业务ID'
                   labelWidth={10}
-                  tooltip={getEnByName('蓝鲸监控业务ID')}
+                  tooltip={t('蓝鲸监控业务ID')}
                 />
               </div>
               <div
@@ -168,9 +168,7 @@ export default class ConfigEditor extends React.PureComponent<
                     <Input
                       style={{ width: '500px' }}
                       placeholder={
-                        options.secureJsonFields?.token
-                          ? getEnByName('已设置免登入Token')
-                          : getEnByName('蓝鲸监控当前业务免登入Token')
+                        options.secureJsonFields?.token ? t('已设置免登入Token') : t('蓝鲸监控当前业务免登入Token')
                       }
                       defaultValue={options.secureJsonData?.token ?? ''}
                       spellCheck={false}
@@ -180,7 +178,7 @@ export default class ConfigEditor extends React.PureComponent<
                   }
                   label='Token'
                   labelWidth={10}
-                  tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
+                  tooltip={t('蓝鲸监控当前业务免登入Token')}
                 />
               </div>
             </>

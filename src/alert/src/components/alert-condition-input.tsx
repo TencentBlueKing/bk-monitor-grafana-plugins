@@ -36,7 +36,7 @@ import DataSource from '../datasource/datasource';
 import { DIM_NULL_ID } from '../typings/datasource';
 import { ICommonItem, IConditionItem, CONDITION, ALERT_CONDITION_METHOD_LIST } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 const { Option } = Select;
 export interface IProps {
   dimensions: ICommonItem[];
@@ -288,7 +288,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                           onClick={(): void => this.handleDeleteKey(index)}
                         >
                           <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                          {getEnByName('删除', language)}
+                          {t('删除', language)}
                         </div>
                       </div>
                     ) : (
@@ -300,7 +300,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                   defaultOpen={item.key === ''}
                   defaultValue={item.key || ''}
                   dropdownMatchSelectWidth={140}
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   showSearch
                   onChange={(v: string) => this.handleKeyChange(v, index)}
@@ -359,7 +359,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                   defaultValue={item.value}
                   dropdownMatchSelectWidth={true}
                   mode='tags'
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   onChange={v => this.handleValueChange(v, index)}
                 >
@@ -368,7 +368,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                       key={DIM_NULL_ID}
                       value={DIM_NULL_ID}
                     >
-                      {getEnByName('- 空 -')}
+                      {t('- 空 -')}
                     </Option>
                   )}
                   {dimensionValueMap[item.key]?.map?.(dim => (

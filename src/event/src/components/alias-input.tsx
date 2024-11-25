@@ -27,7 +27,7 @@ import Input, { InputProps } from 'antd/es/input';
 import React from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 export interface IAliasInputProps {
   style?: React.CSSProperties;
   inputProps?: InputProps;
@@ -46,7 +46,7 @@ export default class AliasInput extends React.PureComponent<IAliasInputProps> {
           <Input
             style={{ minWidth: '300px', ...this.props.style }}
             defaultValue={this.props.value}
-            placeholder={getEnByName('请输入', language)}
+            placeholder={t('请输入', language)}
             onBlur={this.handleBlur}
             {...this.props.inputProps}
           />

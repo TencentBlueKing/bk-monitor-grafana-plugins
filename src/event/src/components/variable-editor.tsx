@@ -34,7 +34,7 @@ import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/m
 import { VariableQueryType, VariableQuery } from '../typings/variable';
 import { LanguageContext } from '../utils/context';
 // import { CascaderOptionType } from 'antd/es/cascader';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getCookie, t } from '../utils/utils';
 import AliasInput from './alias-input';
 import ConditionIput from './condition-input';
 import DataInput from './data-input';
@@ -67,11 +67,11 @@ interface IVariableEditorState {
 const language = getCookie('blueking_language');
 export default class VariableQueryEditor extends React.PureComponent<IVariableEditorProps, IVariableEditorState> {
   queryTypes: { value: string; label: string }[] = [
-    { value: VariableQueryType.Host, label: getEnByName('主机', language) },
-    { value: VariableQueryType.Module, label: getEnByName('模块', language) },
-    { value: VariableQueryType.Set, label: getEnByName('集群', language) },
-    { value: VariableQueryType.ServiceInstance, label: getEnByName('服务实例', language) },
-    { value: VariableQueryType.Dimension, label: getEnByName('维度', language) },
+    { value: VariableQueryType.Host, label: t('主机', language) },
+    { value: VariableQueryType.Module, label: t('模块', language) },
+    { value: VariableQueryType.Set, label: t('集群', language) },
+    { value: VariableQueryType.ServiceInstance, label: t('服务实例', language) },
+    { value: VariableQueryType.Dimension, label: t('维度', language) },
   ];
   constructor(props) {
     super(props);
@@ -344,7 +344,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
       <LanguageContext.Provider value={{ language }}>
         <div className='event-variable-editor'>
           <Spin spinning={loading}>
-            <VariableLine title={getEnByName('类型', language)}>
+            <VariableLine title={t('类型', language)}>
               <Select
                 className='common-select'
                 defaultValue={queryType}
@@ -362,11 +362,11 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
             </VariableLine>
             {queryType !== VariableQueryType.Dimension ? (
               <>
-                <VariableLine title={getEnByName('展示字段', language)}>
+                <VariableLine title={t('展示字段', language)}>
                   <Select
                     className='common-select'
                     optionFilterProp={'children'}
-                    placeholder={getEnByName('请选择展示字段', language)}
+                    placeholder={t('请选择展示字段', language)}
                     value={showField}
                     showSearch
                     onChange={this.handleShowFieldChange}
@@ -381,11 +381,11 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                     ))}
                   </Select>
                 </VariableLine>
-                <VariableLine title={getEnByName('值字段', language)}>
+                <VariableLine title={t('值字段', language)}>
                   <Select
                     className='common-select'
                     optionFilterProp={'children'}
-                    placeholder={getEnByName('请选择值字段', language)}
+                    placeholder={t('请选择值字段', language)}
                     value={valueField}
                     showSearch
                     onChange={this.handleValueFieldChange}
@@ -400,7 +400,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                     ))}
                   </Select>
                 </VariableLine>
-                <VariableLine title={getEnByName('条件', language)}>
+                <VariableLine title={t('条件', language)}>
                   <ConditionIput
                     condition={condition}
                     dimensionList={fieldList}
@@ -410,13 +410,13 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
               </>
             ) : (
               <>
-                <VariableLine title={getEnByName('数据类型', language)}>
+                <VariableLine title={t('数据类型', language)}>
                   <TypeInput
                     value={typeId}
                     onChange={this.handleDataTypeChange}
                   />
                 </VariableLine>
-                <VariableLine title={getEnByName('数据名称', language)}>
+                <VariableLine title={t('数据名称', language)}>
                   <DataInput
                     list={dataList}
                     value={dataId}
@@ -425,14 +425,14 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                 </VariableLine>
                 {dataId ? (
                   <>
-                    <VariableLine title={getEnByName('Query string', language)}>
+                    <VariableLine title={t('Query string', language)}>
                       <AliasInput
                         style={{ minWidth: '100%', flex: 1 }}
                         value={queryString}
                         onChange={this.handleQueryStringChange}
                       />
                     </VariableLine>
-                    <VariableLine title={getEnByName('维度', language)}>
+                    <VariableLine title={t('维度', language)}>
                       <DimensionInput
                         dimension={dimension}
                         dimensionList={dimensionList}
@@ -440,7 +440,7 @@ export default class VariableQueryEditor extends React.PureComponent<IVariableEd
                         onDimensionChange={this.handleDimensionChange}
                       />
                     </VariableLine>
-                    <VariableLine title={getEnByName('条件', language)}>
+                    <VariableLine title={t('条件', language)}>
                       <ConditionIput
                         condition={dimCondition}
                         dimensionList={dimensionList}

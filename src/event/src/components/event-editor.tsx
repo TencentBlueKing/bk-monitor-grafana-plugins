@@ -33,7 +33,7 @@ import QueryDataSource from '../datasource/datasource';
 import { QueryOption } from '../typings/config';
 import { QueryData } from '../typings/datasource';
 import { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typings/metric';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getCookie, t } from '../utils/utils';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
 import DataInput from './data-input';
@@ -273,7 +273,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           {inited ? (
             <>
               <div className='query-editor'>
-                <EditorForm title={getEnByName('类型', language)}>
+                <EditorForm title={t('类型', language)}>
                   <TypeInput
                     value={typeId}
                     onChange={this.handeTypeIdChange}
@@ -281,7 +281,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 </EditorForm>
                 <EditorForm
                   labelStyle={{ minWidth: '108px' }}
-                  title={getEnByName('数据名称', language)}
+                  title={t('数据名称', language)}
                 >
                   <DataInput
                     list={dataList}
@@ -297,7 +297,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                     style={{ width: '100%' }}
                     labelStyle={{ minWidth: '115px' }}
                     tips='meta'
-                    title={getEnByName('Query String', language)}
+                    title={t('Query String', language)}
                   >
                     <AliasInput
                       style={{ minWidth: '100%', flex: 1 }}
@@ -312,7 +312,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <EditorForm
                     labelStyle={{ minWidth: '100px' }}
                     tips='formula'
-                    title={getEnByName('方法', language)}
+                    title={t('方法', language)}
                   >
                     <QueryFormula
                       typeId={typeId}
@@ -323,7 +323,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   {method !== 'COUNT' && false ? (
                     <EditorForm
                       tips='metric'
-                      title={getEnByName('指标', language)}
+                      title={t('指标', language)}
                     >
                       <DataInput
                         list={metricList}
@@ -334,7 +334,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   ) : undefined}
                   <EditorForm
                     tips='interval'
-                    title={getEnByName('周期', language)}
+                    title={t('周期', language)}
                   >
                     <IntervalInput
                       interval={interval}
@@ -346,7 +346,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   <EditorForm
                     labelStyle={{ minWidth: '110px' }}
                     tips='tag'
-                    title={getEnByName('维度', language)}
+                    title={t('维度', language)}
                   >
                     <DimensionInput
                       dimension={dimension}
@@ -354,7 +354,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onDimensionChange={this.handleDimensionChange}
                     />
                   </EditorForm>
-                  <EditorForm title={getEnByName('条件', language)}>
+                  <EditorForm title={t('条件', language)}>
                     <ConditionInput
                       condition={condition}
                       dimensionList={dimensionList}
@@ -362,7 +362,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onChange={this.handleConditionChange}
                     />
                   </EditorForm>
-                  <EditorForm title={getEnByName('别名', language)}>
+                  <EditorForm title={t('别名', language)}>
                     <AliasInput
                       value={alias}
                       onChange={this.handleAliasChange}

@@ -51,7 +51,7 @@ import {
 } from '../typings/metric';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getCookie, t } from '../utils/utils';
 import AddvanceSetting, { AddvanceSettingKey } from './addvance-setting';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
@@ -188,20 +188,20 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         <div className='query-editor-content'>
           <EditorForm
             labelStyle={{ paddingRight: '16px' }}
-            tips={getEnByName('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language)}
-            title={getEnByName('表达式', language)}
+            tips={t('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language)}
+            title={t('表达式', language)}
           >
             <AliasInput
               key={item.expression.length ? 'empty' : 'value'}
               style={{ minWidth: '288px' }}
               inputProps={{
                 defaultValue: item.expression,
-                placeholder: getEnByName('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language),
+                placeholder: t('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language),
               }}
               onChange={v => this.handleExpressionChange(v, index)}
             />
           </EditorForm>
-          <EditorForm title={getEnByName('函数', language)}>
+          <EditorForm title={t('函数', language)}>
             <>
               {item.functions?.map((funtion, i) => (
                 <FunctionInput
@@ -220,7 +220,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               />
             </>
           </EditorForm>
-          <EditorForm title={getEnByName('别名', language)}>
+          <EditorForm title={t('别名', language)}>
             <AliasInput
               inputProps={{ defaultValue: item.alias }}
               onChange={v => this.handleExpressionAliasChange(v, index)}
@@ -393,7 +393,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(e => {
             Message.error({
               duration: 10,
-              message: e.message || getEnByName('转换失败', this.state.language),
+              message: e.message || t('转换失败', this.state.language),
             });
             hasError = true;
             return '';
@@ -869,9 +869,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   transfromModeComp = (state?: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { mode, searchState } = this.state;
-    let btnText = getEnByName('查询');
-    if (isLoading) btnText = getEnByName('查询中...');
-    else if (searchState === SearcState.auto) btnText = getEnByName('自动查询');
+    let btnText = t('查询');
+    if (isLoading) btnText = t('查询中...');
+    else if (searchState === SearcState.auto) btnText = t('自动查询');
     return (
       <div className='transform-mode'>
         {mode === 'code' && (
@@ -1195,7 +1195,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                 <EditorForm
                                   style={{ flex: 1 }}
                                   tips='metric'
-                                  title={getEnByName('指标', language)}
+                                  title={t('指标', language)}
                                 >
                                   <MetricInput
                                     datasource={this.props.datasource}
@@ -1207,7 +1207,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                   <>
                                     <EditorForm
                                       tips='formula'
-                                      title={getEnByName('汇聚', language)}
+                                      title={t('汇聚', language)}
                                     >
                                       <QueryFormula
                                         metric={item}
@@ -1216,7 +1216,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       tips='interval'
-                                      title={getEnByName('周期', language)}
+                                      title={t('周期', language)}
                                     >
                                       <IntervalInput
                                         metric={item}
@@ -1226,7 +1226,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       tips='tag'
-                                      title={getEnByName('维度', language)}
+                                      title={t('维度', language)}
                                     >
                                       <DimensionInput
                                         metric={item}
@@ -1235,7 +1235,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       style={{ marginBottom: '0px' }}
-                                      title={getEnByName('条件', language)}
+                                      title={t('条件', language)}
                                     >
                                       <ConditionInput
                                         datasource={this.props.datasource}
@@ -1245,7 +1245,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         }
                                       />
                                     </EditorForm>
-                                    <EditorForm title={getEnByName('函数', language)}>
+                                    <EditorForm title={t('函数', language)}>
                                       <>
                                         {item.functions?.map((funtion, i) => (
                                           <FunctionInput
@@ -1265,7 +1265,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         />
                                       </>
                                     </EditorForm>
-                                    <EditorForm title={getEnByName('别名', language)}>
+                                    <EditorForm title={t('别名', language)}>
                                       <AliasInput
                                         metric={item}
                                         onChange={v => this.handleAliasChange(v, index)}
@@ -1356,9 +1356,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onBlur={this.handleSourceBlur}
                     />
                     {/* <div>
-                          <EditorForm title={getEnByName('别名', language)}>
+                          <EditorForm title={t('别名', language)}>
                             <AliasInput style={{ width: '288px', height: '32px' }} inputProps={{ defaultValue: promqlAlias }} onChange={this.handleAllAliasChange} />
-                            <EditorForm title={getEnByName('Step', language)}>
+                            <EditorForm title={t('Step', language)}>
                               <AliasInput style={{ width: '88px' }} inputProps={{ defaultValue: step, placeholder: 'auto' }} onChange={this.handleProStepChange} />
                             </EditorForm>
                           </EditorForm>
@@ -1368,8 +1368,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 {mode !== 'code' && metricList.some(item => item.metricMetaId) ? (
                   <EditorForm
                     style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
-                    tips={getEnByName('维度中有目标IP和云区域ID才会生效', language)}
-                    title={getEnByName('目标', language)}
+                    tips={t('维度中有目标IP和云区域ID才会生效', language)}
+                    title={t('目标', language)}
                   >
                     <TargetInput
                       cluster={cluster}
@@ -1391,7 +1391,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         type='default'
                         onClick={this.handleAddEmptyMetric}
                       >
-                        {getEnByName('多指标', language)}
+                        {t('多指标', language)}
                       </Button>
                     }
                     {
@@ -1402,7 +1402,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         type='default'
                         onClick={this.handleAddExpression}
                       >
-                        {getEnByName('表达式', language)}
+                        {t('表达式', language)}
                       </Button>
                     }
                     {/* <Button
@@ -1411,7 +1411,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         style={{ marginLeft: '10px', display: 'none' }}
                         onClick={this.handleTransformMode}
                       >
-                        {getEnByName(mode === 'code' ? 'UI' : 'Source', language)}
+                        {t(mode === 'code' ? 'UI' : 'Source', language)}
                       </Button> */}
                   </>
                 ) : undefined}

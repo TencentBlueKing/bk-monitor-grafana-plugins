@@ -220,7 +220,7 @@ const config = async (env): Promise<Configuration> => {
       ...(env.development
         ? [
             new LiveReloadPlugin({
-              port: 35732,
+              port: 35734,
             }),
           ]
         : []),

@@ -31,7 +31,7 @@ import React from 'react';
 
 import { ITargetData, ITargetItem, TARGET_TYPE } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 const { Option } = Select;
 
 const clusterParams = {
@@ -318,7 +318,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               mode='multiple'
               optionFilterProp='label'
               options={clusterList}
-              placeholder={getEnByName('集群', language)}
+              placeholder={t('集群', language)}
               value={clusterValue}
               onChange={this.handleClusterChange}
               onFocus={this.handleClusterFocus}
@@ -339,7 +339,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               mode='multiple'
               optionFilterProp='label'
               options={moduleList}
-              placeholder={getEnByName('模块', language)}
+              placeholder={t('模块', language)}
               value={moduleValue}
               onChange={this.handleModuleChange}
               onFocus={this.handleModuleFocus}
@@ -355,11 +355,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
             </Select>
             <Select
               style={{ marginRight: 0 }}
-              placeholder={
-                targetType === TARGET_TYPE.SERVICE_INSTANCE
-                  ? getEnByName('服务实例', language)
-                  : getEnByName('主机', language)
-              }
+              placeholder={targetType === TARGET_TYPE.SERVICE_INSTANCE ? t('服务实例', language) : t('主机', language)}
               className='target-input-host'
               dropdownClassName='target-input-cluster-dropdown'
               dropdownRender={menu => handleHostDropdownRender(menu, 'host')}

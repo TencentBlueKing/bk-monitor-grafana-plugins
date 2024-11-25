@@ -59,7 +59,7 @@ export const language = getCookie('blueking_language');
  * @param {string} lang 语言
  * @return {*}
  */
-export const getEnByName = (name: string, lang = language): string => {
+export const t = (name: string, lang = language): string => {
   if (process.env.NODE_ENV === 'development' && !enData[name]) {
     console.log(`翻译缺失：${name}`);
   }

@@ -36,7 +36,7 @@ import DataSource from '../datasource/datasource';
 import { ProfilingQuery } from '../typings/datasource';
 import { CONDITION, ICommonItem, IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
 import { DIM_NULL_ID } from '../typings/profile';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 
 const { Option } = Select;
 
@@ -220,7 +220,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                       onClick={() => handleDeleteKey(index)}
                     >
                       <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                      {getEnByName('删除')}
+                      {t('删除')}
                     </div>
                   </div>
                 ) : (
@@ -232,7 +232,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
               defaultOpen={item.key === '' && !!keyList.length}
               defaultValue={item.key || undefined}
               dropdownMatchSelectWidth={140}
-              placeholder={getEnByName('请选择')}
+              placeholder={t('请选择')}
               showArrow={false}
               showSearch
               onChange={v => handleKeyChange(v, index)}
@@ -289,7 +289,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                 defaultValue={item.value}
                 dropdownMatchSelectWidth={true}
                 mode='tags'
-                placeholder={getEnByName('请输入')}
+                placeholder={t('请输入')}
                 showArrow={false}
                 tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
                 onChange={v => handleValueChange(v, index)}
@@ -300,7 +300,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                     key={DIM_NULL_ID}
                     value={DIM_NULL_ID}
                   >
-                    {getEnByName('- 空 -')}
+                    {t('- 空 -')}
                   </Option>
                 )}
                 {dimensionValueMap[item.key]?.map?.(dim => (

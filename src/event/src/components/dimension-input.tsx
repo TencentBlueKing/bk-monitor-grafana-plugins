@@ -31,7 +31,7 @@ import React from 'react';
 
 import { ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 const { Option } = Select;
 export interface IDimensionInputProps {
   dimensionList: ICommonItem[];
@@ -86,7 +86,7 @@ export default class DimensionInput extends React.PureComponent<IDimensionInputP
             )}
             className='dimension-input'
             open={this.state.open}
-            placeholder={getEnByName('维度', language)}
+            placeholder={t('维度', language)}
             showArrow={false}
             showSearch
             {...selectProps}

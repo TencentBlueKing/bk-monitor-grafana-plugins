@@ -29,7 +29,7 @@ import { LegacyForms, TagsInput } from '@grafana/ui';
 import React, { useState } from 'react';
 
 import { QueryOption, SecureOption } from '../typings/config';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 
 const { FormField, Input, Switch } = LegacyForms;
 
@@ -88,14 +88,14 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
               <Input
                 style={{ width: '500px' }}
                 defaultValue={options.jsonData.baseUrl}
-                placeholder={getEnByName('蓝鲸监控API路径')}
+                placeholder={t('蓝鲸监控API路径')}
                 spellCheck={false}
                 onBlur={e => handleChange('baseUrl', e)}
               />
             }
             label='Base Url'
             labelWidth={10}
-            tooltip={getEnByName('蓝鲸监控API路径')}
+            tooltip={t('蓝鲸监控API路径')}
           />
         </div>
         <div
@@ -110,9 +110,9 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
                 onChange={e => handleUseTokenChange(e)}
               />
             }
-            label={getEnByName('是否启用token')}
+            label={t('是否启用token')}
             labelWidth={10}
-            tooltip={getEnByName('是否启用token')}
+            tooltip={t('是否启用token')}
           />
         </div>
         {useToken && (
@@ -137,7 +137,7 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
                 }
                 label='Allowed cookies'
                 labelWidth={10}
-                tooltip={getEnByName('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
+                tooltip={t('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
               />
             </div>
             <div
@@ -149,14 +149,14 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
                   <Input
                     style={{ width: '500px' }}
                     defaultValue={options.jsonData.bizId}
-                    placeholder={getEnByName('蓝鲸监控业务ID')}
+                    placeholder={t('蓝鲸监控业务ID')}
                     spellCheck={false}
                     onBlur={e => handleChange('bizId', e)}
                   />
                 }
                 label='业务ID'
                 labelWidth={10}
-                tooltip={getEnByName('蓝鲸监控业务ID')}
+                tooltip={t('蓝鲸监控业务ID')}
               />
             </div>
             <div
@@ -168,9 +168,7 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
                   <Input
                     style={{ width: '500px' }}
                     placeholder={
-                      options.secureJsonFields?.token
-                        ? getEnByName('已设置免登入Token')
-                        : getEnByName('蓝鲸监控当前业务免登入Token')
+                      options.secureJsonFields?.token ? t('已设置免登入Token') : t('蓝鲸监控当前业务免登入Token')
                     }
                     defaultValue={options.secureJsonData?.token ?? ''}
                     spellCheck={false}
@@ -180,7 +178,7 @@ const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, Sec
                 }
                 label='Token'
                 labelWidth={10}
-                tooltip={getEnByName('蓝鲸监控当前业务免登入Token')}
+                tooltip={t('蓝鲸监控当前业务免登入Token')}
               />
             </div>
           </>

@@ -34,7 +34,7 @@ import React from 'react';
 
 import { IFunctionItem, IFunctionParam } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 export const EMPTY_VALUE = '-空-';
 export interface IFunctionInputProps {
   funtion: IFunctionItem;
@@ -121,7 +121,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                     onClick={this.handleDelete}
                   >
                     <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                    {getEnByName('删除', language)}
+                    {t('删除', language)}
                   </div>
                 </div>
               }

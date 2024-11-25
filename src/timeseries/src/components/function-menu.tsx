@@ -31,7 +31,7 @@ import React from 'react';
 
 import { IFunctionItem, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from '../utils/utils';
 export interface IFunctionMenuProps {
   datasource: any;
   functionList: IFunctionItem[];
@@ -114,7 +114,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                 <div className='function-menu-panel'>
                   <Input
                     className='panel-search'
-                    placeholder={getEnByName('搜索函数', language)}
+                    placeholder={t('搜索函数', language)}
                     suffix={<SearchOutlined style={{ color: '#c4c6cc', fontSize: '16px' }} />}
                     value={keyword}
                     onChange={this.handleKeywordChange}
@@ -168,7 +168,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                       </div>
                     )}
                     {(!this.filterList?.length || !this.activeFuncList?.length) && (
-                      <div className='panel-desc'>{getEnByName('暂无数据', language)}</div>
+                      <div className='panel-desc'>{t('暂无数据', language)}</div>
                     )}
                   </div>
                 </div>
@@ -182,7 +182,7 @@ export default class FunctionMenu extends React.PureComponent<IFunctionMenuProps
                   <PlusOutlined className='add-icon' />
                 </span>
               ) : (
-                <span className='function-menu-anchor'>{getEnByName('请选择', language)}</span>
+                <span className='function-menu-anchor'>{t('请选择', language)}</span>
               )}
             </Popover>
           )}

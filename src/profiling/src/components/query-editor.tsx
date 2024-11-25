@@ -33,7 +33,7 @@ import ProfilingDatasource from '../datasource/datasource';
 import { ProfilingQuery } from '../typings/datasource';
 import { ICommonItem } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName, language } from '../utils/utils';
+import { t, language } from '../utils/utils';
 import ConditionInput from './condition-input';
 import EditorForm from './editor-form';
 
@@ -134,7 +134,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
     <LanguageContext.Provider value={{ language }}>
       <div className='monitor-profiling'>
         <div className='query-editor-content'>
-          <EditorForm title={getEnByName('应用/服务')}>
+          <EditorForm title={t('应用/服务')}>
             <Cascader
               style={{ width: '100%', minWidth: '160px' }}
               options={appList.map(option => {
@@ -144,7 +144,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
                     label: (
                       <Tooltip
                         placement='right'
-                        title={getEnByName('无数据')}
+                        title={t('无数据')}
                       >
                         <span>{option.label}</span>
                       </Tooltip>
@@ -179,12 +179,12 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               }}
             />
           </EditorForm>
-          <EditorForm title={getEnByName('Profile 类型')}>
+          <EditorForm title={t('Profile 类型')}>
             <Select
               style={{ width: '160px' }}
               disabled={isLoading.types}
               loading={isLoading.types}
-              placeholder={isLoading.types ? getEnByName('加载中') : getEnByName('请选择')}
+              placeholder={isLoading.types ? t('加载中') : t('请选择')}
               value={query.profile_type || undefined}
               onChange={v => {
                 onChange({ ...query, profile_type: v });
@@ -201,7 +201,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               ))}
             </Select>
           </EditorForm>
-          <EditorForm title={getEnByName('条件')}>
+          <EditorForm title={t('条件')}>
             <ConditionInput
               appName={query.app_name}
               datasource={datasource}

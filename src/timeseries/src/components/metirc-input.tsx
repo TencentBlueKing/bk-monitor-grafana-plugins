@@ -44,7 +44,7 @@ import React from 'react';
 
 import { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { createMetricTitleTooltips, getEnByName, random } from '../utils/utils';
+import { createMetricTitleTooltips, t, random } from '../utils/utils';
 let interval: any = null;
 const { TabPane } = Tabs;
 export enum MetricInputMode {
@@ -265,7 +265,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const [resultTableId, metricField] = this.state.keyword.split('.');
     if (!resultTableId || !metricField || !/^[_a-zA-Z][a-zA-Z0-9_]*$/.test(metricField)) {
       Message.error({
-        content: getEnByName('自定义指标格式错误'),
+        content: t('自定义指标格式错误'),
         duration: 3,
       });
       return;
@@ -281,7 +281,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         this.handleVisibleChange(false);
       })
       .catch(e => {
-        Message.error({ content: e?.data?.message || getEnByName('添加自定义指标失败'), duration: 3 });
+        Message.error({ content: e?.data?.message || t('添加自定义指标失败'), duration: 3 });
       });
   };
   /**
@@ -508,7 +508,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         >
           {isSelectedMetric && (
             <div className='metric-selected'>
-              <span className='metric-selected-lable'>{getEnByName('已选')}</span>
+              <span className='metric-selected-lable'>{t('已选')}</span>
             </div>
           )}
           <div className='metric-item-title'>
@@ -525,7 +525,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               {isSelectedMetric ? metric.titleAlias : this.getSearchNode(metric.titleAlias)}
             </div>
             {this.props.mode !== MetricInputMode.COPY && (
-              <Tooltip title={getEnByName('复制指标名')}>
+              <Tooltip title={t('复制指标名')}>
                 <span
                   style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
                   className='copy-icon'
@@ -561,7 +561,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
             ref={this.inputRef}
             allowClear={true}
             autoFocus={true}
-            placeholder={getEnByName('搜索指标')}
+            placeholder={t('搜索指标')}
             value={keyword}
             onChange={this.handleSearch}
             onFocus={this.handInputFocus}
@@ -639,13 +639,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                       </g>
                     </svg>
                   </div>
-                  <div className='empty-content-title'>{getEnByName('搜索结果为空')}</div>
-                  <div className='empty-content-subtitle'>{getEnByName('你可以将该搜索内容直接自定义为指标选项')}</div>
+                  <div className='empty-content-title'>{t('搜索结果为空')}</div>
+                  <div className='empty-content-subtitle'>{t('你可以将该搜索内容直接自定义为指标选项')}</div>
                   <span
                     className='text-btn'
                     onClick={this.handleAddCustomMetric}
                   >
-                    {getEnByName('生成自定义指标')}
+                    {t('生成自定义指标')}
                   </span>
                   {/* <div className='empty-content-subtitle'>
                   <div>指标显示是基于实际的数据上报</div>
@@ -653,7 +653,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 </div> */}
                 </div>
               )}
-              {showAllTotal && <div className='all-data'>{getEnByName('已加载全部数据')}</div>}
+              {showAllTotal && <div className='all-data'>{t('已加载全部数据')}</div>}
               {this.state.moreLoading && (
                 <Spin
                   indicator={
@@ -680,9 +680,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const { datasourceLabel, resultTableLabel } = this.state;
     return (
       <>
-        <div className='content-tag-title'>
-          {dataType === 'scenario' ? getEnByName('监控对象') : getEnByName('采集来源')}
-        </div>
+        <div className='content-tag-title'>{dataType === 'scenario' ? t('监控对象') : t('采集来源')}</div>
         <ul className='content-tag-list'>
           {list.map(item => (
             <Checkbox
@@ -718,7 +716,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     selection?.removeAllRanges();
     selection?.addRange(range);
     Message.success({
-      content: getEnByName('复制成功'),
+      content: t('复制成功'),
       duration: 3,
     });
     document.execCommand('copy');
@@ -758,7 +756,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
             >
               {this.props.mode === MetricInputMode.COPY ? (
                 <div className='copy-mode-input'>
-                  {getEnByName('指标选择')}
+                  {t('指标选择')}
                   <i className='fa fa-angle-down' />
                 </div>
               ) : (
@@ -775,7 +773,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     placement='right'
                   >
                     <span className='mitric-input-name'>
-                      {needPlaceholder ? getEnByName('选择指标') : this.displayRender()}
+                      {needPlaceholder ? t('选择指标') : this.displayRender()}
                       {this.props.metric?.metric_field
                         ? [
                             <svg

@@ -35,7 +35,7 @@ import QueryDataSource from '../datasource/datasource';
 import { QueryOption } from '../typings/config';
 import { IQueryConfig, QueryData } from '../typings/datasource';
 import { LanguageContext } from '../utils/context';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getCookie, t } from '../utils/utils';
 import AlertAliasInput from './alert-alias-input';
 import AlertConditionInput from './alert-condition-input';
 import AlertDimensionInput from './alert-dimension-input';
@@ -166,9 +166,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   transfromModeComp = (state: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { searchState } = this.state;
-    let btnText = getEnByName('查询');
-    if (isLoading) btnText = getEnByName('查询中...');
-    else if (searchState === SearcState.auto) btnText = getEnByName('自动查询');
+    let btnText = t('查询');
+    if (isLoading) btnText = t('查询中...');
+    else if (searchState === SearcState.auto) btnText = t('自动查询');
     return (
       <div className='transform-mode'>
         <span
@@ -241,7 +241,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                     <>
                       <EditorForm
                         tips='formula'
-                        title={getEnByName('汇聚', language)}
+                        title={t('汇聚', language)}
                       >
                         <AlertQueryFormula
                           agg_method={agg_method}
@@ -250,7 +250,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         tips='interval'
-                        title={getEnByName('周期', language)}
+                        title={t('周期', language)}
                       >
                         <AlertIntervalInput
                           agg_interval={this.state.interval}
@@ -261,7 +261,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         tips='tag'
-                        title={getEnByName('维度', language)}
+                        title={t('维度', language)}
                       >
                         <AlertDimensionInput
                           agg_dimension={this.state.group_by}
@@ -271,7 +271,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         style={{ marginBottom: '0px' }}
-                        title={getEnByName('条件', language)}
+                        title={t('条件', language)}
                       >
                         <AlertConditionInput
                           agg_condition={this.state.where}
@@ -280,7 +280,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                           onChange={(v, needQuery = true) => this.handleConditionChange(v, needQuery)}
                         />
                       </EditorForm>
-                      <EditorForm title={getEnByName('别名', language)}>
+                      <EditorForm title={t('别名', language)}>
                         <AlertAliasInput
                           alias={this.state.alias}
                           onChange={this.handleAliasChange}
