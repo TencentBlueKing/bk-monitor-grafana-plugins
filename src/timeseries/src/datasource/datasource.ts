@@ -890,7 +890,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 )
                 .catch(e => {
                   console.error(e);
-                  errorMsg += e.data?.message || 'query error';
+                  errorMsg += e.message || e.data?.message || 'query error';
                   return [];
                 }),
             );
@@ -934,7 +934,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               )
               .catch(e => {
                 console.error(e);
-                errorMsg += e.data?.message || 'query error';
+                errorMsg += e.message || e.data?.message || 'query error';
                 return [];
               }),
           );
@@ -965,7 +965,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                   .then(data => this.buildFetchSeries(data, options.scopedVars, exp.alias, null, item, true))
                   .catch(e => {
                     console.error(e);
-                    errorMsg += e.data?.message || 'query error';
+                    errorMsg += e.message || e.data?.message || 'query error';
                     return [];
                   }),
               );
