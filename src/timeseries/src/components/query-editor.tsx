@@ -50,7 +50,7 @@ import {
 } from '../typings/metric';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
-import { getCookie, t } from 'common/utils/utils';
+import { language, t } from 'common/utils/utils';
 import AddvanceSetting, { type AddvanceSettingKey } from './addvance-setting';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
@@ -118,7 +118,6 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       promqlAlias = '',
       source = '',
       step = '',
-      enableDownSampling = true,
     } = query;
     let expressions: IExpresionItem[] = expressionList;
     // 兼容旧版本
@@ -132,6 +131,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         },
       ];
     }
+    const stateMode = only_promql || mode === 'code' ? 'code' : 'ui';
+    let enableDownSampling = query.enableDownSampling;
+    if (enableDownSampling === undefined) {
+      enableDownSampling = stateMode !== 'code';
+    }
     this.state = {
       cluster,
       editorStatus: 'default',
@@ -141,10 +145,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       host,
       inited: false,
       isTranform: false,
-      language: getCookie('blueking_language'),
+      language: language,
       loading: true,
       metricList: [{} as any],
-      mode: only_promql || mode === 'code' ? 'code' : 'ui',
+      mode: stateMode,
       module,
       promqlAlias: promqlAlias || alias,
       searchState: SearcState.deafult,

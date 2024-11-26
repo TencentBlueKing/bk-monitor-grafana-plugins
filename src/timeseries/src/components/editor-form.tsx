@@ -31,7 +31,7 @@ import { LanguageContext } from '../utils/context';
 export interface IEditorFormProps {
   labelStyle?: React.CSSProperties;
   metricList?: MetricDetail[];
-  renderTitle?: () => Element;
+  renderTitle?: () => React.ReactNode;
   style?: React.CSSProperties;
   tips?: string;
   title?: string;
