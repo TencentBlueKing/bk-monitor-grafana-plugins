@@ -27,29 +27,29 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   ArrayVector,
-  BootData,
-  DataFrame,
-  DataQueryRequest,
-  DataQueryResponse,
+  type BootData,
+  type DataFrame,
+  type DataQueryRequest,
+  type DataQueryResponse,
   DataSourceApi,
-  DataSourceInstanceSettings,
-  Field,
+  type DataSourceInstanceSettings,
+  type Field,
   FieldType,
-  ScopedVar,
-  ScopedVars,
+  type ScopedVar,
+  type ScopedVars,
   TIME_SERIES_TIME_FIELD_NAME,
   TIME_SERIES_VALUE_FIELD_NAME,
-  TimeRange,
+  type TimeRange,
 } from '@grafana/data';
-import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import apiCacheInstance from 'common/utils/api-cache';
 
-import { QueryOption } from '../typings/config';
-import { DIM_NULL_ID, IQueryConfig, QueryData } from '../typings/datasource';
-import { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
-import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
-import apiCacheInstance from '../utils/api-cache';
+import type { QueryOption } from '../typings/config';
+import { DIM_NULL_ID, type IQueryConfig, type QueryData } from '../typings/datasource';
+import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
+import { type K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
-import { random } from '../utils/utils';
+import { random } from 'common/utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
   series: Array<{

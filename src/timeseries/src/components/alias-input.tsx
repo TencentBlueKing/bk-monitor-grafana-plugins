@@ -23,12 +23,12 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Input, { InputProps } from 'antd/es/input';
+import Input, { type InputProps } from 'antd/es/input';
 import React from 'react';
 
-import { MetricDetail } from '../typings/metric';
+import type { MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
 export interface IAliasInputProps {
   inputProps?: InputProps;
   metric?: MetricDetail;
@@ -59,7 +59,7 @@ export default class AliasInput extends React.PureComponent<
             <Input
               style={{ minWidth: '100px', ...this.props.style }}
               defaultValue={this.props.metric ? this.props.metric.alias : this.props.inputProps?.defaultValue}
-              placeholder={getEnByName('请输入', language)}
+              placeholder={t('请输入', language)}
               onBlur={this.handleBlur}
               onChange={e => this.setState({ value: e.target.value })}
               {...this.props.inputProps}

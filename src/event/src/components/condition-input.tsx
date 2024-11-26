@@ -32,14 +32,14 @@ import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
 import {
-  ICommonItem,
-  IConditionItem,
+  type ICommonItem,
+  type IConditionItem,
   CONDITION,
   NUMBER_CONDITION_METHOD_LIST,
   STRING_CONDITION_METHOD_LIST,
 } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Option } = Select;
 export interface IProps {
   dimensionList: ICommonItem[];
@@ -214,7 +214,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                           onClick={(): void => this.handleDeleteKey(index)}
                         >
                           <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                          {getEnByName('删除', language)}
+                          {t('删除', language)}
                         </div>
                       </div>
                     ) : (
@@ -226,28 +226,25 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   defaultOpen={item.key === ''}
                   defaultValue={item.key || ''}
                   dropdownMatchSelectWidth={140}
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   showSearch
                   onChange={(v: string) => this.handleKeyChange(v, index)}
                   onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                 >
-                  {dimensionList?.map(
-                    dim =>
-                      (
-                        <Option
-                          key={dim.id}
-                          value={dim.id}
-                        >
-                          <Tooltip
-                            placement='right'
-                            title={dim.id}
-                          >
-                            <div>{dim.name || dim.id}</div>
-                          </Tooltip>
-                        </Option>
-                      ) || undefined,
-                  )}
+                  {dimensionList?.map(dim => (
+                    <Option
+                      key={dim.id}
+                      value={dim.id}
+                    >
+                      <Tooltip
+                        placement='right'
+                        title={dim.id}
+                      >
+                        <div>{dim.name || dim.id}</div>
+                      </Tooltip>
+                    </Option>
+                  ))}
                 </Select>
               ) : (
                 <span
@@ -283,7 +280,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   dropdownMatchSelectWidth={true}
                   dropdownStyle={{ display: dimensionValueMap[item.key]?.length < 1 ? 'none' : '' }}
                   mode='tags'
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   onChange={v => this.handleValueChange(v, index)}
                 >

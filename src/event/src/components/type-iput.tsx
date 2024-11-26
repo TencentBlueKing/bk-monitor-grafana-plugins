@@ -26,7 +26,7 @@
 import Select from 'antd/es/select';
 import React from 'react';
 
-import { MetricType } from '../typings/metric';
+import type { MetricType } from '../typings/metric';
 const { Option } = Select;
 const metaList: { id: MetricType; name: string }[] = [
   {

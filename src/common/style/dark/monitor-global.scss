@@ -1,0 +1,55 @@
+// div, ul, section, article {
+//     &::-webkit-scrollbar {
+//         width: 4px;
+//         height: 6px;
+//     }
+
+//     &::-webkit-scrollbar-thumb {
+//         border-radius: 20px;
+//         background: #a5a5a5;
+//         box-shadow: inset 0 0 6px rgba(204, 204, 204, 0.3);
+//     }
+// }
+// a {
+//     color: inherit;
+//     text-decoration: none;
+//     background-color: transparent;
+//     outline: none;
+//     cursor: pointer;
+//     -webkit-transition: color 0.3s;
+//     transition: color 0.3s;
+//     -webkit-text-decoration-skip: objects;
+//   }
+a {
+  color: #ccccdc;
+  text-decoration: none;
+  cursor: pointer;
+  background-color: transparent;
+  outline: none;
+  transition: color 0.3s;
+  text-decoration-skip: objects;
+}
+
+a:hover {
+  color: #ccccdc;
+}
+
+a:active {
+  color: #366fd9;
+}
+
+body {
+  color: #ccccdc;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 500;
+  color: #ccccdc;
+}

@@ -23,11 +23,11 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import Input, { InputProps } from 'antd/es/input';
+import Input, { type InputProps } from 'antd/es/input';
 import React from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
 export interface IAliasInputProps {
   alias?: string;
   style?: React.CSSProperties;
@@ -46,7 +46,7 @@ export default class AliasInput extends React.PureComponent<IAliasInputProps> {
           <Input
             style={{ minWidth: '100px', ...this.props.style }}
             defaultValue={this.props.alias || this.props.inputProps?.defaultValue}
-            placeholder={getEnByName('请输入', language)}
+            placeholder={t('请输入', language)}
             onBlur={this.handleBlur}
             {...this.props.inputProps}
           />

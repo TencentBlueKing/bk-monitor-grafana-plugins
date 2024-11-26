@@ -24,7 +24,7 @@
  * IN THE SOFTWARE.
  */
 
-import { IConditionItem } from './metric';
+import type { IConditionItem } from './metric';
 // 变量类型
 export enum VariableQueryType {
   Dimension = 'dimension',

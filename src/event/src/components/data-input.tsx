@@ -25,7 +25,7 @@
  */
 import Select from 'antd/es/select';
 import React from 'react';
-import { ICommonItem } from 'typings/metric';
+import type { ICommonItem } from 'typings/metric';
 const { Option } = Select;
 export interface IDataInputProps {
   onChange?: (v: string) => void;

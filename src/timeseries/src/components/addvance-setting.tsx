@@ -26,9 +26,9 @@
 import Select from 'antd/es/select';
 import Switch from 'antd/es/switch';
 import React from 'react';
-import { EditMode } from 'typings/metric';
 
-import { getEnByName } from '../utils/utils';
+import type { EditMode } from '../typings/metric';
+import { t } from 'common/utils/utils';
 import AliasInput from './alias-input';
 import EditorForm from './editor-form';
 export type AddvanceSettingKey = 'enableDownSampling' | 'format' | 'promqlAlias' | 'step' | 'type';
@@ -95,23 +95,23 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
         {mode === 'code' && <span className='header-content-item'>Min Step: {step || 'auto'}</span>}
         {mode === 'code' && (
           <span className='header-content-item'>
-            {getEnByName('别名')}: {promqlAlias || '-'}
+            {t('别名')}: {promqlAlias || '-'}
           </span>
         )}
         <span className='header-content-item'>
-          {getEnByName('输出模式')}: {formatList.find(item => item.id === format)?.name || 'Time Series'}
+          {t('输出模式')}: {formatList.find(item => item.id === format)?.name || 'Time Series'}
         </span>
         <span className='header-content-item'>
-          {getEnByName('类型')}: {typeList.find(item => item.id === type)?.name || 'Range'}
+          {t('类型')}: {typeList.find(item => item.id === type)?.name || 'Range'}
         </span>
         <span className='header-content-item'>
-          {getEnByName('降采样')}: {enableDownSampling ? getEnByName('开启') : getEnByName('关闭')}
+          {t('降采样')}: {enableDownSampling ? t('开启') : t('关闭')}
         </span>
       </div>
     );
     const uiForm = () => (
       <>
-        <EditorForm title={getEnByName('输出模式')}>
+        <EditorForm title={t('输出模式')}>
           <Select
             dropdownStyle={{ minWidth: '100px' }}
             value={format}
@@ -126,7 +126,7 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
               </Select.Option>
             ))}
           </Select>
-          <EditorForm title={getEnByName('类型')}>
+          <EditorForm title={t('类型')}>
             <Select
               value={type}
               onChange={v => onChange('type', v)}
@@ -141,13 +141,13 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
               ))}
             </Select>
           </EditorForm>
-          <EditorForm title={getEnByName('降采样')}>
+          <EditorForm title={t('降采样')}>
             <div className='down-sample-wrapper'>
               <Switch
                 checked={enableDownSampling}
-                checkedChildren={getEnByName('开启')}
+                checkedChildren={t('开启')}
                 size='small'
-                unCheckedChildren={getEnByName('关闭')}
+                unCheckedChildren={t('关闭')}
                 onChange={v => onChange('enableDownSampling', v)}
               />
             </div>
@@ -163,7 +163,7 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
             onClick={this.handleClickTitle}
           >
             <i className={`fa fa-angle-down ${showContent ? 'is-open' : ''}`} />
-            {getEnByName('高级配置')}
+            {t('高级配置')}
           </span>
           {!showContent && getHeaderContent()}
         </div>
@@ -180,14 +180,14 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
                 inputProps={{ defaultValue: step, placeholder: 'auto' }}
                 onChange={v => onChange('step', v)}
               />
-              <EditorForm title={getEnByName('别名')}>
+              <EditorForm title={t('别名')}>
                 <AliasInput
                   style={{ height: '32px', width: '288px' }}
                   inputProps={{ defaultValue: promqlAlias }}
                   onChange={v => onChange('promqlAlias', v)}
                 />
               </EditorForm>
-              <EditorForm title={getEnByName('输出模式')}>
+              <EditorForm title={t('输出模式')}>
                 <Select
                   dropdownStyle={{ minWidth: '100px' }}
                   value={format}
@@ -203,7 +203,7 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
                   ))}
                 </Select>
               </EditorForm>
-              <EditorForm title={getEnByName('类型')}>
+              <EditorForm title={t('类型')}>
                 <Select
                   value={type}
                   onChange={v => onChange('type', v)}
@@ -218,13 +218,13 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
                   ))}
                 </Select>
               </EditorForm>
-              <EditorForm title={getEnByName('降采样')}>
+              <EditorForm title={t('降采样')}>
                 <div className='down-sample-wrapper'>
                   <Switch
                     checked={enableDownSampling}
-                    checkedChildren={getEnByName('开启')}
+                    checkedChildren={t('开启')}
                     size='small'
-                    unCheckedChildren={getEnByName('关闭')}
+                    unCheckedChildren={t('关闭')}
                     onChange={v => onChange('enableDownSampling', v)}
                   />
                 </div>

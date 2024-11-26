@@ -1,0 +1,49 @@
+{
+  "type": "datasource",
+  "name": "BlueKing Monitor Profiling",
+  "id": "bkmonitor-profiling-datasource",
+  "metrics": true,
+  "annotations": false,
+  "alerting": true,
+  "queryOptions": {
+    "maxDataPoints": true
+  },
+  "dependencies": {
+    "grafanaDependency": ">=7.5",
+    "plugins": []
+  },
+  "links": [
+    { "name": "GitHub", "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins" },
+    {
+      "name": "License",
+      "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE"
+    }
+  ],
+  "routes": [
+    {
+      "path": "profiling",
+      "url": "{{.JsonData.baseUrl}}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{ .SecureJsonData.token }}"
+        },
+        {
+          "name": "keepCookies",
+          "content": "{{ .JsonData.keepCookies }}"
+        }
+      ]
+    }
+  ],
+  "info": {
+    "description": "Grafana data source for BlueKing Monitor/Application Insights",
+    "author": {
+      "name": "Tencent BlueKing"
+    },
+    "version": "3.6.0",
+    "logos": {
+      "small": "img/logo.png",
+      "large": "img/logo.png"
+    }
+  }
+}

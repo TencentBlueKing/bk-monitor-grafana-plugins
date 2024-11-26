@@ -34,7 +34,7 @@ export default class VariableLine extends React.PureComponent<IVariableLineProps
       <div className='variable-line'>
         <span className='variable-line-label'>{this.props.title}</span>
         <div className='variable-line-content'>{this.props?.children}</div>
-        <div className='variable-line-blank'></div>
+        <div className='variable-line-blank' />
       </div>
     );
   }

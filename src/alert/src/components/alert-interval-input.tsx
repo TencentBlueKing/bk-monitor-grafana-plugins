@@ -31,7 +31,7 @@ import Menu from 'antd/es/menu';
 import Select from 'antd/es/select';
 import React from 'react';
 
-import { INTERVAL_LIST, ALERT_INTERVAL_UNIT_LIST, IntervalType } from '../typings/metric';
+import { INTERVAL_LIST, ALERT_INTERVAL_UNIT_LIST, type IntervalType } from '../typings/metric';
 const { Option } = Select;
 const { Item } = Menu;
 export interface IIntervalInputProps {

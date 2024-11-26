@@ -32,9 +32,9 @@ import Menu from 'antd/es/menu';
 import Popover from 'antd/es/popover';
 import React from 'react';
 
-import { IFunctionItem, IFunctionParam } from '../typings/metric';
+import type { IFunctionItem, IFunctionParam } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
 export const EMPTY_VALUE = '-空-';
 export interface IFunctionInputProps {
   funtion: IFunctionItem;
@@ -121,7 +121,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                     onClick={this.handleDelete}
                   >
                     <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                    {getEnByName('删除', language)}
+                    {t('删除', language)}
                   </div>
                 </div>
               }
@@ -150,7 +150,7 @@ export default class FunctionInput extends React.PureComponent<IFunctionInputPro
                       defaultValue={param.value === '' ? '-空-' : param.value}
                       autoFocus
                       onBlur={e => this.handleParamBlur(e, param)}
-                    ></Input>
+                    />
                   </Dropdown>
                 );
               }

@@ -1,0 +1,35 @@
+{
+  "name": "trace",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "build": "webpack --progress -c ./.config/webpack/webpack.config.ts --env production",
+    "dev": "webpack --progress -w -c ./.config/webpack/webpack.config.ts --env development",
+    "test": "jest --watch --onlyChanged",
+    "test:ci": "jest --passWithNoTests --maxWorkers 4",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint --cache --ignore-path ./.gitignore --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "npm run lint -- --fix",
+    "e2e": "npm exec cypress install && npm exec grafana-e2e run",
+    "e2e:update": "npm exec cypress install && npm exec grafana-e2e run --update-screenshots",
+    "server": "docker-compose up --build",
+    "sign": "npx --yes @grafana/sign-plugin@latest"
+  },
+  "author": "Blueking",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@emotion/css": "11.10.6",
+    "@grafana/data": "10.4.2",
+    "@grafana/runtime": "10.4.2",
+    "@grafana/schema": "10.4.2",
+    "@grafana/ui": "10.4.2",
+    "logfmt": "^1.4.0",
+    "postcss-scss": "^4.0.9",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  },
+  "packageManager": "pnpm@8.10.2"
+}

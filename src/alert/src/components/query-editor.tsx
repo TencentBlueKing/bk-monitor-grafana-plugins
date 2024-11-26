@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -25,29 +26,30 @@
  * IN THE SOFTWARE.
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
-import { LoadingState, QueryEditorProps } from '@grafana/data';
+import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Spin from 'antd/es/spin';
 import React from 'react';
-import { ICommonItem, IConditionItem, IntervalType } from 'typings/metric';
 
-import QueryDataSource from '../datasource/datasource';
-import { QueryOption } from '../typings/config';
-import { IQueryConfig, QueryData } from '../typings/datasource';
+import type { QueryOption } from '../typings/config';
+import type { IQueryConfig, QueryData } from '../typings/datasource';
+import type { ICommonItem, IConditionItem, IntervalType } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getCookie, getEnByName } from '../utils/utils';
+import { getCookie, t } from 'common/utils/utils';
 import AlertAliasInput from './alert-alias-input';
 import AlertConditionInput from './alert-condition-input';
 import AlertDimensionInput from './alert-dimension-input';
 import AlertIntervalInput from './alert-interval-input';
 import AlertQueryFormula from './alert-query-formula';
 import EditorForm from './editor-form';
+
+import type QueryDataSource from '../datasource/datasource';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 export enum SearcState {
-  'auto' = 'auto',
-  'deafult' = 'deafult',
-  'loading' = 'loading',
+  auto = 'auto',
+  deafult = 'deafult',
+  loading = 'loading',
 }
 interface IQueryEditorState {
   agg_method: string;
@@ -76,7 +78,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       inited: false,
       interval: interval || 'auto',
       interval_unit: interval_unit || 'h',
-      language: getCookie('blueking_language'),
+      language: getCookie('blueking_language') || 'zh-cn',
       loading: true,
       searchState: SearcState.deafult,
       where: where?.length ? where : [{} as any],
@@ -166,9 +168,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   transfromModeComp = (state: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { searchState } = this.state;
-    let btnText = getEnByName('查询');
-    if (isLoading) btnText = getEnByName('查询中...');
-    else if (searchState === SearcState.auto) btnText = getEnByName('自动查询');
+    let btnText = t('查询');
+    if (isLoading) btnText = t('查询中...');
+    else if (searchState === SearcState.auto) btnText = t('自动查询');
     return (
       <div className='transform-mode'>
         <span
@@ -228,7 +230,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const { data } = this.props;
     return (
       <LanguageContext.Provider value={{ language }}>
-        <div className='monitor-grafana'>
+        <div className='monitor-grafana-alert'>
           <Spin
             spinning={loading}
             tip='Loading...'
@@ -241,7 +243,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                     <>
                       <EditorForm
                         tips='formula'
-                        title={getEnByName('汇聚', language)}
+                        title={t('汇聚', language)}
                       >
                         <AlertQueryFormula
                           agg_method={agg_method}
@@ -250,7 +252,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         tips='interval'
-                        title={getEnByName('周期', language)}
+                        title={t('周期', language)}
                       >
                         <AlertIntervalInput
                           agg_interval={this.state.interval}
@@ -261,7 +263,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         tips='tag'
-                        title={getEnByName('维度', language)}
+                        title={t('维度', language)}
                       >
                         <AlertDimensionInput
                           agg_dimension={this.state.group_by}
@@ -271,7 +273,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       </EditorForm>
                       <EditorForm
                         style={{ marginBottom: '0px' }}
-                        title={getEnByName('条件', language)}
+                        title={t('条件', language)}
                       >
                         <AlertConditionInput
                           agg_condition={this.state.where}
@@ -280,7 +282,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                           onChange={(v, needQuery = true) => this.handleConditionChange(v, needQuery)}
                         />
                       </EditorForm>
-                      <EditorForm title={getEnByName('别名', language)}>
+                      <EditorForm title={t('别名', language)}>
                         <AlertAliasInput
                           alias={this.state.alias}
                           onChange={this.handleAliasChange}

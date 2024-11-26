@@ -24,4 +24,6 @@
  * IN THE SOFTWARE.
  */
 import './sass/grafana-antd.dark.less';
-import './sass/grafana-monitor.dark.scss';
+import 'common/style/dark.scss';
+import './sass/query.scss';
+import './sass/variable.scss';

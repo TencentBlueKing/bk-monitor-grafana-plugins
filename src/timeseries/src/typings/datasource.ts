@@ -24,9 +24,9 @@
  * IN THE SOFTWARE.
  */
 
-import { DataQuery } from '@grafana/data';
+import type { DataQuery } from '@grafana/data';
 
-import { EditMode, IConditionItem, IExpresionItem, IFunctionItem, ITargetItem, IntervalType } from './metric';
+import type { EditMode, IConditionItem, IExpresionItem, IFunctionItem, ITargetItem, IntervalType } from './metric';
 // datasource 查询数据
 export interface IQueryConfig {
   alias: string;
