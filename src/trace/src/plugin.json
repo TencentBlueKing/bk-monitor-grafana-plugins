@@ -23,6 +23,22 @@
       "url": "https://github.com/TencentBlueKing/bkmonitor-grafana-plugins/blob/master/LICENSE"
     }
   ],
+  "routes": [
+    {
+      "path": "trace",
+      "url": "{{.JsonData.baseUrl}}",
+      "headers": [
+        {
+          "name": "Authorization",
+          "content": "Bearer {{ .SecureJsonData.token }}"
+        },
+        {
+          "name": "keepCookies",
+          "content": "{{ .JsonData.keepCookies }}"
+        }
+      ]
+    }
+  ],
   "info": {
     "description": "Grafana data source for BlueKing Monitor/Application Insights",
     "author": {

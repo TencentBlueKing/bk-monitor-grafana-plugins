@@ -65,11 +65,15 @@ function toSpanRow(span: Span, processes: Record<string, TraceProcess>): TraceSp
   };
 }
 
-export function createTableFrame(data: TraceResponse[], instanceSettings: DataSourceInstanceSettings): DataFrame {
+export function createTableFrame(
+  appName: string,
+  data: TraceResponse[],
+  instanceSettings: DataSourceInstanceSettings,
+): DataFrame {
   const frame = new MutableDataFrame({
     fields: [
       {
-        name: 'traceID',
+        name: 'trace_id',
         type: FieldType.string,
         config: {
           unit: 'string',
@@ -83,25 +87,29 @@ export function createTableFrame(data: TraceResponse[], instanceSettings: DataSo
                 datasourceName: instanceSettings.name,
                 query: {
                   query: '${__value.raw}',
+                  app_name: appName,
                 },
               },
             },
           ],
         },
       },
-      { name: 'traceName', type: FieldType.string, config: { displayNameFromDS: 'Trace name' } },
-      { name: 'startTime', type: FieldType.time, config: { displayNameFromDS: 'Start time' } },
-      { name: 'duration', type: FieldType.number, config: { displayNameFromDS: 'Duration', unit: 'µs' } },
+      { name: 'trace_name', type: FieldType.string, config: { displayNameFromDS: 'Trace name' } },
+      { name: 'start_time', type: FieldType.time, config: { displayNameFromDS: 'Start time' } },
+      { name: 'trace_duration', type: FieldType.number, config: { displayNameFromDS: 'Duration', unit: 'µs' } },
     ],
     meta: {
       preferredVisualisationType: 'table',
     },
   });
   // Show the most recent traces
-  const traceData = data.map(transformToTraceData).sort((a, b) => b?.startTime! - a?.startTime!);
+  const traceData = data.sort((a, b) => b?.start_time! - a?.start_time!);
 
   for (const trace of traceData) {
-    frame.add(trace);
+    frame.add({
+      ...trace,
+      start_time: trace.start_time / 1000,
+    });
   }
 
   return frame;
@@ -168,7 +176,7 @@ export function transformToJaeger(data: MutableDataFrame): JaegerResponse {
       operationName: span.operationName,
       processID:
         Object.keys(traceResponse.processes).find(
-          key => traceResponse.processes[key].serviceName === span.serviceName
+          key => traceResponse.processes[key].serviceName === span.serviceName,
         ) || '',
       startTime: span.startTime * 1000,
       tags: span.tags,

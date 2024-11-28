@@ -98,7 +98,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
   }
   async queryProfilingGraph(options: DataQueryRequest, target: ProfilingQuery) {
     const filterLabel: Record<string, string[]> = {};
-    for (const item of target.filter_labels) {
+    for (const item of target?.filter_labels || []) {
       if (!item.value?.length || !item.key) {
         continue;
       }
@@ -125,6 +125,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
           profile_id: target.profile_id,
           offset: target.offset,
           filter_labels: filterLabel,
+          diagram_types: ['grafana_flame'],
         },
         method: 'POST',
       }),

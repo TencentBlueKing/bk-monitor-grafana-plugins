@@ -44,23 +44,24 @@ export type Span = {
 };
 
 export type TraceResponse = {
-  processes: Record<string, TraceProcess>;
-  traceID: string;
+  trace_id: string;
+  start_time: number;
+  trace_duration: number;
+  trace_name: string;
   warnings?: null | string[];
-  spans: Span[];
 };
 
-export type JaegerQuery = {
+export type TraceQuery = {
   // undefined means the old behavior, showing only trace ID input
   queryType?: JaegerQueryType;
-  app?: string;
+  app_name?: string;
   service?: string;
   operation?: string;
   // trace ID
   query?: string;
   tags?: string;
-  minDuration?: string;
-  maxDuration?: string;
+  min_duration?: string;
+  max_duration?: string;
   limit?: number;
 } & DataQuery;
 

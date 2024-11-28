@@ -110,3 +110,25 @@ export type CriticalPathSection = {
   section_start: number;
   section_end: number;
 };
+
+export interface IService {
+  id: number;
+  last_check_time: string;
+  created_at: string;
+  updated_at: string;
+  bk_biz_id: number;
+  app_name: string;
+  name: string;
+  period: string;
+  period_type: string;
+  frequency: null | string;
+  data_type: string;
+  sample_type: string;
+  is_large: boolean;
+}
+
+export interface IApplication {
+  bk_biz_id: number;
+  app_name: string;
+  app_alias: string;
+}

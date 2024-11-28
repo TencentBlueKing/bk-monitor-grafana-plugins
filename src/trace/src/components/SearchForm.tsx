@@ -7,54 +7,49 @@ import { fuzzyMatch, InlineField, InlineFieldRow, Input, Select } from '@grafana
 // import { dispatch } from 'grafana/app/store/store';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import type { JaegerDatasource } from '../datasource';
-import type { JaegerQuery } from '../types';
+import type TraceDatasource from '../datasource';
+import type { TraceQuery } from '../types';
 import { transformToLogfmt } from '../util';
 
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';
 
 type Props = {
-  datasource: JaegerDatasource;
-  query: JaegerQuery;
-  onChange: (value: JaegerQuery) => void;
-};
-
-export const ALL_OPERATIONS_KEY = 'All';
-const allOperationsOption: SelectableValue<string> = {
-  label: ALL_OPERATIONS_KEY,
-  value: undefined,
+  datasource: TraceDatasource;
+  query: TraceQuery;
+  onChange: (value: TraceQuery) => void;
 };
 
 export function SearchForm({ datasource, query, onChange }: Props) {
-  const [appOptions, setAppOptions] = useState<Array<SelectableValue<string>>>();
   const [serviceOptions, setServiceOptions] = useState<Array<SelectableValue<string>>>();
   const [operationOptions, setOperationOptions] = useState<Array<SelectableValue<string>>>();
   const [isLoading, setIsLoading] = useState<{
-    app: boolean;
     services: boolean;
     operations: boolean;
   }>({
-    app: false,
     services: false,
     operations: false,
   });
 
   const loadOptions = useCallback(
-    async (url: string, loaderOfType: string, query = ''): Promise<Array<SelectableValue<string>>> => {
+    async (
+      loaderOfType: keyof typeof isLoading,
+      field: string,
+      keyword = '',
+    ): Promise<Array<SelectableValue<string>>> => {
       setIsLoading(prevValue => ({ ...prevValue, [loaderOfType]: true }));
 
       try {
-        const values: null | string[] = await datasource.metadataRequest(url);
-        if (!values) {
+        const values = await datasource.loadOptions(query.app_name!, field);
+        if (!values?.length) {
           return [{ label: `No ${loaderOfType} found`, value: `No ${loaderOfType} found` }];
         }
 
         const options: SelectableValue[] = values.sort().map(option => ({
-          label: option,
-          value: option,
+          label: option.text,
+          value: option.value,
         }));
 
-        const filteredOptions = options.filter(item => (item.value ? fuzzyMatch(item.value, query).found : false));
+        const filteredOptions = options.filter(item => (item.value ? fuzzyMatch(item.value, keyword).found : false));
         return filteredOptions;
       } catch (error) {
         // if (error instanceof Error) {
@@ -65,68 +60,38 @@ export function SearchForm({ datasource, query, onChange }: Props) {
         setIsLoading(prevValue => ({ ...prevValue, [loaderOfType]: false }));
       }
     },
-    [datasource]
+    [datasource],
   );
 
   useEffect(() => {
-    const getServices = async () => {
-      const services = await loadOptions('/api/services', 'services');
-      if (query.service && getTemplateSrv().containsTemplate(query.service)) {
-        services.push(toOption(query.service));
-      }
-      setServiceOptions(services);
-    };
-    getServices();
-  }, [datasource, loadOptions, query.service]);
-
-  useEffect(() => {
     const getOperations = async () => {
-      const operations = await loadOptions(
-        `/api/services/${encodeURIComponent(getTemplateSrv().replace(query.service!))}/operations`,
-        'operations'
-      );
+      const operations = await loadOptions('operations', 'span_name');
       if (query.operation && getTemplateSrv().containsTemplate(query.operation)) {
         operations.push(toOption(query.operation));
       }
-      setOperationOptions([allOperationsOption, ...operations]);
+      setOperationOptions([...operations]);
     };
-    if (query.service) {
+    if (query.app_name) {
       getOperations();
     }
-  }, [datasource, query.service, loadOptions, query.operation]);
-
+  }, [datasource, query.app_name, loadOptions]);
+  useEffect(() => {
+    const getServices = async () => {
+      const operations = await loadOptions('services', 'resource.service.name');
+      if (query.service && getTemplateSrv().containsTemplate(query.service)) {
+        operations.push(toOption(query.service));
+      }
+      setServiceOptions([...operations]);
+    };
+    if (query.app_name) {
+      getServices();
+    }
+  }, [datasource, query.app_name, loadOptions]);
   return (
     <div className={css({ maxWidth: '500px' })}>
       <InlineFieldRow>
         <InlineField
-          label='App Name'
-          labelWidth={14}
-          grow
-        >
-          <Select
-            allowCustomValue={true}
-            aria-label={'select-app-name'}
-            inputId='app'
-            isLoading={isLoading.app}
-            menuPlacement='bottom'
-            options={appOptions}
-            placeholder='Select a App'
-            value={appOptions?.find(v => v?.value === query.app) || undefined}
-            isClearable
-            onChange={v =>
-              onChange({
-                ...query,
-                app: v?.value!,
-                service: query.app !== v?.value ? undefined : query.service,
-                operation: query.app !== v?.value ? undefined : query.operation,
-              })
-            }
-            onOpenMenu={() => loadOptions('/api/services', 'services')}
-          />
-        </InlineField>
-      </InlineFieldRow>
-      <InlineFieldRow>
-        <InlineField
+          disabled={!query.app_name}
           label='Service Name'
           labelWidth={14}
           grow
@@ -148,13 +113,13 @@ export function SearchForm({ datasource, query, onChange }: Props) {
                 operation: query.service !== v?.value ? undefined : query.operation,
               })
             }
-            onOpenMenu={() => loadOptions('/api/services', 'services')}
+            onOpenMenu={() => loadOptions('services', 'resource.service.name')}
           />
         </InlineField>
       </InlineFieldRow>
       <InlineFieldRow>
         <InlineField
-          disabled={!query.service}
+          disabled={!query.app_name}
           label='Operation Name'
           labelWidth={14}
           grow
@@ -175,12 +140,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
                 operation: v?.value! || undefined,
               })
             }
-            onOpenMenu={() =>
-              loadOptions(
-                `/api/services/${encodeURIComponent(getTemplateSrv().replace(query.service!))}/operations`,
-                'operations'
-              )
-            }
+            onOpenMenu={() => loadOptions('operations', 'span_name')}
           />
         </InlineField>
       </InlineFieldRow>
@@ -211,14 +171,14 @@ export function SearchForm({ datasource, query, onChange }: Props) {
           grow
         >
           <Input
-            id='minDuration'
-            name='minDuration'
+            id='min_duration'
+            name='min_duration'
             placeholder={durationPlaceholder}
-            value={query.minDuration || ''}
+            value={query.min_duration || ''}
             onChange={v =>
               onChange({
                 ...query,
-                minDuration: v.currentTarget.value,
+                min_duration: v.currentTarget.value,
               })
             }
           />
@@ -231,14 +191,14 @@ export function SearchForm({ datasource, query, onChange }: Props) {
           grow
         >
           <Input
-            id='maxDuration'
-            name='maxDuration'
+            id='max_duration'
+            name='max_duration'
             placeholder={durationPlaceholder}
-            value={query.maxDuration || ''}
+            value={query.max_duration || ''}
             onChange={v =>
               onChange({
                 ...query,
-                maxDuration: v.currentTarget.value,
+                max_duration: v.currentTarget.value,
               })
             }
           />
