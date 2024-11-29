@@ -1,7 +1,6 @@
 import { css } from '@emotion/css';
 import type { QueryEditorProps, SelectableValue } from '@grafana/data';
 import {
-  Button,
   FileDropzone,
   HorizontalGroup,
   InlineField,
@@ -18,6 +17,7 @@ import React, { useEffect, useState } from 'react';
 import type TraceDatasource from '../datasource';
 import type { TraceQuery, JaegerQueryType } from '../types';
 import { SearchForm } from './SearchForm';
+import { t } from 'common/utils/utils';
 
 type Props = QueryEditorProps<TraceDatasource, TraceQuery>;
 
@@ -120,7 +120,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         <InlineFieldRow>
           <InlineField
             grow={true}
-            label='Query type'
+            label={t('查询方式')}
           >
             <HorizontalGroup
               align={'center'}
@@ -156,7 +156,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         </InlineFieldRow>
         <InlineFieldRow style={{ maxWidth: '500px' }}>
           <InlineField
-            label='App Name'
+            label={t('应用')}
             labelWidth={14}
             grow
           >
@@ -170,14 +170,14 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               placeholder='Select a App'
               value={appOptions?.find(v => v?.value === query.app_name) || undefined}
               isClearable={false}
-              onChange={v =>
+              onChange={v => {
                 onChange({
                   ...query,
                   app_name: v?.value!,
-                  service: query.app_name !== v?.value ? undefined : query.service,
-                  operation: query.app_name !== v?.value ? undefined : query.operation,
-                })
-              }
+                  service: query.app_name !== v?.value ? [] : query.service,
+                  spans: query.app_name !== v?.value ? [] : query.spans,
+                });
+              }}
             />
           </InlineField>
         </InlineFieldRow>

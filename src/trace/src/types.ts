@@ -55,8 +55,8 @@ export type TraceQuery = {
   // undefined means the old behavior, showing only trace ID input
   queryType?: JaegerQueryType;
   app_name?: string;
-  service?: string;
-  operation?: string;
+  service?: string[];
+  spans?: string[];
   // trace ID
   query?: string;
   tags?: string;
@@ -82,4 +82,10 @@ export type JaegerServiceDependency = {
   parent: string;
   child: string;
   callCount: number;
+};
+
+export type FilterParam = {
+  key: string;
+  value: (string | boolean)[];
+  operator: string;
 };

@@ -5,25 +5,21 @@ import {
   type DataQueryResponse,
   DataSourceApi,
   type DataSourceInstanceSettings,
-  dateMath,
-  type DateTime,
   FieldType,
   MutableDataFrame,
   type ScopedVars,
 } from '@grafana/data';
 import type { NodeGraphOptions, SpanBarOptions } from '@grafana/o11y-ds-frontend';
 import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
-import { identity, omit, pick, pickBy } from 'lodash';
+import { identity, pick, pickBy } from 'lodash';
 import { lastValueFrom, type Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-// import { ALL_OPERATIONS_KEY } from './components/SearchForm';
 import type { TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
-// import { mapJaegerDependenciesResponse } from './dependencyGraphTransform';
 import { createGraphFrames } from './graphTransform';
 import { createTableFrame, createTraceFrame } from './responseTransform';
 import type { TraceQuery } from './types';
-import { convertTagsLogfmt } from './util';
+import { convertTagsFilters } from './util';
 import type { QueryOption } from './types/config';
 import { random } from 'common/utils/utils';
 import type { IApplication } from './types/trace';
@@ -34,10 +30,6 @@ export enum QueryUrl {
   get_trace_detail = 'get_trace_detail/',
   testAndSaveUrl = '',
 }
-// export interface JaegerJsonData extends DataSourceJsonData {
-//   nodeGraph?: NodeGraphOptions;
-//   traceIdTimeParams?: TraceIdTimeParamsOptions;
-// }
 
 export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOption> {
   uploadedJson: ArrayBuffer | null | string = null;
@@ -61,19 +53,17 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       : process.env.NODE_ENV === 'development'
         ? 2
         : window?.grafanaBootData?.user.orgName;
-    // this.nodeGraph = instanceSettings.jsonData.nodeGraph;
-    // this.traceIdTimeParams = instanceSettings.jsonData.traceIdTimeParams;
   }
 
   async loadOptions<
-    T = {
+    T extends {
       text: string;
       value: string;
-    }[],
+    },
   >(appName: string, field: string) {
-    if (!appName || !field?.length) return [] as T;
+    if (!appName || !field?.length) return [] as T[];
     return await lastValueFrom(
-      this.request<Record<typeof field, T>>(QueryUrl.load_options, {
+      this.request<Record<typeof field, T[]>>(QueryUrl.load_options, {
         data: {
           fields: [field],
           ...this.getTimeRange(),
@@ -84,11 +74,11 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
         method: 'POST',
       }).pipe(
         map(data => {
-          if (!data) return [] as T;
+          if (!data) return [] as T[];
           return data[field];
         }),
         catchError(() => {
-          return of([] as T);
+          return of([] as T[]);
         }),
       ),
     );
@@ -106,33 +96,18 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     if (!target?.app_name) {
       return of({ data: [emptyTraceDataFrame] });
     }
-
-    // Use the internal /dependencies API for rendering the dependency graph.
-    // if (target.queryType === 'dependencyGraph') {
-    //   const timeRange = getTemplateSrv().timeRange;
-    //   const endTs = getTime(timeRange.to, true) / 1000;
-    //   const lookback = endTs - getTime(timeRange.from, false) / 1000;
-    //   return this.request('/api/dependencies', { endTs, lookback }).pipe(map(mapJaegerDependenciesResponse));
-    // }
-
     if (target.queryType === 'search' && !this.isSearchFormValid(target)) {
       return of({ error: { message: 'You must select a app.' }, data: [] });
     }
-
     if (target.queryType !== 'search' && target.query) {
-      // let url = `/api/traces/${encodeURIComponent(getTemplateSrv().replace(target.query, options.scopedVars))}`;
-      // if (this.traceIdTimeParams) {
-      //   url += `?start=${start}&end=${end}`;
-      // }
-
       return this.request(QueryUrl.get_trace_detail, {
-        params: {
+        data: {
           app_name: target.app_name,
           trace_id: target.query,
           ...this.getTimeRange(),
           bk_biz_id: this.bizId,
         },
-        method: 'GET',
+        method: 'POST',
       }).pipe(
         map(response => {
           const traceData = response?.[0];
@@ -149,52 +124,38 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
         }),
       );
     }
-
-    // if (target.queryType === 'upload') {
-    //   if (!this.uploadedJson) {
-    //     return of({ data: [] });
-    //   }
-
-    //   try {
-    //     const traceData = JSON.parse(this.uploadedJson as string).data[0];
-    //     const data = [createTraceFrame(traceData)];
-    //     if (this.nodeGraph?.enabled) {
-    //       data.push(...createGraphFrames(traceData));
-    //     }
-    //     return of({ data });
-    //   } catch (error) {
-    //     return of({ error: { message: 'The JSON file uploaded is not in a valid format' }, data: [] });
-    //   }
-    // }
-    const jaegerInterpolated = pick(this.applyVariables(target, options.scopedVars), [
+    const traceInterpolated = pick(this.applyVariables(target, options.scopedVars), [
       'service',
-      'operation',
+      'spans',
       'tags',
       'min_duration',
       'max_duration',
       'limit',
     ]);
     // remove empty properties
-    let jaegerQuery = pickBy(jaegerInterpolated, identity);
+    let traceQuery = pickBy(traceInterpolated, identity);
 
-    // if (jaegerQuery.operation === ALL_OPERATIONS_KEY) {
-    //   jaegerQuery = omit(jaegerQuery, 'operation');
+    // if (traceQuery.spans === ALL_OPERATIONS_KEY) {
+    //   traceQuery = omit(traceQuery, 'spans');
     // }
 
-    if (jaegerQuery.tags) {
-      jaegerQuery = {
-        ...jaegerQuery,
-        tags: convertTagsLogfmt(jaegerQuery.tags.toString()),
-      };
-    }
     return this.request(QueryUrl.list_trace, {
-      params: {
+      data: {
         ...this.getTimeRange(),
-        ...jaegerQuery,
         app_name: target.app_name,
         bk_biz_id: this.bizId,
+        filters: [
+          ...convertTagsFilters({
+            span_name: traceQuery.service,
+            'resource.service.name': traceQuery.spans,
+          }),
+          ...convertTagsFilters(traceQuery.tags?.toString()),
+        ],
+        limit: traceQuery.limit,
+        min_duration: traceQuery.min_duration,
+        max_duration: traceQuery.max_duration,
       },
-      method: 'GET',
+      method: 'POST',
     }).pipe(
       map(data => {
         return {
@@ -224,8 +185,8 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     return {
       ...expandedQuery,
       tags: template.replace(query.tags ?? '', scopedVars),
-      service: template.replace(query.service ?? '', scopedVars),
-      operation: template.replace(query.operation ?? '', scopedVars),
+      service: query.service,
+      spans: query.spans,
       min_duration: template.replace(query.min_duration ?? '', scopedVars),
       max_duration: template.replace(query.max_duration ?? '', scopedVars),
     };
@@ -276,10 +237,10 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
   }
   getListApplication() {
     return this.request<IApplication[]>(QueryUrl.list_application, {
-      params: {
+      data: {
         bk_biz_id: this.bizId,
       },
-      method: 'GET',
+      method: 'POST',
     }).pipe(
       map(data => {
         if (!data) return [];
@@ -318,14 +279,6 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       );
   }
 }
-
-function getTime(date: DateTime | string, roundUp: boolean) {
-  if (typeof date === 'string') {
-    date = dateMath.parse(date, roundUp)!;
-  }
-  return date.valueOf() * 1000;
-}
-
 const emptyTraceDataFrame = new MutableDataFrame({
   fields: [
     {

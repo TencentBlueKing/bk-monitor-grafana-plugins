@@ -1,16 +1,36 @@
 import logfmt from 'logfmt';
-export function convertTagsLogfmt(tags: string | undefined) {
+import { FilterParam } from './types';
+export function convertTagsFilters<
+  T extends string | undefined | Record<string, string | number | string[] | undefined>,
+>(tags: T) {
   if (!tags) {
     return '';
   }
-  const data = logfmt.parse(tags);
-  Object.keys(data).forEach(key => {
-    const value = data[key];
-    if (typeof value !== 'string') {
-      data[key] = String(value);
+  let data: Partial<Record<string, string | boolean | number | null | string[]>>;
+  if (typeof tags === 'string') {
+    data = logfmt.parse(tags);
+  } else {
+    data = tags;
+  }
+  const filters: FilterParam[] = [];
+  for (const [key, value] of Object.entries(data)) {
+    if (key && value) {
+      if (Array.isArray(value)) {
+        filters.push({
+          key,
+          value,
+          operator: 'equal',
+        });
+        continue;
+      }
+      filters.push({
+        key,
+        value: [typeof value !== 'string' ? String(value) : value],
+        operator: 'equal',
+      });
     }
-  });
-  return JSON.stringify(data);
+  }
+  return filters;
 }
 
 export function transformToLogfmt(tags: string | undefined) {

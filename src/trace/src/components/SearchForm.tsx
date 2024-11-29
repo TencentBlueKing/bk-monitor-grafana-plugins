@@ -10,6 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import type TraceDatasource from '../datasource';
 import type { TraceQuery } from '../types';
 import { transformToLogfmt } from '../util';
+import { t } from 'common/utils/utils';
 
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';
 
@@ -21,13 +22,13 @@ type Props = {
 
 export function SearchForm({ datasource, query, onChange }: Props) {
   const [serviceOptions, setServiceOptions] = useState<Array<SelectableValue<string>>>();
-  const [operationOptions, setOperationOptions] = useState<Array<SelectableValue<string>>>();
+  const [spanOptions, setOperationOptions] = useState<Array<SelectableValue<string>>>();
   const [isLoading, setIsLoading] = useState<{
     services: boolean;
-    operations: boolean;
+    spans: boolean;
   }>({
     services: false,
-    operations: false,
+    spans: false,
   });
 
   const loadOptions = useCallback(
@@ -65,11 +66,11 @@ export function SearchForm({ datasource, query, onChange }: Props) {
 
   useEffect(() => {
     const getOperations = async () => {
-      const operations = await loadOptions('operations', 'span_name');
-      if (query.operation && getTemplateSrv().containsTemplate(query.operation)) {
-        operations.push(toOption(query.operation));
-      }
-      setOperationOptions([...operations]);
+      const spansOptions = await loadOptions('spans', 'span_name');
+      // if (query.spans && getTemplateSrv().containsTemplate(query.spans)) {
+      //   spans.push(toOption(query.spans));
+      // }
+      setOperationOptions([...spansOptions]);
     };
     if (query.app_name) {
       getOperations();
@@ -77,11 +78,11 @@ export function SearchForm({ datasource, query, onChange }: Props) {
   }, [datasource, query.app_name, loadOptions]);
   useEffect(() => {
     const getServices = async () => {
-      const operations = await loadOptions('services', 'resource.service.name');
-      if (query.service && getTemplateSrv().containsTemplate(query.service)) {
-        operations.push(toOption(query.service));
-      }
-      setServiceOptions([...operations]);
+      const serviceOptions = await loadOptions('services', 'resource.service.name');
+      // if (query.service && getTemplateSrv().containsTemplate(query.service)) {
+      //   spans.push(toOption(query.service));
+      // }
+      setServiceOptions([...serviceOptions]);
     };
     if (query.app_name) {
       getServices();
@@ -92,7 +93,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
       <InlineFieldRow>
         <InlineField
           disabled={!query.app_name}
-          label='Service Name'
+          label={t('服务')}
           labelWidth={14}
           grow
         >
@@ -104,15 +105,15 @@ export function SearchForm({ datasource, query, onChange }: Props) {
             menuPlacement='bottom'
             options={serviceOptions}
             placeholder='Select a service'
-            value={serviceOptions?.find(v => v?.value === query.service) || undefined}
+            isMulti
+            value={query.service || undefined}
             isClearable
-            onChange={v =>
+            onChange={v => {
               onChange({
                 ...query,
-                service: v?.value!,
-                operation: query.service !== v?.value ? undefined : query.operation,
-              })
-            }
+                service: v?.map(item => item.value) || [],
+              });
+            }}
             onOpenMenu={() => loadOptions('services', 'resource.service.name')}
           />
         </InlineField>
@@ -120,27 +121,28 @@ export function SearchForm({ datasource, query, onChange }: Props) {
       <InlineFieldRow>
         <InlineField
           disabled={!query.app_name}
-          label='Operation Name'
+          label={t('接口')}
           labelWidth={14}
           grow
         >
           <Select
             allowCustomValue={true}
-            aria-label={'select-operation-name'}
-            inputId='operation'
-            isLoading={isLoading.operations}
+            isMulti
+            aria-label={'select-spans-name'}
+            inputId='spans'
+            isLoading={isLoading.spans}
             menuPlacement='bottom'
-            options={operationOptions}
-            placeholder='Select an operation'
-            value={operationOptions?.find(v => v.value === query.operation) || null}
+            options={spanOptions}
+            placeholder='Select an spans'
+            value={query.spans || undefined}
             isClearable
             onChange={v =>
               onChange({
                 ...query,
-                operation: v?.value! || undefined,
+                spans: v?.map(item => item.value) || [],
               })
             }
-            onOpenMenu={() => loadOptions('operations', 'span_name')}
+            onOpenMenu={() => loadOptions('spans', 'span_name')}
           />
         </InlineField>
       </InlineFieldRow>
@@ -166,7 +168,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
       </InlineFieldRow>
       <InlineFieldRow>
         <InlineField
-          label='Min Duration'
+          label={t('最小耗时')}
           labelWidth={14}
           grow
         >
@@ -186,7 +188,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
       </InlineFieldRow>
       <InlineFieldRow>
         <InlineField
-          label='Max Duration'
+          label={t('最大耗时')}
           labelWidth={14}
           grow
         >

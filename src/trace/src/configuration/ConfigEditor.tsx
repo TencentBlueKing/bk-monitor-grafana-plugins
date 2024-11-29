@@ -1,85 +1,189 @@
-import { css } from '@emotion/css';
-import type { DataSourcePluginOptionsEditorProps, GrafanaTheme2 } from '@grafana/data';
-import { ConfigSection, DataSourceDescription } from '@grafana/experimental';
-import { NodeGraphSection, SpanBarSection, TraceToLogsSection, TraceToMetricsSection } from '@grafana/o11y-ds-frontend';
-import { config } from '@grafana/runtime';
-import { DataSourceHttpSettings, useStyles2, Divider, Stack } from '@grafana/ui';
-import React from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/*
+ * Tencent is pleased to support the open source community by making
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) available.
+ *
+ * Copyright (C) 2021 THL A29 Limited, a Tencent company.  All rights reserved.
+ *
+ * 蓝鲸智云PaaS平台 (BlueKing PaaS) is licensed under the MIT License.
+ *
+ * License for 蓝鲸智云PaaS平台 (BlueKing PaaS):
+ *
+ * ---------------------------------------------------
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
+ * documentation files (the "Software"), to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and
+ * to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of
+ * the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+ * THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF
+ * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+ * IN THE SOFTWARE.
+ */
+import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
+import { LegacyForms, TagsInput } from '@grafana/ui';
+import React, { useState } from 'react';
 
-import { TraceIdTimeParams } from './TraceIdTimeParams';
+import type { QueryOption, SecureOption } from '../types/config';
+import { t } from 'common/utils/utils';
 
-export type Props = DataSourcePluginOptionsEditorProps;
+const { FormField, Input, Switch } = LegacyForms;
 
-export const ConfigEditor = ({ options, onOptionsChange }: Props) => {
-  const styles = useStyles2(getStyles);
+export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>> = ({
+  options,
+  onOptionsChange,
+}) => {
+  const [useToken, setUseToken] = useState<boolean>(options?.jsonData?.useToken ?? false);
+
+  const handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        [type]: e.target.value.trim(),
+      },
+    });
+  };
+
+  const handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
+    onOptionsChange({
+      ...options,
+      secureJsonData: {
+        ...options.secureJsonData,
+        token: e.target.value.trim(),
+      },
+    });
+  };
+
+  const handleUseTokenChange = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
+    const newUseToken = (e.target as any).checked;
+    setUseToken(newUseToken);
+    onOptionsChange({
+      ...options,
+      jsonData: {
+        ...options.jsonData,
+        useToken: newUseToken,
+      },
+    });
+  };
+
+  const tagProps = {
+    style: { width: '500px' },
+  };
 
   return (
-    <div className={styles.container}>
-      <DataSourceDescription
-        dataSourceName='"BlueKing Monitor TimeSeries'
-        docsLink='https://grafana.com/docs/grafana/latest/datasources/jaeger'
-        hasRequiredFields={false}
-      />
-
-      <Divider spacing={4} />
-
-      <DataSourceHttpSettings
-        dataSourceConfig={options}
-        defaultUrl='http://localhost:16686'
-        secureSocksDSProxyEnabled={config.secureSocksDSProxyEnabled}
-        showAccessOptions={false}
-        onChange={onOptionsChange}
-      />
-
-      <TraceToLogsSection
-        options={options}
-        onOptionsChange={onOptionsChange}
-      />
-
-      <Divider spacing={4} />
-
-      {config.featureToggles.traceToMetrics ? (
-        <>
-          <TraceToMetricsSection
-            options={options}
-            onOptionsChange={onOptionsChange}
-          />
-          <Divider spacing={4} />
-        </>
-      ) : null}
-
-      <ConfigSection
-        description='Additional settings are optional settings that can be configured for more control over your data source.'
-        isCollapsible={true}
-        isInitiallyOpen={false}
-        title='Additional settings'
-      >
-        <Stack
-          direction='column'
-          gap={5}
+    <>
+      <h3 className='page-heading'>BlueKing Monitor API Details</h3>
+      <div className='gf-form-group'>
+        <div
+          style={{ width: '100%' }}
+          className='gf-form'
         >
-          <NodeGraphSection
-            options={options}
-            onOptionsChange={onOptionsChange}
+          <FormField
+            inputEl={
+              <Input
+                style={{ width: '500px' }}
+                defaultValue={options.jsonData.baseUrl}
+                placeholder={t('蓝鲸监控API路径')}
+                spellCheck={false}
+                onBlur={e => handleChange('baseUrl', e)}
+              />
+            }
+            label='Base Url'
+            labelWidth={10}
+            tooltip={t('蓝鲸监控API路径')}
           />
-          <SpanBarSection
-            options={options}
-            onOptionsChange={onOptionsChange}
+        </div>
+        <div
+          style={{ width: '100%' }}
+          className='gf-form'
+        >
+          <FormField
+            inputEl={
+              <Switch
+                checked={useToken}
+                label=''
+                onChange={e => handleUseTokenChange(e)}
+              />
+            }
+            label={t('是否启用token')}
+            labelWidth={10}
+            tooltip={t('是否启用token')}
           />
-          <TraceIdTimeParams
-            options={options}
-            onOptionsChange={onOptionsChange}
-          />
-        </Stack>
-      </ConfigSection>
-    </div>
+        </div>
+        {useToken && (
+          <>
+            <div className='gf-form'>
+              <FormField
+                inputEl={
+                  <TagsInput
+                    {...tagProps}
+                    width={500}
+                    tags={options.jsonData.keepCookies}
+                    onChange={cookies =>
+                      onOptionsChange({
+                        ...options,
+                        jsonData: {
+                          ...options.jsonData,
+                          keepCookies: cookies,
+                        },
+                      })
+                    }
+                  />
+                }
+                label='Allowed cookies'
+                labelWidth={10}
+                tooltip={t('Grafana代理默认删除转发的cookie,按名称指定应转发到数据源的cookie')}
+              />
+            </div>
+            <div
+              style={{ width: '100%' }}
+              className='gf-form'
+            >
+              <FormField
+                inputEl={
+                  <Input
+                    style={{ width: '500px' }}
+                    defaultValue={options.jsonData.bizId}
+                    placeholder={t('蓝鲸监控业务ID')}
+                    spellCheck={false}
+                    onBlur={e => handleChange('bizId', e)}
+                  />
+                }
+                label='业务ID'
+                labelWidth={10}
+                tooltip={t('蓝鲸监控业务ID')}
+              />
+            </div>
+            <div
+              style={{ width: '100%' }}
+              className='gf-form'
+            >
+              <FormField
+                inputEl={
+                  <Input
+                    style={{ width: '500px' }}
+                    placeholder={
+                      options.secureJsonFields?.token ? t('已设置免登入Token') : t('蓝鲸监控当前业务免登入Token')
+                    }
+                    defaultValue={options.secureJsonData?.token ?? ''}
+                    spellCheck={false}
+                    type='password'
+                    onBlur={handleTokenChange}
+                  />
+                }
+                label='Token'
+                labelWidth={10}
+                tooltip={t('蓝鲸监控当前业务免登入Token')}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
-
-const getStyles = (theme: GrafanaTheme2) => ({
-  container: css`
-    label: container;
-    margin-bottom: ${theme.spacing(2)};
-    max-width: 900px;
-  `,
-});
