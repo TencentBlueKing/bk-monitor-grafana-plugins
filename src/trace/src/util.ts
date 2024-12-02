@@ -1,5 +1,5 @@
 import logfmt from 'logfmt';
-import { FilterParam } from './types';
+import type { FilterParam } from './types';
 export function convertTagsFilters<
   T extends string | undefined | Record<string, string | number | string[] | undefined>,
 >(tags: T) {

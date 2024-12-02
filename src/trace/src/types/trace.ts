@@ -16,7 +16,7 @@
  * All timestamps are in microseconds
  */
 
-// TODO: Everett Tech Debt: Fix KeyValuePair types
+// TODO: Fix KeyValuePair types
 export type TraceKeyValuePair = {
   key: string;
   type?: string;

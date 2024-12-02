@@ -1,16 +1,13 @@
 import { css } from '@emotion/css';
-import { type SelectableValue, toOption } from '@grafana/data';
-import { getTemplateSrv } from '@grafana/runtime';
+import type { SelectableValue } from '@grafana/data';
 import { fuzzyMatch, InlineField, InlineFieldRow, Input, Select } from '@grafana/ui';
-// import { notifyApp } from 'grafana/app/core/actions';
-// import { createErrorNotification } from 'grafana/app/core/copy/appNotification';
-// import { dispatch } from 'grafana/app/store/store';
 import React, { useCallback, useEffect, useState } from 'react';
 
 import type TraceDatasource from '../datasource';
 import type { TraceQuery } from '../types';
 import { transformToLogfmt } from '../util';
 import { t } from 'common/utils/utils';
+import { getTemplateSrv } from '@grafana/runtime';
 
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';
 
@@ -40,16 +37,15 @@ export function SearchForm({ datasource, query, onChange }: Props) {
       setIsLoading(prevValue => ({ ...prevValue, [loaderOfType]: true }));
 
       try {
-        const values = await datasource.loadOptions(query.app_name!, field);
+        if (!query.app_name) return [];
+        const values = await datasource.loadOptions(query.app_name, field);
         if (!values?.length) {
           return [{ label: `No ${loaderOfType} found`, value: `No ${loaderOfType} found` }];
         }
-
         const options: SelectableValue[] = values.sort().map(option => ({
           label: option.text,
           value: option.value,
         }));
-
         const filteredOptions = options.filter(item => (item.value ? fuzzyMatch(item.value, keyword).found : false));
         return filteredOptions;
       } catch (error) {
@@ -65,28 +61,26 @@ export function SearchForm({ datasource, query, onChange }: Props) {
   );
 
   useEffect(() => {
-    const getOperations = async () => {
+    const getSpans = async () => {
       const spansOptions = await loadOptions('spans', 'span_name');
-      // if (query.spans && getTemplateSrv().containsTemplate(query.spans)) {
-      //   spans.push(toOption(query.spans));
-      // }
       setOperationOptions([...spansOptions]);
     };
-    if (query.app_name) {
-      getOperations();
-    }
+    query.app_name && getSpans();
   }, [datasource, query.app_name, loadOptions]);
   useEffect(() => {
     const getServices = async () => {
       const serviceOptions = await loadOptions('services', 'resource.service.name');
-      // if (query.service && getTemplateSrv().containsTemplate(query.service)) {
-      //   spans.push(toOption(query.service));
-      // }
+      if (query.service?.length && getTemplateSrv().containsTemplate()) {
+        for (const service of query.service) {
+          serviceOptions.push({
+            label: service,
+            value: service,
+          });
+        }
+      }
       setServiceOptions([...serviceOptions]);
     };
-    if (query.app_name) {
-      getServices();
-    }
+    query.app_name && getServices();
   }, [datasource, query.app_name, loadOptions]);
   return (
     <div className={css({ maxWidth: '500px' })}>
@@ -210,7 +204,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
         <InlineField
           label='Limit'
           labelWidth={14}
-          tooltip='Maximum number of returned results'
+          tooltip='Maximum number of returned results, default is 10'
           grow
         >
           <Input
@@ -218,6 +212,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
             name='limit'
             type='number'
             value={query.limit || ''}
+            placeholder='e.g. 10'
             onChange={v =>
               onChange({
                 ...query,

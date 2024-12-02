@@ -1,11 +1,9 @@
 import { css } from '@emotion/css';
-import { type QueryEditorProps, type SelectableValue } from '@grafana/data';
+import type { QueryEditorProps, SelectableValue } from '@grafana/data';
 import {
-  FileDropzone,
   HorizontalGroup,
   InlineField,
   InlineFieldRow,
-  Modal,
   QueryField,
   RadioButtonGroup,
   Select,
@@ -23,11 +21,9 @@ import { getTemplateSrv } from '@grafana/runtime';
 type Props = QueryEditorProps<TraceDatasource, TraceQuery>;
 
 export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) {
-  const [uploadModalOpen, setUploadModalOpen] = useState(false);
   const [appLoading, setAppLoading] = useState(false);
   const [appOptions, setAppOptions] = useState<Array<SelectableValue<string>>>();
 
-  const theme = useTheme2();
   const styles = useStyles2(getStyles);
 
   useEffect(() => {
@@ -60,11 +56,11 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       },
     });
   }, [datasource]);
+  // trace_id查询图表
   const onChangeQuery = (value: string) => {
     const nextQuery: TraceQuery = { ...query, query: value };
     onChange(nextQuery);
   };
-
   const renderEditorBody = () => {
     switch (query.queryType) {
       case 'search':
@@ -100,26 +96,6 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
 
   return (
     <>
-      <Modal
-        isOpen={uploadModalOpen}
-        title={'Upload trace'}
-        onDismiss={() => setUploadModalOpen(false)}
-      >
-        <div className={css({ padding: theme.spacing(2) })}>
-          <FileDropzone
-            options={{ multiple: false }}
-            onLoad={result => {
-              datasource.uploadedJson = result;
-              onChange({
-                ...query,
-                queryType: 'upload',
-              });
-              setUploadModalOpen(false);
-              onRunQuery();
-            }}
-          />
-        </div>
-      </Modal>
       <div className={styles.container}>
         <InlineFieldRow>
           <InlineField
@@ -146,15 +122,6 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
                   })
                 }
               />
-              {/* <Button
-                size='sm'
-                variant='secondary'
-                onClick={() => {
-                  setUploadModalOpen(true);
-                }}
-              >
-                Import trace
-              </Button> */}
             </HorizontalGroup>
           </InlineField>
         </InlineFieldRow>
@@ -177,7 +144,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               onChange={v => {
                 onChange({
                   ...query,
-                  app_name: v?.value!,
+                  app_name: v?.value,
                   service: query.app_name !== v?.value ? [] : query.service,
                   spans: query.app_name !== v?.value ? [] : query.spans,
                 });

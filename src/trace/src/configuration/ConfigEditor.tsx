@@ -24,12 +24,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
+import React from 'react';
 import type { DataSourcePluginOptionsEditorProps } from '@grafana/data';
 import { LegacyForms, TagsInput } from '@grafana/ui';
-import React, { useState } from 'react';
 
 import type { QueryOption, SecureOption } from '../types/config';
 import { t } from 'common/utils/utils';
+import { css } from '@emotion/css';
 
 const { FormField, Input, Switch } = LegacyForms;
 
@@ -37,44 +38,7 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
   options,
   onOptionsChange,
 }) => {
-  const [useToken, setUseToken] = useState<boolean>(options?.jsonData?.useToken ?? false);
-
-  const handleChange = (type: string, e: React.FocusEvent<HTMLInputElement>) => {
-    onOptionsChange({
-      ...options,
-      jsonData: {
-        ...options.jsonData,
-        [type]: e.target.value.trim(),
-      },
-    });
-  };
-
-  const handleTokenChange = (e: React.FocusEvent<HTMLInputElement>) => {
-    onOptionsChange({
-      ...options,
-      secureJsonData: {
-        ...options.secureJsonData,
-        token: e.target.value.trim(),
-      },
-    });
-  };
-
-  const handleUseTokenChange = (e: React.SyntheticEvent<HTMLInputElement, Event>) => {
-    const newUseToken = (e.target as any).checked;
-    setUseToken(newUseToken);
-    onOptionsChange({
-      ...options,
-      jsonData: {
-        ...options.jsonData,
-        useToken: newUseToken,
-      },
-    });
-  };
-
-  const tagProps = {
-    style: { width: '500px' },
-  };
-
+  const style = getStyles();
   return (
     <>
       <h3 className='page-heading'>BlueKing Monitor API Details</h3>
@@ -90,7 +54,15 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
                 defaultValue={options.jsonData.baseUrl}
                 placeholder={t('蓝鲸监控API路径')}
                 spellCheck={false}
-                onBlur={e => handleChange('baseUrl', e)}
+                onBlur={e => {
+                  onOptionsChange({
+                    ...options,
+                    jsonData: {
+                      ...options.jsonData,
+                      baseUrl: e.target.value.trim(),
+                    },
+                  });
+                }}
               />
             }
             label='Base Url'
@@ -105,9 +77,17 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
           <FormField
             inputEl={
               <Switch
-                checked={useToken}
+                checked={options?.jsonData?.useToken ?? false}
                 label=''
-                onChange={e => handleUseTokenChange(e)}
+                onChange={e => {
+                  onOptionsChange({
+                    ...options,
+                    jsonData: {
+                      ...options.jsonData,
+                      useToken: !!e.target?.checked,
+                    },
+                  });
+                }}
               />
             }
             label={t('是否启用token')}
@@ -115,13 +95,13 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
             tooltip={t('是否启用token')}
           />
         </div>
-        {useToken && (
+        {options?.jsonData?.useToken && (
           <>
             <div className='gf-form'>
               <FormField
                 inputEl={
                   <TagsInput
-                    {...tagProps}
+                    className={style.tagContainer}
                     width={500}
                     tags={options.jsonData.keepCookies}
                     onChange={cookies =>
@@ -151,7 +131,15 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
                     defaultValue={options.jsonData.bizId}
                     placeholder={t('蓝鲸监控业务ID')}
                     spellCheck={false}
-                    onBlur={e => handleChange('bizId', e)}
+                    onBlur={e => {
+                      onOptionsChange({
+                        ...options,
+                        jsonData: {
+                          ...options.jsonData,
+                          bizId: e.target.value.trim(),
+                        },
+                      });
+                    }}
                   />
                 }
                 label='业务ID'
@@ -173,7 +161,15 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
                     defaultValue={options.secureJsonData?.token ?? ''}
                     spellCheck={false}
                     type='password'
-                    onBlur={handleTokenChange}
+                    onBlur={e => {
+                      onOptionsChange({
+                        ...options,
+                        secureJsonData: {
+                          ...options.secureJsonData,
+                          token: e.target.value.trim(),
+                        },
+                      });
+                    }}
                   />
                 }
                 label='Token'
@@ -187,3 +183,9 @@ export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOpti
     </>
   );
 };
+
+const getStyles = () => ({
+  tagContainer: css({
+    width: '100%',
+  }),
+});
