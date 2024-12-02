@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import {
   type DataQueryRequest,
   type DataQueryResponse,
@@ -54,7 +53,12 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
         ? 2
         : window?.grafanaBootData?.user.orgName;
   }
-
+  /**
+   *
+   * @param appName 应用名
+   * @param field 字段名
+   * @description 获取字段选项列表
+   */
   async loadOptions<
     T extends {
       text: string;
@@ -83,7 +87,11 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       ),
     );
   }
-
+  /**
+   *
+   * @param query 查询参数
+   * @description 是否符合查询条件
+   */
   isSearchFormValid(query: TraceQuery): boolean {
     return !!query.app_name;
   }
@@ -102,8 +110,8 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     if (target.queryType !== 'search' && target.query) {
       return this.request(QueryUrl.get_trace_detail, {
         data: {
-          app_name: target.app_name,
-          trace_id: target.query,
+          app_name: getTemplateSrv().replace(target.app_name, options.scopedVars),
+          trace_id: getTemplateSrv().replace(target.query, options.scopedVars),
           ...this.getTimeRange(),
           bk_biz_id: this.bizId,
         },
@@ -134,15 +142,10 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     ]);
     // remove empty properties
     let traceQuery = pickBy(traceInterpolated, identity);
-
-    // if (traceQuery.spans === ALL_OPERATIONS_KEY) {
-    //   traceQuery = omit(traceQuery, 'spans');
-    // }
-
     return this.request(QueryUrl.list_trace, {
       data: {
         ...this.getTimeRange(),
-        app_name: target.app_name,
+        app_name: getTemplateSrv().replace(target.app_name, options.scopedVars),
         bk_biz_id: this.bizId,
         filters: [
           ...convertTagsFilters({

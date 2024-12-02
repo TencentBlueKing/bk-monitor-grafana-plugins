@@ -3,13 +3,9 @@ import {
   type DataSourceInstanceSettings,
   FieldType,
   MutableDataFrame,
-  type TraceLog,
   type TraceSpanRow,
 } from '@grafana/data';
-// import { transformTraceData } from 'grafana/app/features/explore/TraceView/components';
-
-import transformTraceData from './transform-trace-data';
-import type { JaegerResponse, Span, TraceProcess, TraceResponse } from './types';
+import type { JaegerResponse, Span, TraceLog, TraceProcess, TraceResponse } from './types';
 
 export function createTraceFrame(data: TraceResponse): DataFrame {
   const spans = data.spans.map(s => toSpanRow(s, data.processes));
@@ -37,7 +33,7 @@ export function createTraceFrame(data: TraceResponse): DataFrame {
     },
   });
 
-  for (const span of spans) {
+  for (const span of spans || []) {
     frame.add(span);
   }
 
@@ -78,25 +74,26 @@ export function createTableFrame(
         config: {
           unit: 'string',
           displayNameFromDS: 'Trace ID',
-          links: [
-            {
-              title: 'Trace: ${__value.raw}',
-              url: '',
-              internal: {
-                datasourceUid: instanceSettings.uid,
-                datasourceName: instanceSettings.name,
-                query: {
-                  query: '${__value.raw}',
-                  app_name: appName,
-                },
-              },
-            },
-          ],
+          // links: [
+          //   {
+          //     title: 'Trace: ${__value.raw}',
+          //     url: '',
+          //     internal: {
+          //       datasourceUid: instanceSettings.uid,
+          //       datasourceName: instanceSettings.name,
+          //       query: {
+          //         query: '${__value.raw}',
+          //         app_name: appName,
+          //       },
+          //     },
+          //   },
+          // ],
         },
       },
       { name: 'trace_name', type: FieldType.string, config: { displayNameFromDS: 'Trace name' } },
       { name: 'start_time', type: FieldType.time, config: { displayNameFromDS: 'Start time' } },
       { name: 'trace_duration', type: FieldType.number, config: { displayNameFromDS: 'Duration', unit: 'µs' } },
+      { name: 'app_name', type: FieldType.string, config: { displayNameFromDS: 'App Name' } },
     ],
     meta: {
       preferredVisualisationType: 'table',
@@ -108,24 +105,12 @@ export function createTableFrame(
   for (const trace of traceData) {
     frame.add({
       ...trace,
-      start_time: trace.start_time / 1000,
+      start_time: trace.start_time! / 1000,
+      app_name: appName,
     });
   }
-
+  console.info(frame, '==============');
   return frame;
-}
-function transformToTraceData(data: TraceResponse) {
-  const traceData = transformTraceData(data);
-  if (!traceData) {
-    return;
-  }
-
-  return {
-    traceID: traceData.traceID,
-    startTime: traceData.startTime / 1000,
-    duration: traceData.duration,
-    traceName: traceData.traceName,
-  };
 }
 
 export function transformToJaeger(data: MutableDataFrame): JaegerResponse {

@@ -1,5 +1,5 @@
 import { css } from '@emotion/css';
-import type { QueryEditorProps, SelectableValue } from '@grafana/data';
+import { type QueryEditorProps, type SelectableValue } from '@grafana/data';
 import {
   FileDropzone,
   HorizontalGroup,
@@ -18,6 +18,7 @@ import type TraceDatasource from '../datasource';
 import type { TraceQuery, JaegerQueryType } from '../types';
 import { SearchForm } from './SearchForm';
 import { t } from 'common/utils/utils';
+import { getTemplateSrv } from '@grafana/runtime';
 
 type Props = QueryEditorProps<TraceDatasource, TraceQuery>;
 
@@ -38,9 +39,12 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
             value: item.app_name,
             label: item.app_name,
           })) || [];
-        // if (query.app_name && getTemplateSrv().containsTemplate(query.app_name)) {
-        //   appList.push(toOption(query.app_name));
-        // }
+        if (query.app_name && getTemplateSrv().containsTemplate(query.app_name)) {
+          appList.push({
+            value: query.app_name,
+            label: query.app_name,
+          });
+        }
         setAppOptions(appList);
         if (data.length && !query.app_name) {
           onChange({

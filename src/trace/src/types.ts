@@ -44,11 +44,14 @@ export type Span = {
 };
 
 export type TraceResponse = {
-  trace_id: string;
-  start_time: number;
-  trace_duration: number;
-  trace_name: string;
+  trace_id?: string;
+  start_time?: number;
+  trace_duration?: number;
+  trace_name?: string;
   warnings?: null | string[];
+  processes: Record<string, TraceProcess>;
+  spans: Span[];
+  traceID: string;
 };
 
 export type TraceQuery = {
