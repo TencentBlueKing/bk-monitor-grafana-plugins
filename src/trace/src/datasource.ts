@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type DataQueryRequest,
   type DataQueryResponse,
@@ -21,7 +20,7 @@ import type { TraceQuery } from './types';
 import { convertTagsFilters } from './util';
 import type { QueryOption } from './types/config';
 import { random } from 'common/utils/utils';
-import type { IApplication } from './types/trace';
+import type { IApplication, TraceResponse } from './types/trace';
 export enum QueryUrl {
   list_application = 'list_trace_application_info/',
   load_options = 'get_trace_field_option_values/',
@@ -141,8 +140,10 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       'limit',
     ]);
     // remove empty properties
-    let traceQuery = pickBy(traceInterpolated, identity);
-    return this.request(QueryUrl.list_trace, {
+    const traceQuery = pickBy(traceInterpolated, identity);
+    return this.request<{
+      data: TraceResponse[];
+    }>(QueryUrl.list_trace, {
       data: {
         ...this.getTimeRange(),
         app_name: getTemplateSrv().replace(target.app_name, options.scopedVars),
@@ -162,7 +163,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     }).pipe(
       map(data => {
         return {
-          data: [createTableFrame(target.app_name!, data.data || [], this.instanceSettings)],
+          data: [createTableFrame(target.app_name!, data?.data || [], this.instanceSettings)],
         };
       }),
     );
@@ -183,7 +184,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
   }
 
   applyVariables(query: TraceQuery, scopedVars: ScopedVars) {
-    let expandedQuery = { ...query };
+    const expandedQuery = { ...query };
     const template = getTemplateSrv();
     return {
       ...expandedQuery,
@@ -228,7 +229,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
   }
 
   getTimeRange(): { start_time: number; end_time: number } {
-    const range = (getTemplateSrv() as any).timeRange;
+    const range = getTemplateSrv().timeRange;
     return {
       start_time: range.from.unix(),
       end_time: range.to.unix(),
@@ -254,7 +255,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       }),
     );
   }
-  private request<T = any>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T | undefined> {
+  private request<T>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T | undefined> {
     const url = `${this.useToken ? `${this.url}/trace/${apiUrl}` : this.baseUrl + apiUrl}`;
     const req = {
       ...options,

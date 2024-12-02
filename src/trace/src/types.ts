@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { DataQuery } from '@grafana/data';
 export type TraceKeyValuePair = {
   key: string;

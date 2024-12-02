@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type DataFrame,
   type DataQueryResponse,
@@ -71,7 +70,7 @@ function convertDependenciesToGraph(dependencies: any[]): DataFrame[] {
     addServiceNode(dependency.child, servicesByName);
 
     edges.push({
-      [Fields.id]: dependency.parent + '--' + dependency.child,
+      [Fields.id]: `${dependency.parent}--${dependency.child}`,
       [Fields.target]: dependency.child,
       [Fields.source]: dependency.parent,
       [Fields.mainStat]: dependency.callCount,

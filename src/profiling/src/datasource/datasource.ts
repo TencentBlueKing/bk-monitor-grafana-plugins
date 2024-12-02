@@ -254,7 +254,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
         title: 'Error',
       }));
   }
-  private request<T = any>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T | undefined> {
+  private request<T>(apiUrl: string, options?: Partial<BackendSrvRequest>): Observable<T | undefined> {
     const url = `${this.useToken ? `${this.url}/profiling/${apiUrl}` : this.baseUrl + apiUrl}`;
     const req = {
       ...options,
