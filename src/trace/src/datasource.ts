@@ -150,8 +150,8 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
         bk_biz_id: this.bizId,
         filters: [
           ...convertTagsFilters({
-            span_name: traceQuery.service,
-            'resource.service.name': traceQuery.spans,
+            'resource.service.name': traceQuery.service,
+            span_name: traceQuery.spans,
           }),
           ...convertTagsFilters(traceQuery.tags?.toString()),
         ],
