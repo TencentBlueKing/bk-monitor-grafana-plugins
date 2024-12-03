@@ -7,14 +7,11 @@ import {
   MutableDataFrame,
   type ScopedVars,
 } from '@grafana/data';
-import type { NodeGraphOptions, SpanBarOptions } from '@grafana/o11y-ds-frontend';
 import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import { identity, pick, pickBy } from 'lodash';
 import { lastValueFrom, type Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import type { TraceIdTimeParamsOptions } from './configuration/TraceIdTimeParams';
-import { createGraphFrames } from './graphTransform';
 import { createTableFrame, createTraceFrame } from './responseTransform';
 import type { TraceQuery } from './types';
 import { convertTagsFilters } from './util';
@@ -30,11 +27,6 @@ export enum QueryUrl {
 }
 
 export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOption> {
-  uploadedJson: ArrayBuffer | null | string = null;
-  nodeGraph?: NodeGraphOptions;
-  traceIdTimeParams?: TraceIdTimeParamsOptions;
-  spanBar?: SpanBarOptions;
-
   public baseUrl: string;
   public bizId?: number | string;
   public configData: QueryOption;
@@ -122,9 +114,6 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
             return { data: [emptyTraceDataFrame] };
           }
           const data = [createTraceFrame(traceData)];
-          if (this.nodeGraph?.enabled) {
-            data.push(...createGraphFrames(traceData));
-          }
           return {
             data,
           };
