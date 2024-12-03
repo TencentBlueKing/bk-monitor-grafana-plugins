@@ -9,7 +9,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import LiveReloadPlugin from 'webpack-livereload-plugin';
 import path from 'node:path';
 import ReplaceInFileWebpackPlugin from 'replace-in-file-webpack-plugin';
-import type { Configuration } from 'webpack';
+import { type Configuration, ProvidePlugin } from 'webpack';
 
 import { getPackageJson, getPluginJson, hasReadme, getEntries, isWSL } from './utils';
 import { SOURCE_DIR, DIST_DIR } from './constants';
@@ -27,7 +27,7 @@ const config = async (env): Promise<Configuration> => {
 
     context: path.join(process.cwd(), SOURCE_DIR),
 
-    devtool: env.production ? 'source-map' : 'eval-source-map',
+    devtool: 'source-map',
 
     entry: {
       ...(await getEntries()),
@@ -59,8 +59,8 @@ const config = async (env): Promise<Configuration> => {
       // Mark legacy SDK imports as external if their name starts with the "grafana/" prefix
       ({ request }, callback) => {
         const prefix = 'grafana/';
-        const hasPrefix = request => request.indexOf(prefix) === 0;
-        const stripPrefix = request => request.substr(prefix.length);
+        const hasPrefix = (request) => request.indexOf(prefix) === 0;
+        const stripPrefix = (request) => request.substr(prefix.length);
 
         if (hasPrefix(request)) {
           return callback(undefined, stripPrefix(request));
@@ -128,6 +128,9 @@ const config = async (env): Promise<Configuration> => {
       uniqueName: pluginJson.id,
     },
     plugins: [
+      new ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+      }),
       new CopyWebpackPlugin({
         patterns: [
           // If src/README.md exists use it; otherwise the root README
@@ -181,7 +184,7 @@ const config = async (env): Promise<Configuration> => {
       modules: [path.resolve(process.cwd(), 'src'), 'node_modules'],
       unsafeCache: true,
       fallback: {
-        buffer: false,
+        buffer: require.resolve('buffer'),
         fs: false,
         stream: false,
         http: false,
