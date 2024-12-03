@@ -22,10 +22,10 @@ import type { QueryOption } from './types/config';
 import { random } from 'common/utils/utils';
 import type { IApplication, TraceResponse } from './types/trace';
 export enum QueryUrl {
-  list_application = 'list_trace_application_info/',
-  load_options = 'get_trace_field_option_values/',
-  list_trace = 'list_trace/',
-  get_trace_detail = 'get_trace_detail/',
+  list_application = 'apm/list_application_info/',
+  load_options = 'apm/get_field_option_values/',
+  list_trace = 'apm/list_trace/',
+  get_trace_detail = 'apm/trace_detail/',
   testAndSaveUrl = '',
 }
 

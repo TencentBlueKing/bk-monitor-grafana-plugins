@@ -9,6 +9,7 @@
     "build:alert": "pnpm --filter alert run build",
     "build:event": "pnpm --filter event run build",
     "build:timeseries": "pnpm --filter timeseries run build",
+    "build:trace": "pnpm --filter trace run build",
     "dev:alert": "pnpm --filter alert run dev",
     "dev:event": "pnpm --filter event run dev",
     "dev:timeseries": "pnpm --filter timeseries run dev",
