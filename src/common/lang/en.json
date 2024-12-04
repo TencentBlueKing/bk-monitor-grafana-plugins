@@ -82,5 +82,11 @@
   "应用/服务": "Application/Service",
   "无数据": "No data",
   "Profile 类型": "Profile type",
-  "加载中": "Loading"
+  "加载中": "Loading",
+  "最小耗时": "Min Duration",
+  "最大耗时": "Max Duration",
+  "服务": "Service",
+  "接口": "Span Name",
+  "应用": "App Name",
+  "查询方式": "Query Mode"
 }

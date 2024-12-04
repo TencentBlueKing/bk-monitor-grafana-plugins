@@ -1,6 +1,7 @@
 import { css } from '@emotion/css';
 import type { QueryEditorProps, SelectableValue } from '@grafana/data';
 import {
+  Button,
   HorizontalGroup,
   InlineField,
   InlineFieldRow,
@@ -124,6 +125,14 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               />
             </HorizontalGroup>
           </InlineField>
+          <Button
+            style={{ marginLeft: '10px' }}
+            size='md'
+            fill='solid'
+            onClick={onRunQuery}
+          >
+            {t('查询')}
+          </Button>
         </InlineFieldRow>
         <InlineFieldRow style={{ maxWidth: '500px' }}>
           <InlineField

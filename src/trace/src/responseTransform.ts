@@ -53,7 +53,7 @@ function toSpanRow(span: Span, processes: Record<string, TraceProcess>): TraceSp
       ...l,
       timestamp: l.timestamp / 1000,
     })),
-    tags: span.tags,
+    tags: span.attributes,
     warnings: span.warnings ?? undefined,
     stackTraces: span.stackTraces,
     serviceName: processes[span.processID].serviceName,
@@ -109,7 +109,6 @@ export function createTableFrame(
       app_name: appName,
     });
   }
-  console.info(frame, '==============');
   return frame;
 }
 

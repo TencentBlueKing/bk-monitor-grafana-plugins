@@ -36,6 +36,7 @@ export type Span = {
   duration: number;
   logs: TraceLog[];
   tags?: TraceKeyValuePair[];
+  attributes?: TraceKeyValuePair[];
   references?: TraceSpanReference[];
   warnings?: null | string[];
   stackTraces?: string[];
