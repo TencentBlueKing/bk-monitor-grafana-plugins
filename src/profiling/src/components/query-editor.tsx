@@ -210,7 +210,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               datasource={datasource}
               filterList={query.filter_labels?.length ? query.filter_labels : [{}]}
               keyList={labels}
-              serviceName={query.app_name}
+              serviceName={query.service_name}
               onChange={(v, needQuery = true) => {
                 onChange({ ...query, filter_labels: v });
                 needQuery && onRunQuery();

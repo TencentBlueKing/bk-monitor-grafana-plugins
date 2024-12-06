@@ -88,7 +88,13 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       streams.push(
         new Observable(subscriber => {
           this.queryProfilingGraph(filterTarget, target)
-            .then(events => subscriber.next({ data: [toDataFrame(events)] }))
+            .then(events => {
+              if (Object.keys(events || {}).length === 0) {
+                subscriber.next({ data: [toDataFrame([])] });
+                return;
+              }
+              subscriber.next({ data: [toDataFrame(events)] });
+            })
             .catch(err => subscriber.error(err))
             .finally(() => subscriber.complete());
         }),
@@ -97,28 +103,28 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
     return merge(...streams);
   }
   async queryProfilingGraph(options: DataQueryRequest, target: ProfilingQuery) {
-    const filterLabel: Record<string, string[]> = {};
+    const filterLabel: Record<string, string> = {};
     for (const item of target?.filter_labels || []) {
       if (!item.value?.length || !item.key) {
         continue;
       }
-      const values: string[] = [];
-      for (const value of item.value) {
-        const result = getTemplateSrv().replace(value, options.scopedVars);
-        if (Array.isArray(result)) {
-          values.push(...result);
-          continue;
-        }
-        values.push(result);
-      }
-      filterLabel[item.key] = Array.from(new Set(values));
+      // 多选逻辑 暂时关闭
+      // const values: string[] = [];
+      // for (const value of item.value) {
+      //   const result = getTemplateSrv().replace(value, options.scopedVars);
+      //   if (Array.isArray(result)) {
+      //     values.push(...result);
+      //     continue;
+      //   }
+      //   values.push(result);
+      // }
+      // filterLabel[item.key] = Array.from(new Set(values));
+      filterLabel[item.key] = item.value;
     }
     return await lastValueFrom(
       this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
         data: {
           bk_biz_id: this.bizId,
-          start: options.range.from.valueOf() * 1000,
-          end: options.range.to.valueOf() * 1000,
           app_name: target.app_name,
           service_name: target.service_name,
           data_type: target.profile_type,
@@ -126,13 +132,17 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
           offset: target.offset,
           filter_labels: filterLabel,
           diagram_types: ['grafana_flame'],
+          ...this.getTimeRange('ns'),
         },
         method: 'POST',
       }),
     );
   }
-  getTimeRange(): { start_time: number; end_time: number } {
+  getTimeRange(type: 's' | 'ns' = 's'): Partial<{ start_time: number; end_time: number; start: number; end: number }> {
     const range = (getTemplateSrv() as any).timeRange;
+    if (type === 'ns') {
+      return { start: range.from.valueOf() * 1000, end: range.to.valueOf() * 1000 };
+    }
     return {
       start_time: range.from.unix(),
       end_time: range.to.unix(),
@@ -213,7 +223,9 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       params: {
         bk_biz_id: this.bizId,
         ...params,
-        ...this.getTimeRange(),
+        ...this.getTimeRange('ns'),
+        offset: 0,
+        rows: 1000,
       },
       method: 'GET',
     }).pipe(

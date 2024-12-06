@@ -78,14 +78,6 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
       ),
     );
   }
-  /**
-   *
-   * @param query 查询参数
-   * @description 是否符合查询条件
-   */
-  isSearchFormValid(query: TraceQuery): boolean {
-    return !!query.app_name;
-  }
 
   query(options: DataQueryRequest<TraceQuery>): Observable<DataQueryResponse> {
     // At this moment we expect only one target. In case we somehow change the UI to be able to show multiple
@@ -95,13 +87,14 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     if (!target?.app_name) {
       return of({ data: [emptyTraceDataFrame] });
     }
-    if (target.queryType === 'search' && !this.isSearchFormValid(target)) {
-      return of({ error: { message: 'You must select a app.' }, data: [] });
+    const app_name = getTemplateSrv().replace(target.app_name || '', options.scopedVars);
+    if (!target.app_name || !app_name) {
+      return of({ data: [] });
     }
     if (target.queryType !== 'search' && target.query) {
       return this.request(QueryUrl.get_trace_detail, {
         data: {
-          app_name: getTemplateSrv().replace(target.app_name, options.scopedVars),
+          app_name,
           trace_id: getTemplateSrv().replace(target.query, options.scopedVars),
           ...this.getTimeRange(),
           bk_biz_id: this.bizId,
@@ -152,7 +145,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     }).pipe(
       map(data => {
         return {
-          data: [createTableFrame(target.app_name!, data?.data || [], this.instanceSettings)],
+          data: [createTableFrame(target.app_name, data?.data || [], this.instanceSettings)],
         };
       }),
     );

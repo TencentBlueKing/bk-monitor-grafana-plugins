@@ -78,7 +78,7 @@ export type IConditionItem = {
   condition?: string; // 判断条件
   key?: string; // 维度
   method?: string; // 方法
-  value?: string[]; // 值
+  value?: string; // 值
 };
 
 // 监控条件列表item

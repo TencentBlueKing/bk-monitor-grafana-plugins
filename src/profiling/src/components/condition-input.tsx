@@ -34,7 +34,7 @@ import { map, merge, type Observable } from 'rxjs';
 
 import type { ProfilingQuery } from '../typings/datasource';
 import { CONDITION, type ICommonItem, type IConditionItem, STRING_CONDITION_METHOD_LIST } from '../typings/metric';
-import { DIM_NULL_ID } from '../typings/profile';
+// import { DIM_NULL_ID } from '../typings/profile';
 import { t } from 'common/utils/utils';
 
 import type DataSource from '../datasource/datasource';
@@ -121,7 +121,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
             ...item,
             key: v,
             method: getMethodList()[0].id,
-            value: [],
+            value: '',
             ...(i > 0 ? { condition: 'and' } : {}),
           };
         }
@@ -139,7 +139,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
     handleCommonChange(index, 'method', v);
   };
 
-  const handleValueChange = (v: string[], index: number) => {
+  const handleValueChange = (v: string, index: number) => {
     const param = filterList.map((item, i) => {
       if (i === index) {
         return {
@@ -231,6 +231,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
               }
               autoFocus={true}
               className={`condition-input-key-${index}`}
+              style={{ marginLeft: '-1px' }}
               defaultOpen={item.key === '' && !!keyList.length}
               defaultValue={item.key || undefined}
               dropdownMatchSelectWidth={140}
@@ -290,21 +291,21 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                 className='condition-input-value'
                 defaultValue={item.value}
                 dropdownMatchSelectWidth={true}
-                mode='tags'
                 placeholder={t('请输入')}
                 showArrow={false}
                 tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
                 onChange={v => handleValueChange(v, index)}
                 onInputKeyDown={v => handleValueConditionKeyDown(v)}
+                showSearch={true}
               >
-                {needNUll(item.key) && (
+                {/* {needNUll(item.key) && (
                   <Option
                     key={DIM_NULL_ID}
                     value={DIM_NULL_ID}
                   >
                     {t('- 空 -')}
                   </Option>
-                )}
+                )} */}
                 {dimensionValueMap[item.key]?.map?.(dim => (
                   <Option
                     key={dim.id}
