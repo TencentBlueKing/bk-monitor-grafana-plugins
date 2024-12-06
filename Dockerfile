@@ -17,10 +17,12 @@ RUN pnpm i \
 && mkdir -p build/event \
 && mkdir -p build/timeseries \
 && mkdir -p build/trace \
+&& mkdir -p build/profiling \
 && mv src/alert/dist/* build/alert \
 && mv src/event/dist/* build/event \
 && mv src/timeseries/dist/* build/timeseries \
-&& mv src/trace/dist/* build/trace
+&& mv src/trace/dist/* build/trace \
+&& mv src/profiling/dist/* build/profiling
 
 RUN tar -czvf frontend.tar.gz  build
 
