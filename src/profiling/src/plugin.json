@@ -4,7 +4,8 @@
   "id": "bkmonitor-profiling-datasource",
   "metrics": true,
   "annotations": false,
-  "alerting": true,
+  "alerting": false,
+  "category": "profiling",
   "queryOptions": {
     "maxDataPoints": true
   },
