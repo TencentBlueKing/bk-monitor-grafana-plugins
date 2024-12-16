@@ -145,7 +145,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     }).pipe(
       map(data => {
         return {
-          data: [createTableFrame(target.app_name, data?.data || [], this.instanceSettings)],
+          data: [createTableFrame(app_name, data?.data || [], this.instanceSettings)],
         };
       }),
     );
