@@ -111,9 +111,9 @@ function convertDependenciesToGraph(dependencies: any[]): DataFrame[] {
 }
 
 /**
- * Convenience function to register a service node in the dependency graph.
- * @param service Name of the service to register.
- * @param servicesByName Map of service nodes keyed name.
+ * 一个便捷函数，用于在依赖关系图中注册一个服务节点。
+ * @param service 要注册的服务名称。
+ * @param servicesByName 一个以服务名称为键的服务节点映射。
  */
 function addServiceNode(service: string, servicesByName: Map<string, Node>) {
   if (!servicesByName.has(service)) {

@@ -75,7 +75,7 @@ function convertTraceToGraph(data: TraceResponse): { nodes: Node[]; edges: Edge[
     // Sometimes some span can be missing. Don't add edges for those.
     if (parentSpanID && spanMap[parentSpanID].span) {
       edges.push({
-        [Fields.id]: parentSpanID + '--' + span.spanID,
+        [Fields.id]: `${parentSpanID}--${span.spanID}`,
         [Fields.target]: span.spanID,
         [Fields.source]: parentSpanID,
       });

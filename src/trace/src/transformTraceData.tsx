@@ -1,9 +1,9 @@
 import { isEqual as _isEqual } from 'lodash';
 
 import type { TraceKeyValuePair, TraceSpan, Trace, TraceResponse, TraceProcess } from './types/trace';
-import { getConfigValue } from './utils/get-config';
+import { getConfigValue } from './utils/getConfig';
 import { getTraceSpanIdsAsTree } from './utils/trace';
-import { getTraceName } from './utils/trace-viewer';
+import { getTraceName } from './utils/traceViewer';
 
 import type TreeNode from './utils/TreeNode';
 
@@ -173,9 +173,6 @@ export default function transformTraceData(data: TraceResponse | undefined): Tra
     spans,
     traceID,
     traceName,
-    // can't use spread operator for intersection types
-    // repl: https://goo.gl/4Z23MJ
-    // issue: https://github.com/facebook/flow/issues/1511
     processes: data.processes,
     duration: traceEndTime - traceStartTime,
     startTime: traceStartTime,

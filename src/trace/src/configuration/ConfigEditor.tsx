@@ -7,7 +7,9 @@ import { t } from 'common/utils/utils';
 import { css } from '@emotion/css';
 
 const { FormField, Input, Switch } = LegacyForms;
-
+/**
+ * @description 监控数据源插件配置面板
+ */
 export const ConfigEditor: React.FC<DataSourcePluginOptionsEditorProps<QueryOption, SecureOption>> = ({
   options,
   onOptionsChange,

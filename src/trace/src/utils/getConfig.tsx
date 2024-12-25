@@ -21,12 +21,12 @@ export const defaultConfig = Object.defineProperty(
       trackErrors: true,
     },
   },
-  // fields that should be individually merged vs wholesale replaced
+  // 应该单独合并而不是整体替换的字段
   '__mergeFields',
   { value: ['dependencies', 'search', 'tracking'] },
 );
 /**
- * Merge the embedded config from the query service (if present) with the
+ * 将来自查询服务的嵌入配置（如果存在）与…合并
  */
 export default function getConfig() {
   return defaultConfig;

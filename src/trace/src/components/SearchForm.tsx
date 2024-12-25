@@ -12,8 +12,8 @@ import { getTemplateSrv } from '@grafana/runtime';
 const durationPlaceholder = 'e.g. 1.2s, 100ms, 500us';
 
 type Props = {
-  datasource: TraceDatasource;
-  query: TraceQuery;
+  datasource: TraceDatasource; // datasource
+  query: TraceQuery; // trace查询缓存
   onChange: (value: TraceQuery) => void;
 };
 
@@ -28,6 +28,7 @@ export function SearchForm({ datasource, query, onChange }: Props) {
     spans: false,
   });
 
+  // 获取服务、spans列表
   const loadOptions = useCallback(
     async (
       loaderOfType: keyof typeof isLoading,
@@ -49,9 +50,6 @@ export function SearchForm({ datasource, query, onChange }: Props) {
         const filteredOptions = options.filter(item => (item.value ? fuzzyMatch(item.value, keyword).found : false));
         return filteredOptions;
       } catch (error) {
-        // if (error instanceof Error) {
-        //   dispatch(notifyApp(createErrorNotification('Error', error)));
-        // }
         return [];
       } finally {
         setIsLoading(prevValue => ({ ...prevValue, [loaderOfType]: false }));

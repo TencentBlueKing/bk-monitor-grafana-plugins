@@ -45,7 +45,6 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
         : window?.grafanaBootData?.user.orgName;
   }
   /**
-   *
    * @param appName 应用名
    * @param field 字段名
    * @description 获取字段选项列表
@@ -63,7 +62,7 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
           fields: [field],
           ...this.getTimeRange(),
           bk_biz_id: this.bizId,
-          app_name: appName,
+          app_name: getTemplateSrv().replace(appName),
         },
         hideFromInspector: true,
         method: 'POST',
@@ -171,13 +170,24 @@ export default class TraceDatasource extends DataSourceApi<TraceQuery, QueryOpti
     return {
       ...expandedQuery,
       tags: template.replace(query.tags ?? '', scopedVars),
-      service: query.service,
-      spans: query.spans,
+      service: this.applyArraysVariables(query.service, scopedVars),
+      spans: this.applyArraysVariables(query.spans, scopedVars),
       min_duration: template.replace(query.min_duration ?? '', scopedVars),
       max_duration: template.replace(query.max_duration ?? '', scopedVars),
     };
   }
-
+  applyArraysVariables(targets: string[] | undefined, scopedVars: ScopedVars) {
+    if (!targets?.length) {
+      return [] as string[];
+    }
+    const template = getTemplateSrv();
+    const list: string[] = [];
+    for (const v of targets) {
+      const res = template.replace(v, scopedVars);
+      list.push(...res.split(','));
+    }
+    return list;
+  }
   async testDatasource() {
     if (!this.baseUrl) {
       return {

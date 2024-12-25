@@ -9,7 +9,6 @@ import {
   RadioButtonGroup,
   Select,
   useStyles2,
-  useTheme2,
 } from '@grafana/ui';
 import React, { useEffect, useState } from 'react';
 
