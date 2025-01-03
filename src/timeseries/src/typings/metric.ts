@@ -216,9 +216,9 @@ export const STRING_CONDITION_METHOD_LIST = [
 ];
 // 监控目标类型
 export enum TARGET_TYPE {
-  'HOST' = 'HOST',
-  'NONE' = 'NONE',
-  'SERVICE_INSTANCE' = 'SERVICE_INSTANCE',
+  HOST = 'HOST',
+  NONE = 'NONE',
+  SERVICE_INSTANCE = 'SERVICE_INSTANCE',
 }
 // 监控条件 设置条件
 export const CONDITION = [
@@ -446,7 +446,7 @@ export class MetricDetail {
     this.subtitle = [
       this.result_table_label_name,
       data_source_list.find(
-        item => item.data_source_label === this.data_source_label && item.data_type_label === this.data_type_label,
+        item => item.data_source_label === this.data_source_label && item.data_type_label === this.data_type_label
       )?.name,
       this.related_name,
     ]

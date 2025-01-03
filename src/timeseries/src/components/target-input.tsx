@@ -29,9 +29,9 @@ import Spin from 'antd/es/spin';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import { ITargetData, ITargetItem, TARGET_TYPE } from '../typings/metric';
+import { type ITargetData, type ITargetItem, TARGET_TYPE } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
 const { Option } = Select;
 
 const clusterParams = {
@@ -292,7 +292,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
                         fill='currentColor'
                         viewBox='64 64 896 896'
                       >
-                        <path d='M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z'></path>
+                        <path d='M912 190h-69.9c-9.8 0-19.1 4.5-25.1 12.2L404.7 724.5 207 474a32 32 0 00-25.1-12.2H112c-6.7 0-10.4 7.7-6.3 12.9l273.9 347c12.8 16.2 37.4 16.2 50.3 0l488.4-618.9c4.1-5.1.4-12.8-6.3-12.8z' />
                       </svg>
                     </span>
                   ) : undefined}
@@ -318,7 +318,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               mode='multiple'
               optionFilterProp='label'
               options={clusterList}
-              placeholder={getEnByName('集群', language)}
+              placeholder={t('集群', language)}
               value={clusterValue}
               onChange={this.handleClusterChange}
               onFocus={this.handleClusterFocus}
@@ -339,7 +339,7 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               mode='multiple'
               optionFilterProp='label'
               options={moduleList}
-              placeholder={getEnByName('模块', language)}
+              placeholder={t('模块', language)}
               value={moduleValue}
               onChange={this.handleModuleChange}
               onFocus={this.handleModuleFocus}
@@ -355,11 +355,6 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
             </Select>
             <Select
               style={{ marginRight: 0 }}
-              placeholder={
-                targetType === TARGET_TYPE.SERVICE_INSTANCE
-                  ? getEnByName('服务实例', language)
-                  : getEnByName('主机', language)
-              }
               className='target-input-host'
               dropdownClassName='target-input-cluster-dropdown'
               dropdownRender={menu => handleHostDropdownRender(menu, 'host')}
@@ -367,13 +362,14 @@ export default class TargetInput extends React.PureComponent<ITargetInputProps, 
               maxTagPlaceholder={handleMaxTagPlaceholder}
               mode='multiple'
               options={hostList}
+              placeholder={targetType === TARGET_TYPE.SERVICE_INSTANCE ? t('服务实例', language) : t('主机', language)}
               searchValue={searchValue}
               value={hostValue}
               onChange={this.handleHostChange}
               onDropdownVisibleChange={this.handleHostDropdownVisibleChange}
               onFocus={this.handleHostFocus}
               onSearch={this.handleSearch}
-            ></Select>
+            />
           </div>
         )}
       </LanguageContext.Consumer>

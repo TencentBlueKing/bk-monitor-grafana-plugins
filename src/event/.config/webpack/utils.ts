@@ -1,7 +1,7 @@
-import fs from 'fs';
-import process from 'process';
-import os from 'os';
-import path from 'path';
+import fs from 'node:fs';
+import process from 'node:process';
+import os from 'node:os';
+import path from 'node:path';
 import { glob } from 'glob';
 import { SOURCE_DIR } from './constants';
 
@@ -39,7 +39,7 @@ export async function getEntries(): Promise<Record<string, string>> {
   const pluginsJson = await glob('**/src/**/plugin.json', { absolute: true });
 
   const plugins = await Promise.all(
-    pluginsJson.map((pluginJson) => {
+    pluginsJson.map(pluginJson => {
       const folder = path.dirname(pluginJson);
       return glob(`${folder}/module.{ts,tsx,js,jsx}`, { absolute: true });
     })

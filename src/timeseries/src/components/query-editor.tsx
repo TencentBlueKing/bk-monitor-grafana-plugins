@@ -27,32 +27,31 @@
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
-import { LoadingState, QueryEditorProps } from '@grafana/data';
+import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Message from 'antd/es/message';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
-import QueryDataSource from '../datasource/datasource';
-import { QueryOption } from '../typings/config';
-import { IQueryConfig, QueryData } from '../typings/datasource';
+import type { QueryOption } from '../typings/config';
+import type { IQueryConfig, QueryData } from '../typings/datasource';
 import {
-  EditMode,
-  EditorStatus,
-  IConditionItem,
-  IExpresionItem,
-  IFunctionItem,
-  IMetric,
-  ITargetData,
-  ITargetItem,
-  IntervalType,
+  type EditMode,
+  type EditorStatus,
+  type IConditionItem,
+  type IExpresionItem,
+  type IFunctionItem,
+  type IMetric,
+  type ITargetData,
+  type ITargetItem,
+  type IntervalType,
   MetricDetail,
   TARGET_TYPE,
 } from '../typings/metric';
 import { handleTransformOldQuery } from '../utils/common';
 import { LanguageContext } from '../utils/context';
-import { getCookie, getEnByName } from '../utils/utils';
-import AddvanceSetting, { AddvanceSettingKey } from './addvance-setting';
+import { language, t } from 'common/utils/utils';
+import AddvanceSetting, { type AddvanceSettingKey } from './addvance-setting';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
 import DimensionInput from './dimension-input';
@@ -65,13 +64,15 @@ import PromqlEditor from './promql-editor';
 import QueryFormula from './query-formula';
 import TargetInput from './target-input';
 
+import type QueryDataSource from '../datasource/datasource';
+
 const refLetters = 'abcdefghijklmnopqrstuvwxyz';
 export type Writeable<T> = { -readonly [P in keyof T]: T[P] };
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 export enum SearcState {
-  'auto' = 'auto',
-  'deafult' = 'deafult',
-  'loading' = 'loading',
+  auto = 'auto',
+  deafult = 'deafult',
+  loading = 'loading',
 }
 interface IQueryEditorState {
   cluster: ITargetItem[];
@@ -93,6 +94,7 @@ interface IQueryEditorState {
   // onlyPromql: boolean;
   step: string;
   type: string;
+  enableDownSampling: boolean;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
@@ -129,6 +131,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         },
       ];
     }
+    const stateMode = only_promql || mode === 'code' ? 'code' : 'ui';
+    let enableDownSampling = query.enableDownSampling;
+    if (enableDownSampling === undefined) {
+      enableDownSampling = stateMode !== 'code';
+    }
     this.state = {
       cluster,
       editorStatus: 'default',
@@ -138,15 +145,16 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       host,
       inited: false,
       isTranform: false,
-      language: getCookie('blueking_language'),
+      language: language,
       loading: true,
       metricList: [{} as any],
-      mode: only_promql || mode === 'code' ? 'code' : 'ui',
+      mode: stateMode,
       module,
       promqlAlias: promqlAlias || alias,
       searchState: SearcState.deafult,
       source,
       step,
+      enableDownSampling,
       type: query.type ?? 'range',
     };
     this.initState(query);
@@ -185,20 +193,20 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         <div className='query-editor-content'>
           <EditorForm
             labelStyle={{ paddingRight: '16px' }}
-            tips={getEnByName('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language)}
-            title={getEnByName('表达式', language)}
+            tips={t('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language)}
+            title={t('表达式', language)}
           >
             <AliasInput
               key={item.expression.length ? 'empty' : 'value'}
               style={{ minWidth: '288px' }}
               inputProps={{
                 defaultValue: item.expression,
-                placeholder: getEnByName('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language),
+                placeholder: t('支持四则运算 + - * / % ^ ( ) ,如(A+B)/100', language),
               }}
               onChange={v => this.handleExpressionChange(v, index)}
             />
           </EditorForm>
-          <EditorForm title={getEnByName('函数', language)}>
+          <EditorForm title={t('函数', language)}>
             <>
               {item.functions?.map((funtion, i) => (
                 <FunctionInput
@@ -217,7 +225,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               />
             </>
           </EditorForm>
-          <EditorForm title={getEnByName('别名', language)}>
+          <EditorForm title={t('别名', language)}>
             <AliasInput
               inputProps={{ defaultValue: item.alias }}
               onChange={v => this.handleExpressionAliasChange(v, index)}
@@ -234,9 +242,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             onClick={() => this.handleExpressionChecked(index)}
           >
             {item.active ? (
-              <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
+              <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z' />
             ) : (
-              <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z'></path>
+              <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z' />
             )}
           </svg>
           <svg
@@ -390,7 +398,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(e => {
             Message.error({
               duration: 10,
-              message: e.message || getEnByName('转换失败', this.state.language),
+              message: e.message || t('转换失败', this.state.language),
             });
             hasError = true;
             return '';
@@ -866,9 +874,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   transfromModeComp = (state?: LoadingState) => {
     const isLoading = state === LoadingState.Loading;
     const { mode, searchState } = this.state;
-    let btnText = getEnByName('查询');
-    if (isLoading) btnText = getEnByName('查询中...');
-    else if (searchState === SearcState.auto) btnText = getEnByName('自动查询');
+    let btnText = t('查询');
+    if (isLoading) btnText = t('查询中...');
+    else if (searchState === SearcState.auto) btnText = t('自动查询');
     return (
       <div className='transform-mode'>
         {mode === 'code' && (
@@ -942,7 +950,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     return letter;
   }
   handleGetQueryData(metricList: MetricDetail[]) {
-    const { cluster, expressionList, host, module, promqlAlias } = this.state;
+    const { cluster, expressionList, host, module, promqlAlias, enableDownSampling } = this.state;
     // const curExpression = typeof expression === 'undefined' ? this.state.expression : expression;
     // const curDisplay = typeof display === 'undefined' ? this.state.display : display;
     return {
@@ -957,6 +965,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       host,
       module,
       promqlAlias,
+      enableDownSampling,
       query_configs: metricList
         .filter(item => item.metricMetaId)
         .map(item => {
@@ -1191,7 +1200,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                 <EditorForm
                                   style={{ flex: 1 }}
                                   tips='metric'
-                                  title={getEnByName('指标', language)}
+                                  title={t('指标', language)}
                                 >
                                   <MetricInput
                                     datasource={this.props.datasource}
@@ -1203,7 +1212,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                   <>
                                     <EditorForm
                                       tips='formula'
-                                      title={getEnByName('汇聚', language)}
+                                      title={t('汇聚', language)}
                                     >
                                       <QueryFormula
                                         metric={item}
@@ -1212,7 +1221,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       tips='interval'
-                                      title={getEnByName('周期', language)}
+                                      title={t('周期', language)}
                                     >
                                       <IntervalInput
                                         metric={item}
@@ -1222,7 +1231,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       tips='tag'
-                                      title={getEnByName('维度', language)}
+                                      title={t('维度', language)}
                                     >
                                       <DimensionInput
                                         metric={item}
@@ -1231,7 +1240,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                     </EditorForm>
                                     <EditorForm
                                       style={{ marginBottom: '0px' }}
-                                      title={getEnByName('条件', language)}
+                                      title={t('条件', language)}
                                     >
                                       <ConditionInput
                                         datasource={this.props.datasource}
@@ -1241,7 +1250,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         }
                                       />
                                     </EditorForm>
-                                    <EditorForm title={getEnByName('函数', language)}>
+                                    <EditorForm title={t('函数', language)}>
                                       <>
                                         {item.functions?.map((funtion, i) => (
                                           <FunctionInput
@@ -1261,7 +1270,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                                         />
                                       </>
                                     </EditorForm>
-                                    <EditorForm title={getEnByName('别名', language)}>
+                                    <EditorForm title={t('别名', language)}>
                                       <AliasInput
                                         metric={item}
                                         onChange={v => this.handleAliasChange(v, index)}
@@ -1312,9 +1321,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               onClick={() => this.handleSetMetricDisplay(index)}
                             >
                               {item.display ? (
-                                <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z'></path>
+                                <path d='M21.92,11.6C19.9,6.91,16.1,4,12,4S4.1,6.91,2.08,11.6a1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20s7.9-2.91,9.92-7.6A1,1,0,0,0,21.92,11.6ZM12,18c-3.17,0-6.17-2.29-7.9-6C5.83,8.29,8.83,6,12,6s6.17,2.29,7.9,6C18.17,15.71,15.17,18,12,18ZM12,8a4,4,0,1,0,4,4A4,4,0,0,0,12,8Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,14Z' />
                               ) : (
-                                <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z'></path>
+                                <path d='M10.94,6.08A6.93,6.93,0,0,1,12,6c3.18,0,6.17,2.29,7.91,6a15.23,15.23,0,0,1-.9,1.64,1,1,0,0,0-.16.55,1,1,0,0,0,1.86.5,15.77,15.77,0,0,0,1.21-2.3,1,1,0,0,0,0-.79C19.9,6.91,16.1,4,12,4a7.77,7.77,0,0,0-1.4.12,1,1,0,1,0,.34,2ZM3.71,2.29A1,1,0,0,0,2.29,3.71L5.39,6.8a14.62,14.62,0,0,0-3.31,4.8,1,1,0,0,0,0,.8C4.1,17.09,7.9,20,12,20a9.26,9.26,0,0,0,5.05-1.54l3.24,3.25a1,1,0,0,0,1.42,0,1,1,0,0,0,0-1.42Zm6.36,9.19,2.45,2.45A1.81,1.81,0,0,1,12,14a2,2,0,0,1-2-2A1.81,1.81,0,0,1,10.07,11.48ZM12,18c-3.18,0-6.17-2.29-7.9-6A12.09,12.09,0,0,1,6.8,8.21L8.57,10A4,4,0,0,0,14,15.43L15.59,17A7.24,7.24,0,0,1,12,18Z' />
                               )}
                             </svg>
                             <svg
@@ -1325,7 +1334,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                               // style={{ display: metricList.length < 2 ? 'none' : 'flex' }}
                               onClick={() => this.handleCopyMetric(index)}
                             >
-                              <path d='M21,8.94a1.31,1.31,0,0,0-.06-.27l0-.09a1.07,1.07,0,0,0-.19-.28h0l-6-6h0a1.07,1.07,0,0,0-.28-.19.32.32,0,0,0-.09,0A.88.88,0,0,0,14.05,2H10A3,3,0,0,0,7,5V6H6A3,3,0,0,0,3,9V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V18h1a3,3,0,0,0,3-3V9S21,9,21,8.94ZM15,5.41,17.59,8H16a1,1,0,0,1-1-1ZM15,19a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9A1,1,0,0,1,6,8H7v7a3,3,0,0,0,3,3h5Zm4-4a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1V5a1,1,0,0,1,1-1h3V7a3,3,0,0,0,3,3h3Z'></path>
+                              <path d='M21,8.94a1.31,1.31,0,0,0-.06-.27l0-.09a1.07,1.07,0,0,0-.19-.28h0l-6-6h0a1.07,1.07,0,0,0-.28-.19.32.32,0,0,0-.09,0A.88.88,0,0,0,14.05,2H10A3,3,0,0,0,7,5V6H6A3,3,0,0,0,3,9V19a3,3,0,0,0,3,3h8a3,3,0,0,0,3-3V18h1a3,3,0,0,0,3-3V9S21,9,21,8.94ZM15,5.41,17.59,8H16a1,1,0,0,1-1-1ZM15,19a1,1,0,0,1-1,1H6a1,1,0,0,1-1-1V9A1,1,0,0,1,6,8H7v7a3,3,0,0,0,3,3h5Zm4-4a1,1,0,0,1-1,1H10a1,1,0,0,1-1-1V5a1,1,0,0,1,1-1h3V7a3,3,0,0,0,3,3h3Z' />
                             </svg>
                             <svg
                               width='200'
@@ -1352,9 +1361,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onBlur={this.handleSourceBlur}
                     />
                     {/* <div>
-                          <EditorForm title={getEnByName('别名', language)}>
+                          <EditorForm title={t('别名', language)}>
                             <AliasInput style={{ width: '288px', height: '32px' }} inputProps={{ defaultValue: promqlAlias }} onChange={this.handleAllAliasChange} />
-                            <EditorForm title={getEnByName('Step', language)}>
+                            <EditorForm title={t('Step', language)}>
                               <AliasInput style={{ width: '88px' }} inputProps={{ defaultValue: step, placeholder: 'auto' }} onChange={this.handleProStepChange} />
                             </EditorForm>
                           </EditorForm>
@@ -1364,8 +1373,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 {mode !== 'code' && metricList.some(item => item.metricMetaId) ? (
                   <EditorForm
                     style={{ marginLeft: metricList.length > 1 && mode === 'ui' ? '34px' : '0px' }}
-                    tips={getEnByName('维度中有目标IP和云区域ID才会生效', language)}
-                    title={getEnByName('目标', language)}
+                    tips={t('维度中有目标IP和云区域ID才会生效', language)}
+                    title={t('目标', language)}
                   >
                     <TargetInput
                       cluster={cluster}
@@ -1387,7 +1396,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         type='default'
                         onClick={this.handleAddEmptyMetric}
                       >
-                        {getEnByName('多指标', language)}
+                        {t('多指标', language)}
                       </Button>
                     }
                     {
@@ -1398,7 +1407,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         type='default'
                         onClick={this.handleAddExpression}
                       >
-                        {getEnByName('表达式', language)}
+                        {t('表达式', language)}
                       </Button>
                     }
                     {/* <Button
@@ -1407,12 +1416,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                         style={{ marginLeft: '10px', display: 'none' }}
                         onClick={this.handleTransformMode}
                       >
-                        {getEnByName(mode === 'code' ? 'UI' : 'Source', language)}
+                        {t(mode === 'code' ? 'UI' : 'Source', language)}
                       </Button> */}
                   </>
                 ) : undefined}
                 {
                   <AddvanceSetting
+                    enableDownSampling={this.state.enableDownSampling}
                     format={this.state.format}
                     mode={mode}
                     promqlAlias={promqlAlias}

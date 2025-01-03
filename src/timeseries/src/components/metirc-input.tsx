@@ -30,7 +30,6 @@
 import CloseCircleFilled from '@ant-design/icons/CloseCircleFilled';
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
 import SyncOutlined from '@ant-design/icons/SyncOutlined';
-import Button from 'antd/es/button';
 import Checkbox from 'antd/es/checkbox';
 import Input from 'antd/es/input';
 import Message from 'antd/es/message';
@@ -39,12 +38,13 @@ import Popover from 'antd/es/popover';
 import Spin from 'antd/es/spin';
 import Tabs from 'antd/es/tabs';
 import Tooltip from 'antd/es/tooltip';
-import DashboardDatasource from 'datasource/datasource';
 import React from 'react';
 
-import { IMetric, MetricDetail } from '../typings/metric';
+import type { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { createMetricTitleTooltips, getEnByName, random } from '../utils/utils';
+import { createMetricTitleTooltips, t, random } from 'common/utils/utils';
+
+import type DashboardDatasource from 'datasource/datasource';
 let interval: any = null;
 const { TabPane } = Tabs;
 export enum MetricInputMode {
@@ -265,7 +265,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const [resultTableId, metricField] = this.state.keyword.split('.');
     if (!resultTableId || !metricField || !/^[_a-zA-Z][a-zA-Z0-9_]*$/.test(metricField)) {
       Message.error({
-        content: getEnByName('自定义指标格式错误'),
+        content: t('自定义指标格式错误'),
         duration: 3,
       });
       return;
@@ -281,7 +281,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         this.handleVisibleChange(false);
       })
       .catch(e => {
-        Message.error({ content: e?.data?.message || getEnByName('添加自定义指标失败'), duration: 3 });
+        Message.error({ content: e?.data?.message || t('添加自定义指标失败'), duration: 3 });
       });
   };
   /**
@@ -508,7 +508,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
         >
           {isSelectedMetric && (
             <div className='metric-selected'>
-              <span className='metric-selected-lable'>{getEnByName('已选')}</span>
+              <span className='metric-selected-lable'>{t('已选')}</span>
             </div>
           )}
           <div className='metric-item-title'>
@@ -525,7 +525,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
               {isSelectedMetric ? metric.titleAlias : this.getSearchNode(metric.titleAlias)}
             </div>
             {this.props.mode !== MetricInputMode.COPY && (
-              <Tooltip title={getEnByName('复制指标名')}>
+              <Tooltip title={t('复制指标名')}>
                 <span
                   style={{ visibility: metric.showTool ? 'visible' : 'hidden' }}
                   className='copy-icon'
@@ -538,7 +538,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     viewBox='0 0 1024 1024'
                     xmlns='http://www.w3.org/2000/svg'
                   >
-                    <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                    <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z' />
                   </svg>
                 </span>
               </Tooltip>
@@ -561,7 +561,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
             ref={this.inputRef}
             allowClear={true}
             autoFocus={true}
-            placeholder={getEnByName('搜索指标')}
+            placeholder={t('搜索指标')}
             value={keyword}
             onChange={this.handleSearch}
             onFocus={this.handInputFocus}
@@ -584,7 +584,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 <TabPane
                   key={item.id}
                   tab={<span className='tab-tag'>{item.name}</span>}
-                ></TabPane>
+                />
               ))}
             </Tabs>
           )}
@@ -625,27 +625,27 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                           cy='33'
                           rx='32'
                           ry='7'
-                        ></ellipse>
+                        />
                         <g
                           className='ant-empty-img-simple-g'
                           fillRule='nonzero'
                         >
-                          <path d='M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z'></path>
+                          <path d='M55 12.76L44.854 1.258C44.367.474 43.656 0 42.907 0H21.093c-.749 0-1.46.474-1.947 1.257L9 12.761V22h46v-9.24z' />
                           <path
                             className='ant-empty-img-simple-path'
                             d='M41.613 15.931c0-1.605.994-2.93 2.227-2.931H55v18.137C55 33.26 53.68 35 52.05 35h-40.1C10.32 35 9 33.259 9 31.137V13h11.16c1.233 0 2.227 1.323 2.227 2.928v.022c0 1.605 1.005 2.901 2.237 2.901h14.752c1.232 0 2.237-1.308 2.237-2.913v-.007z'
-                          ></path>
+                          />
                         </g>
                       </g>
                     </svg>
                   </div>
-                  <div className='empty-content-title'>{getEnByName('搜索结果为空')}</div>
-                  <div className='empty-content-subtitle'>{getEnByName('你可以将该搜索内容直接自定义为指标选项')}</div>
+                  <div className='empty-content-title'>{t('搜索结果为空')}</div>
+                  <div className='empty-content-subtitle'>{t('你可以将该搜索内容直接自定义为指标选项')}</div>
                   <span
                     className='text-btn'
                     onClick={this.handleAddCustomMetric}
                   >
-                    {getEnByName('生成自定义指标')}
+                    {t('生成自定义指标')}
                   </span>
                   {/* <div className='empty-content-subtitle'>
                   <div>指标显示是基于实际的数据上报</div>
@@ -653,7 +653,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 </div> */}
                 </div>
               )}
-              {showAllTotal && <div className='all-data'>{getEnByName('已加载全部数据')}</div>}
+              {showAllTotal && <div className='all-data'>{t('已加载全部数据')}</div>}
               {this.state.moreLoading && (
                 <Spin
                   indicator={
@@ -663,7 +663,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     />
                   }
                   className='more-loading'
-                ></Spin>
+                />
               )}
             </ul>
             <div className='content-tag'>
@@ -680,9 +680,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const { datasourceLabel, resultTableLabel } = this.state;
     return (
       <>
-        <div className='content-tag-title'>
-          {dataType === 'scenario' ? getEnByName('监控对象') : getEnByName('采集来源')}
-        </div>
+        <div className='content-tag-title'>{dataType === 'scenario' ? t('监控对象') : t('采集来源')}</div>
         <ul className='content-tag-list'>
           {list.map(item => (
             <Checkbox
@@ -718,7 +716,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     selection?.removeAllRanges();
     selection?.addRange(range);
     Message.success({
-      content: getEnByName('复制成功'),
+      content: t('复制成功'),
       duration: 3,
     });
     document.execCommand('copy');
@@ -758,7 +756,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
             >
               {this.props.mode === MetricInputMode.COPY ? (
                 <div className='copy-mode-input'>
-                  {getEnByName('指标选择')}
+                  {t('指标选择')}
                   <i className='fa fa-angle-down' />
                 </div>
               ) : (
@@ -775,7 +773,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                     placement='right'
                   >
                     <span className='mitric-input-name'>
-                      {needPlaceholder ? getEnByName('选择指标') : this.displayRender()}
+                      {needPlaceholder ? t('选择指标') : this.displayRender()}
                       {this.props.metric?.metric_field
                         ? [
                             <svg
@@ -787,7 +785,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                               xmlns='http://www.w3.org/2000/svg'
                               onClick={e => this.handleCopyMetric(this.props.metric as any, e)}
                             >
-                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z'></path>
+                              <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z' />
                             </svg>,
                             <span
                               id={this.props.metric.metric_id}

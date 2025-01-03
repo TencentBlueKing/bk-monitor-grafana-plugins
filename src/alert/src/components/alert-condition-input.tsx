@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 /*
  * Tencent is pleased to support the open source community by making
@@ -32,11 +33,12 @@ import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
 import React from 'react';
 
-import DataSource from '../datasource/datasource';
 import { DIM_NULL_ID } from '../typings/datasource';
-import { ICommonItem, IConditionItem, CONDITION, ALERT_CONDITION_METHOD_LIST } from '../typings/metric';
+import { type ICommonItem, type IConditionItem, CONDITION, ALERT_CONDITION_METHOD_LIST } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
-import { getEnByName } from '../utils/utils';
+import { t } from 'common/utils/utils';
+
+import type DataSource from '../datasource/datasource';
 const { Option } = Select;
 export interface IProps {
   dimensions: ICommonItem[];
@@ -288,7 +290,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                           onClick={(): void => this.handleDeleteKey(index)}
                         >
                           <CloseCircleOutlined style={{ marginRight: '5px' }} />
-                          {getEnByName('删除', language)}
+                          {t('删除', language)}
                         </div>
                       </div>
                     ) : (
@@ -300,29 +302,26 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                   defaultOpen={item.key === ''}
                   defaultValue={item.key || ''}
                   dropdownMatchSelectWidth={140}
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   showSearch
                   onChange={(v: string) => this.handleKeyChange(v, index)}
                   onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                   onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
                 >
-                  {dimensions?.map(
-                    dim =>
-                      (
-                        <Option
-                          key={dim.id}
-                          value={dim.id}
-                        >
-                          <Tooltip
-                            placement='right'
-                            title={dim.id}
-                          >
-                            <div>{dim.name || dim.id}</div>
-                          </Tooltip>
-                        </Option>
-                      ) || undefined,
-                  )}
+                  {dimensions?.map(dim => (
+                    <Option
+                      key={dim.id}
+                      value={dim.id}
+                    >
+                      <Tooltip
+                        placement='right'
+                        title={dim.id}
+                      >
+                        <div>{dim.name || dim.id}</div>
+                      </Tooltip>
+                    </Option>
+                  ))}
                 </Select>
               ) : (
                 <span
@@ -362,7 +361,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                   defaultValue={item.value}
                   dropdownMatchSelectWidth={true}
                   mode='tags'
-                  placeholder={getEnByName('请选择', language)}
+                  placeholder={t('请选择', language)}
                   showArrow={false}
                   onChange={v => this.handleValueChange(v, index)}
                 >
@@ -371,7 +370,7 @@ export default class AlertConditionInput extends React.PureComponent<IProps, ISt
                       key={DIM_NULL_ID}
                       value={DIM_NULL_ID}
                     >
-                      {getEnByName('- 空 -')}
+                      {t('- 空 -')}
                     </Option>
                   )}
                   {dimensionValueMap[item.key]?.map?.(dim => (

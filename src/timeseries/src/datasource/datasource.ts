@@ -27,29 +27,29 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   ArrayVector,
-  BootData,
-  DataFrame,
-  DataQueryRequest,
-  DataQueryResponse,
+  type BootData,
+  type DataFrame,
+  type DataQueryRequest,
+  type DataQueryResponse,
   DataSourceApi,
-  DataSourceInstanceSettings,
-  Field,
+  type DataSourceInstanceSettings,
+  type Field,
   FieldType,
-  ScopedVar,
-  ScopedVars,
+  type ScopedVar,
+  type ScopedVars,
   TIME_SERIES_TIME_FIELD_NAME,
   TIME_SERIES_VALUE_FIELD_NAME,
-  TimeRange,
+  type TimeRange,
 } from '@grafana/data';
-import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import apiCacheInstance from 'common/utils/api-cache';
 
-import { QueryOption } from '../typings/config';
-import { DIM_NULL_ID, IQueryConfig, QueryData } from '../typings/datasource';
-import { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
-import { K8sVariableQueryType, ScenarioType, VariableQuery, VariableQueryType } from '../typings/variable';
-import apiCacheInstance from '../utils/api-cache';
+import type { QueryOption } from '../typings/config';
+import { DIM_NULL_ID, type IQueryConfig, type QueryData } from '../typings/datasource';
+import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
+import { type K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
-import { random } from '../utils/utils';
+import { random } from 'common/utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
   series: Array<{
@@ -105,7 +105,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public useToken: boolean;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
-    this.url = instanceSettings.url!;
+    this.url = instanceSettings.url || '';
     this.configData = instanceSettings?.jsonData;
     this.baseUrl = instanceSettings?.jsonData?.baseUrl || '';
     this.useToken = instanceSettings?.jsonData?.useToken || false;
@@ -248,7 +248,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       ...this.createScopedVariables(dimensions_translation || {}, 'dimensions_translation', 'trans_'),
       ...this.createScopedVariables(metric || {}, 'metric', 'metric_'),
     };
-    console.info(monitorScopedVars);
     return getTemplateSrv().replace(alias, monitorScopedVars);
   }
   buildFetchSeries(
@@ -363,6 +362,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public buildWhereVariables(values: string | string[], scopedVars: ScopedVars | undefined) {
     const valList: string[] = [];
     Array.isArray(values) &&
+      // biome-ignore lint/complexity/noForEach: <explanation>
       values.forEach(val => {
         if (val === DIM_NULL_ID) {
           valList.push('');
@@ -388,6 +388,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   }
   formatHeatmap(series, hasVariateAlias, aliasData, alias, scopedVars, metric, refId) {
     const dataFrame: DataFrame[] = [];
+    // biome-ignore lint/complexity/noForEach: <explanation>
     series.forEach(sere => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
@@ -395,6 +396,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
       if (!sere.unit || sere.unit === 'none') {
+        // biome-ignore lint/performance/noDelete: <explanation>
         delete sere.unit;
       }
       const newSere = {
@@ -451,8 +453,10 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       type: FieldType;
       values: ArrayVector;
     }> = [];
+    // biome-ignore lint/complexity/noForEach: <explanation>
     series.forEach(sere => {
       if (sere.dimensions) {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         Object.keys(sere.dimensions)
           .filter(key => !dimensionFields.some(item => item.name === key))
           .forEach(key => {
@@ -465,6 +469,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           });
       }
     });
+    // biome-ignore lint/complexity/noForEach: <explanation>
     series.forEach(sere => {
       // 兼容老版本变量设置
       if (hasVariateAlias) {
@@ -472,6 +477,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
       if (!sere.unit || sere.unit === 'none') {
+        // biome-ignore lint/performance/noDelete: <explanation>
         delete sere.unit;
       }
       const newSere = {
@@ -481,9 +487,11 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           : alias || sere.target,
       };
       ValueField.config.unit = newSere.unit;
+      // biome-ignore lint/complexity/noForEach: <explanation>
       newSere.datapoints.forEach(v => {
         TimeField.values.add(v[1]);
         ValueField.values.add(v[0]);
+        // biome-ignore lint/complexity/noForEach: <explanation>
         dimensionFields?.forEach(dimensionFiled => {
           const dimValue = newSere.dimensions[dimensionFiled.name];
           if (typeof dimValue !== 'undefined') {
@@ -507,6 +515,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         aliasData.target_instance = sere.dimensions.bk_inst_name;
       }
       if (!sere.unit || sere.unit === 'none') {
+        // biome-ignore lint/performance/noDelete: <explanation>
         delete sere.unit;
       }
       const target = hasVariateAlias
@@ -670,7 +679,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   }
   handleGetPromqlConfig(config: IQueryConfig) {
     const logParam = config.data_source_label === 'bk_log_search' ? { index_set_id: config.index_set_id || '' } : {};
-    const interval = this.replaceInterval(config.interval, config.interval_unit);
+    const interval = this.replaceInterval(config.interval, config.interval_unit, {});
     return {
       agg_condition: config.where?.filter?.(item => item.key && item.value?.length) || [],
       agg_dimension: config.group_by,
@@ -713,7 +722,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             })),
           })) || [],
       group_by: (config.group_by || []).map(set => getTemplateSrv().replace(set, scopedVars)),
-      interval: this.replaceInterval(config.interval, config.interval_unit),
+      interval: this.replaceInterval(config.interval, config.interval_unit, scopedVars),
       interval_unit: 's',
       metrics: [{ alias: config.refId || 'a', field: config.metric_field, method: config.method }],
       table: config.result_table_id,
@@ -730,12 +739,15 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       return [];
     }
 
+    // biome-ignore lint/style/noNonNullAssertion: <explanation>
     const timeField = frames[0].fields.find(field => field.type === FieldType.time)!;
     const countFields = frames.map(frame => {
+      // biome-ignore lint/style/noNonNullAssertion: <explanation>
       const field = frame.fields.find(field => field.type === FieldType.number)!;
 
       return {
         ...field,
+        // biome-ignore lint/style/noNonNullAssertion: <explanation>
         name: field.config.displayNameFromDS! ?? TIME_SERIES_VALUE_FIELD_NAME,
       };
     });
@@ -844,12 +856,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     });
     const promiseList: Array<Promise<any>> = [];
     let errorMsg = '';
+    // biome-ignore lint/complexity/noForEach: <explanation>
     queryList.forEach((item: QueryData) => {
       const configList: Array<{
         config: IQueryConfig;
       }> = [];
       // 指标数据请求
       if (item?.mode !== 'code') {
+        // biome-ignore lint/complexity/noForEach: <explanation>
         item.query_configs?.forEach(config => {
           const queryConfig = this.handleGetQueryConfig(config, options.scopedVars);
           if (config.display) {
@@ -858,7 +872,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               this.request({
                 data: {
                   display: config.display,
-                  down_sample_range,
+                  down_sample_range: item.enableDownSampling !== false ? down_sample_range : undefined,
                   end_time: options.range.to.unix(),
                   expression: config.refId || '',
                   format: item.format,
@@ -876,7 +890,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 )
                 .catch(e => {
                   console.error(e);
-                  errorMsg += e.data?.message || 'query error';
+                  errorMsg += e.message || e.data?.message || 'query error';
                   return [];
                 }),
             );
@@ -893,7 +907,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         if (item.mode === 'code' || item.only_promql) {
           const params = {
             data: {
-              down_sample_range,
+              down_sample_range: item.enableDownSampling === true ? down_sample_range : undefined, // promql 原来默认是不开启的
               end_time: options.range.to.unix(),
               format: item.format,
               promql: this.buildPromqlVariables(item.source!, {
@@ -913,25 +927,26 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 this.buildFetchSeries(
                   data,
                   options.scopedVars,
-                  item.mode === 'code' ? item.promqlAlias || item.alias : item.alias,
-                  null,
+                  item.mode === 'code' ? item.promqlAlias || item.alias || '' : item.alias || '',
+                  undefined,
                   item,
                 ),
               )
               .catch(e => {
                 console.error(e);
-                errorMsg += e.data?.message || 'query error';
+                errorMsg += e.message || e.data?.message || 'query error';
                 return [];
               }),
           );
         } else {
-          const { cluster, expressionList, host, module } = item;
+          const { cluster, expressionList, host, module, enableDownSampling } = item;
+          // biome-ignore lint/complexity/noForEach: <explanation>
           expressionList?.forEach(exp => {
             if (exp.expression && exp.active) {
               const p = {
                 data: {
                   display: exp.active,
-                  down_sample_range,
+                  down_sample_range: enableDownSampling !== false ? down_sample_range : undefined,
                   end_time: options.range.to.unix(),
                   expression: exp.expression,
                   format: item.format,
@@ -950,7 +965,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                   .then(data => this.buildFetchSeries(data, options.scopedVars, exp.alias, null, item, true))
                   .catch(e => {
                     console.error(e);
-                    errorMsg += e.data?.message || 'query error';
+                    errorMsg += e.message || e.data?.message || 'query error';
                     return [];
                   }),
               );
@@ -1058,32 +1073,35 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    * @param unit 单位
    * @returns {number} 转换后的汇聚周期 单位固定 s
    */
-  replaceInterval(inter: IntervalType, unit: string) {
+  replaceInterval(inter: IntervalType, unit: string, scopedVars: ScopedVars) {
     let interval: number | string = inter;
     if (typeof interval === 'string' && interval !== 'auto') {
-      interval = +getTemplateSrv()
-        .replace(interval)
-        .replace(/(\d+)(.*)/, (match: string, p1: string, p2: string) => {
-          let str: number | string = p1 || '10';
-          switch (p2) {
-            case 'm':
-              str = +p1 * 60;
-              break;
-            case 'h':
-              str = +p1 * 60 * 60;
-              break;
-            case 'd':
-              str = +p1 * 60 * 60 * 24;
-              break;
-            case 'w':
-              str = +p1 * 60 * 60 * 24 * 7;
-              break;
-            default:
-              str = (+p1 || 10) * (unit === 'm' ? 60 : 1);
-              break;
-          }
-          return str.toString();
-        });
+      const intervalStr = getTemplateSrv().replace(interval, scopedVars);
+      if (['$__interval_ms'].includes(interval)) {
+        // ms 转换为 s
+        return +intervalStr / 1000;
+      }
+      interval = +intervalStr.replace(/(\d+)(.*)/, (match: string, p1: string, p2: string) => {
+        let str: number | string = p1 || '10';
+        switch (p2) {
+          case 'm':
+            str = +p1 * 60;
+            break;
+          case 'h':
+            str = +p1 * 60 * 60;
+            break;
+          case 'd':
+            str = +p1 * 60 * 60 * 24;
+            break;
+          case 'w':
+            str = +p1 * 60 * 60 * 24 * 7;
+            break;
+          default:
+            str = (+p1 || 10) * (unit === 'm' ? 60 : 1);
+            break;
+        }
+        return str.toString();
+      });
     } else if (typeof interval === 'number') {
       if (unit === 'm') {
         interval = interval * 60;

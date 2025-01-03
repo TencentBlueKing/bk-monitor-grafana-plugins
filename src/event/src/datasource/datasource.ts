@@ -27,20 +27,20 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import {
-  DataQueryRequest,
-  DataQueryResponse,
+  type DataQueryRequest,
+  type DataQueryResponse,
   DataSourceApi,
-  DataSourceInstanceSettings,
-  ScopedVars,
+  type DataSourceInstanceSettings,
+  type ScopedVars,
 } from '@grafana/data';
-import { BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
+import apiCacheInstance from 'common/utils/api-cache';
 
-import { QueryOption } from '../typings/config';
-import { IQueryConfig, QueryData } from '../typings/datasource';
-import { IMetric } from '../typings/metric';
-import { VariableQuery, VariableQueryType } from '../typings/variable';
-import apiCacheInstance from '../utils/api-cache';
-import { random } from '../utils/utils';
+import type { QueryOption } from '../typings/config';
+import type { IQueryConfig, QueryData } from '../typings/datasource';
+import type { IMetric } from '../typings/metric';
+import { type VariableQuery, VariableQueryType } from '../typings/variable';
+import { random } from 'common/utils/utils';
 interface QueryFetchData {
   metrics: IMetric[];
   series: {

@@ -235,9 +235,9 @@ export const STRING_CONDITION_METHOD_LIST = [
 ];
 // 监控目标类型
 export enum TARGET_TYPE {
-  'HOST' = 'HOST',
-  'NONE' = 'NONE',
-  'SERVICE_INSTANCE' = 'SERVICE_INSTANCE',
+  HOST = 'HOST',
+  NONE = 'NONE',
+  SERVICE_INSTANCE = 'SERVICE_INSTANCE',
 }
 // 监控条件 设置条件
 export const CONDITION = [

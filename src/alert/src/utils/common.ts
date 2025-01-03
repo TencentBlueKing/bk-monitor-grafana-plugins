@@ -23,7 +23,7 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import { VariableQuery } from '../typings/variable';
+import type { VariableQuery } from '../typings/variable';
 /**
  * @description: 转换旧版本查询
  * @param {any} data 旧版本数据
@@ -38,7 +38,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
   let metricConfig: any = {};
   if (data.dimensionData) {
     const { metric, conditions, dimensions, monitorObject } = data.dimensionData;
-    const [dataSourceTypeLabel, , resultTableId, metricField] = metric?.id;
+    const [dataSourceTypeLabel, , resultTableId, metricField] = metric.id;
     const dataSourceLabel = dataSourceTypeLabel?.replace(/(_|\.)(log|event|time_series)$/, '') || '';
     metricConfig = {
       data_source_label: dataSourceLabel,
@@ -50,7 +50,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
         item.reduce((pre, cur) => {
           pre[cur.type] = cur.value;
           return pre;
-        }, {}),
+        }, {})
       ),
       group_by: typeof dimensions === 'string' ? [dimensions] : dimensions,
     };
@@ -64,7 +64,7 @@ export const handleTransformOldVariableQuery = (data: any) => {
         item.reduce((pre, cur) => {
           pre[cur.type] = cur.value;
           return pre;
-        }, {}),
+        }, {})
       ) || [],
     variables: data.variables,
     metricConfig,
