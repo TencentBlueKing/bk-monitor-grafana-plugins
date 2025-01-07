@@ -402,7 +402,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             url,
           })
             .then((data: QueryFetchData) =>
-              isTableQuery ? data : this.buildFetchSeries(data, options.scopedVars, config.alias, config),
+              isTableQuery
+                ? data?.map(item => ({
+                    ...item,
+                    rows: item?.rows?.map(row => (row?.length ? [row[0] * 1000, ...row.slice(1)] : row)),
+                  }))
+                : this.buildFetchSeries(data, options.scopedVars, config.alias, config),
             )
             .catch(() => []),
         );
