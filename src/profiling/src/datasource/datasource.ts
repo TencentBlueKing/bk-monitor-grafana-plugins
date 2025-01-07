@@ -125,8 +125,8 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
         data: {
           bk_biz_id: this.bizId,
-          app_name: target.app_name,
-          service_name: target.service_name,
+          app_name: getTemplateSrv().replace(target.app_name),
+          service_name: getTemplateSrv().replace(target.service_name),
           data_type: target.profile_type,
           profile_id: target.profile_id,
           offset: target.offset,

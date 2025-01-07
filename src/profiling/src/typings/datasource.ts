@@ -27,8 +27,8 @@ import type { DataQuery } from '@grafana/schema';
 
 import type { IConditionItem } from './metric';
 export interface ProfilingQuery extends DataQuery {
-  app_name: number | string;
-  service_name: number | string;
+  app_name: string;
+  service_name: string;
   profile_type: string;
   profile_id: number;
   offset: number;
