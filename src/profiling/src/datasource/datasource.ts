@@ -31,6 +31,7 @@ import {
   type DataQueryResponse,
   DataSourceApi,
   type DataSourceInstanceSettings,
+  LoadingState,
   toDataFrame,
 } from '@grafana/data';
 import {
@@ -95,7 +96,12 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
               }
               subscriber.next({ data: [toDataFrame(events)] });
             })
-            .catch(err => subscriber.error(err))
+            .catch(e => {
+              return subscriber.error({
+                state: LoadingState.Error,
+                message: e?.message || e?.error_details?.overview || '请求失败',
+              });
+            })
             .finally(() => subscriber.complete());
         }),
       );
