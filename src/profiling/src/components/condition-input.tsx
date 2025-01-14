@@ -155,9 +155,15 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
     onChange(param);
   };
 
-  const handleValueConditionKeyDown = e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
+  const handleValueConditionKeyDown = (e, index: number, list: ICommonItem[]) => {
+    if (
+      e.key === 'Enter' &&
+      e.target.value &&
+      !list?.some(item => item.id === e.target.value || item.name === e.target.value)
+    ) {
+      const dimension = e.target.value;
+      list.push({ id: dimension, name: dimension });
+      handleValueChange(e.target.value, index);
     }
   };
 
@@ -295,7 +301,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                 showArrow={false}
                 tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
                 onChange={v => handleValueChange(v, index)}
-                onInputKeyDown={v => handleValueConditionKeyDown(v)}
+                onInputKeyDown={v => handleValueConditionKeyDown(v, index, dimensionValueMap[item.key!] || [])}
                 showSearch={true}
               >
                 {/* {needNUll(item.key) && (
