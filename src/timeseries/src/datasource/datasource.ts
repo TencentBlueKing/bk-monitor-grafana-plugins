@@ -91,6 +91,7 @@ export enum QueryUrl {
   queryVariableValue = 'get_variable_value/',
   testAndSaveUrl = '',
   update_metric_list_by_biz = 'update_metric_list_by_biz/',
+  get_related_strategy = 'get_related_strategy/'
 }
 declare global {
   interface Window {
@@ -1059,13 +1060,19 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       }, 2000);
     });
   }
-  public async getRelateStrategy(targets: QueryData) {
-    return new Promise(r => {
-      setTimeout(() => {
-        console.info('getRelateStrategy', targets, '+++++++++++++++');
-        r(targets);
-      }, 2000);
-    });
+  /**
+   * @description 获取关联策略
+   * @param params 
+   * @returns 
+   */
+  public async getRelateStrategy(params) {
+    return await this.request({
+      method: 'post',
+      data: params,
+      url: QueryUrl.get_related_strategy
+    }).then((data) => {
+      return data;
+    }).catch(() => []);
   }
   /**
    *
