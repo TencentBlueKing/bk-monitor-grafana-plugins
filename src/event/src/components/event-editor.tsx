@@ -43,6 +43,7 @@ import QueryFormula from './query-formula';
 import TypeInput from './type-iput';
 
 import type QueryDataSource from '../datasource/datasource';
+import Select from 'antd/es/select';
 
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 interface IQueryEditorState {
@@ -60,6 +61,7 @@ interface IQueryEditorState {
   condition: IConditionItem[];
   alias: string;
   queryString: string;
+  event_name: string;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
@@ -82,6 +84,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         result_table_id = '',
         query_string = '',
         alias = '',
+        event_name = '',
       },
     ] = query_configs;
     const typeId = `${data_source_label}|${data_type_label}` as MetricType;
@@ -92,7 +95,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.state = {
       loading: true,
       inited: false,
-      language: getCookie('blueking_language'),
+      language: getCookie('blueking_language') || '',
       typeId,
       dataId: result_table_id,
       dataList: [],
@@ -104,6 +107,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       condition,
       alias,
       queryString: query_string,
+      event_name,
     };
     this.initState(this.state.typeId, hasQuery);
   }
@@ -123,8 +127,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.props.onRunQuery();
   };
   handleGetQueryData() {
-    const { alias, typeId, dataId, dimension, metric, interval, intervalUnit, method, condition, queryString } =
-      this.state;
+    const {
+      alias,
+      typeId,
+      dataId,
+      dimension,
+      metric,
+      interval,
+      intervalUnit,
+      method,
+      condition,
+      queryString,
+      event_name,
+    } = this.state;
     const [data_source_label, data_type_label] = typeId.split('|');
     if (!dataId) return {};
     return {
@@ -141,6 +156,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           interval_unit: intervalUnit,
           metric_field: metric,
           method,
+          event_name,
           time_field: this.curData.time_field || 'time',
           where: condition.filter?.(item => item.key) || [],
           query_string: queryString,
@@ -156,7 +172,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    */
   async initState(typeId: MetricType, hasQuery: boolean) {
     if (!hasQuery) {
-      await this.handeTypeIdChange(typeId);
+      await this.handelTypeIdChange(typeId);
     } else {
       const [data_source_label, data_type_label] = typeId.split('|');
       const dataList: IDataItem[] = await this.props.datasource.getDataSourceConfig({
@@ -179,7 +195,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    * @param {MetricType} typeId
    * @return {*}
    */
-  handeTypeIdChange = async (typeId: MetricType) => {
+  handelTypeIdChange = async (typeId: MetricType) => {
     const [data_source_label, data_type_label] = typeId.split('|');
     this.state.inited && this.setState({ loading: true });
     const dataList: IDataItem[] = await this.props.datasource.getDataSourceConfig({
@@ -193,6 +209,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         dataId: dataList[0]?.id || '',
         dataList,
         method: dataList[0]?.metrics?.length && typeId !== 'custom|event' ? this.state.method : 'COUNT',
+        event_name: '',
       },
       () => {
         this.setState(
@@ -222,7 +239,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.setState({ intervalUnit }, this.handleQuery);
   };
   handleDataIdChage = async (dataId: string) => {
-    this.setState({ dataId, dimension: [], condition: [{}] as any }, this.handleQuery);
+    this.setState({ dataId, dimension: [], event_name: '', condition: [{}] as any }, this.handleQuery);
   };
   handleDimensionChange = async (dimension: string[]) => {
     this.setState({ dimension }, this.handleQuery);
@@ -245,6 +262,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       field: v,
     });
     return { [v]: list || [] };
+  };
+  handleEventNameChange = async (event_name: string) => {
+    this.setState({ event_name }, this.handleQuery);
   };
   render(): JSX.Element {
     const {
@@ -277,7 +297,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 <EditorForm title={t('类型', language)}>
                   <TypeInput
                     value={typeId}
-                    onChange={this.handeTypeIdChange}
+                    onChange={this.handelTypeIdChange}
                   />
                 </EditorForm>
                 <EditorForm
@@ -291,6 +311,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                     onChange={this.handleDataIdChage}
                   />
                 </EditorForm>
+                {typeId === 'custom|event' ? (
+                  <EditorForm title={t('事件', language)}>
+                    <Select
+                      style={{ minWidth: '300px' }}
+                      dropdownStyle={{ minWidth: '500px !important' }}
+                      options={[{ id: '', name: ' 全部 ' }].concat(...this.curData.metrics)}
+                      fieldNames={{ label: 'name', value: 'id' }}
+                      value={this.state.event_name}
+                      showSearch={true}
+                      onSelect={this.handleEventNameChange}
+                    />
+                  </EditorForm>
+                ) : undefined}
               </div>
               {dataId ? (
                 <div className='query-editor'>

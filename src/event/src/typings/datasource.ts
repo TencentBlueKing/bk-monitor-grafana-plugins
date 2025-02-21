@@ -40,6 +40,7 @@ export interface IQueryConfig {
   result_table_id: string;
   time_field: string;
   query_string: string;
+  event_name?: string;
   where: IConditionItem[];
 }
 export interface QueryData extends DataQuery {

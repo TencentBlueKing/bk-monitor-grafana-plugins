@@ -42,6 +42,7 @@ export default class DataInput extends React.PureComponent<IDataInputProps> {
           dropdownClassName={'monitor-data-input-dropdown'}
           value={this.props.value}
           onChange={this.props.onChange}
+          showSearch
         >
           {this.props.list.map(item => (
             <Option
