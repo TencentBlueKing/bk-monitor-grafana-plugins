@@ -35,7 +35,6 @@ import type { ICommonItem, IConditionItem, MetricType, IDataItem } from '../typi
 import { getCookie, t } from 'common/utils/utils';
 import AliasInput from './alias-input';
 import ConditionInput from './condition-input';
-import DataInput from './data-input';
 import DimensionInput from './dimension-input';
 import EditorForm from './editor-form';
 import IntervalInput from './interval-input';
@@ -43,6 +42,7 @@ import QueryFormula from './query-formula';
 import TypeInput from './type-iput';
 
 import type QueryDataSource from '../datasource/datasource';
+import Select from 'antd/es/select';
 
 export type IQueryEditorProps = QueryEditorProps<QueryDataSource, QueryData, QueryOption>;
 interface IQueryEditorState {
@@ -50,8 +50,7 @@ interface IQueryEditorState {
   inited: boolean;
   language: string;
   typeId: MetricType;
-  dataId: string;
-  metric: string;
+  metricId: string;
   dataList: IDataItem[];
   method: string;
   interval: number;
@@ -60,30 +59,37 @@ interface IQueryEditorState {
   condition: IConditionItem[];
   alias: string;
   queryString: string;
+  currentMetricItem?: IDataItem;
+  page: number;
+  total: number;
+  keyword: string;
+  timer: any;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
     super(props, context);
-    let { query_configs } = this.props.query;
-    const hasQuery = query_configs?.length > 0;
-    if (!hasQuery) {
-      query_configs = [{}] as any;
-    }
-    const [
+    const { query_configs } = this.props.query;
+    let [
       {
         interval = 60,
         interval_unit = 's',
         where = [{}],
         group_by = [],
-        metric_field = '',
         method = 'COUNT',
         data_source_label = 'bk_monitor',
         data_type_label = 'log',
-        result_table_id = '',
+        metric_id = '',
         query_string = '',
         alias = '',
+        metric_field = '',
+        result_table_id = '',
       },
     ] = query_configs;
+    if (!metric_id && result_table_id) {
+      // 旧版数据兼容
+      metric_field = result_table_id;
+      result_table_id = metric_field;
+    }
     const typeId = `${data_source_label}|${data_type_label}` as MetricType;
     const condition = where.length ? where : ([{}] as any);
     if (condition[condition.length - 1]?.key) {
@@ -92,30 +98,26 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.state = {
       loading: true,
       inited: false,
-      language: getCookie('blueking_language'),
+      language: getCookie('blueking_language') || '',
       typeId,
-      dataId: result_table_id,
+      metricId: metric_id,
       dataList: [],
       method,
       interval,
       intervalUnit: interval_unit,
-      metric: metric_field,
       dimension: group_by,
       condition,
       alias,
       queryString: query_string,
+      currentMetricItem: undefined,
+      page: 1,
+      total: 0,
+      keyword: '',
+      timer: null,
     };
-    this.initState(this.state.typeId, hasQuery);
+    this.initState(this.state.typeId, metric_id);
   }
-  get curData() {
-    return (
-      this.state.dataList?.find?.(item => item.id === this.state.dataId) || {
-        metrics: [],
-        dimensions: [],
-        time_field: '',
-      }
-    );
-  }
+
   handleQuery = () => {
     const query: any = this.handleGetQueryData();
     const { refId, hide, key, queryType, datasource } = this.props.query;
@@ -123,27 +125,41 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     this.props.onRunQuery();
   };
   handleGetQueryData() {
-    const { alias, typeId, dataId, dimension, metric, interval, intervalUnit, method, condition, queryString } =
-      this.state;
+    const {
+      alias,
+      typeId,
+      metricId,
+      dimension,
+      interval,
+      intervalUnit,
+      method,
+      condition,
+      queryString,
+      dataList,
+      currentMetricItem,
+    } = this.state;
     const [data_source_label, data_type_label] = typeId.split('|');
-    if (!dataId) return {};
+    if (!metricId) return {};
+    const metricItem = dataList.find(item => item.id === metricId);
+    if (!metricItem) return {};
     return {
       query_configs: [
         {
           data_source_label,
           data_type_label,
-          result_table_id: dataId,
+          result_table_id: metricItem.result_table_id,
           alias,
           refId: 'a',
-          // result_table_label: item.result_table_label,
           group_by: dimension,
           interval,
           interval_unit: intervalUnit,
-          metric_field: metric,
+          metric_field: metricItem.metric_field,
+          metric_id: metricItem.metric_id,
           method,
-          time_field: this.curData.time_field || 'time',
+          time_field: currentMetricItem?.time_field || 'time',
           where: condition.filter?.(item => item.key) || [],
           query_string: queryString,
+          event_name: metricItem?.extend_fields?.custom_event_name,
         },
       ],
     };
@@ -151,22 +167,44 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   /**
    * @description: 初始化state
    * @param {MetricType} typeId
-   * @param {boolean} hasQuery
+   * @param {string} metric_id
    * @return {*}
    */
-  async initState(typeId: MetricType, hasQuery: boolean) {
-    if (!hasQuery) {
-      await this.handeTypeIdChange(typeId);
-    } else {
-      const [data_source_label, data_type_label] = typeId.split('|');
-      const dataList: IDataItem[] = await this.props.datasource.getDataSourceConfig({
-        data_source_label,
-        data_type_label,
-      });
-      this.setState({
-        dataList,
-      });
+  async initState(typeId: MetricType, metric_id: string) {
+    const [data_source_label, data_type_label] = typeId.split('|');
+    const getInitMetricList = async (id: string): Promise<IDataItem[]> => {
+      return await this.props.datasource
+        .getMetricList({
+          conditions: [
+            {
+              key: id ? 'metric_id' : 'query',
+              value: id || '',
+            },
+          ],
+          data_source: [[data_source_label, data_type_label]],
+          page: 1,
+          page_size: 500,
+        })
+        .then(({ metric_list }) => {
+          return metric_list
+            ?.filter(item => (id ? item.metric_id === id : true))
+            ?.map?.(item => ({ ...item, id: item.metric_id, name: item.metric_field_name }));
+        })
+        .catch(() => []);
+    };
+    const promiseList = [getInitMetricList('')];
+    if (metric_id) {
+      promiseList.push(getInitMetricList(metric_id));
     }
+    const [dataList, initDataList] = await Promise.all(promiseList);
+    if (metric_id && initDataList?.length && !dataList?.some(item => item.id === metric_id)) {
+      dataList.unshift({ ...initDataList[0] });
+    }
+    this.setState({
+      currentMetricItem: dataList[0],
+      dataList,
+      metricId: metric_id || dataList[0]?.id,
+    });
     setTimeout(() => {
       this.setState({
         loading: false,
@@ -179,32 +217,61 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
    * @param {MetricType} typeId
    * @return {*}
    */
-  handeTypeIdChange = async (typeId: MetricType) => {
-    const [data_source_label, data_type_label] = typeId.split('|');
-    this.state.inited && this.setState({ loading: true });
-    const dataList: IDataItem[] = await this.props.datasource.getDataSourceConfig({
-      data_source_label,
-      data_type_label,
-    });
+  handelTypeIdChange = async (typeId: MetricType) => {
     this.setState(
       {
-        loading: false,
         typeId,
-        dataId: dataList[0]?.id || '',
-        dataList,
-        method: dataList[0]?.metrics?.length && typeId !== 'custom|event' ? this.state.method : 'COUNT',
+        total: 0,
+        loading: true,
+        dataList: [],
+        metricId: '',
+        currentMetricItem: undefined,
       },
-      () => {
+      async () => {
+        const dataList: IDataItem[] = await this.getMetricList();
         this.setState(
           {
-            metric: this.curData.metrics?.[0]?.id || '',
-            dimension: [],
-            condition: [{}] as any,
+            loading: false,
+            metricId: dataList[0]?.id || '',
+            dataList,
+            currentMetricItem: dataList[0],
+            method: dataList[0]?.metrics?.length && typeId !== 'custom|event' ? this.state.method : 'COUNT',
           },
-          this.handleQuery,
+          () => {
+            this.setState(
+              {
+                dimension: [],
+                condition: [{}] as any,
+              },
+              this.handleQuery,
+            );
+          },
         );
       },
     );
+  };
+  getMetricList = async (page = 1, keyword = '') => {
+    if (this.state.total !== 0 && this.state.total <= this.state.dataList.length) return this.state.dataList;
+    const [data_source_label, data_type_label] = this.state.typeId.split('|');
+    const data = await this.props.datasource
+      .getMetricList({
+        conditions: [
+          {
+            key: 'query',
+            value: keyword,
+          },
+        ],
+        data_source: [[data_source_label, data_type_label]],
+        data_type_label: data_type_label,
+        page,
+        page_size: 500,
+      })
+      .then(({ metric_list }) => {
+        return metric_list?.map?.(item => ({ ...item, id: item.metric_id, name: item.metric_field_name }));
+      })
+      .catch(() => []);
+    this.setState({ total: data.count || 0 });
+    return page === 1 ? data : this.state.dataList.slice().concat(data);
   };
   handleQueryStringChange = async (queryString: string) => {
     this.setState({ queryString }, this.handleQuery);
@@ -221,8 +288,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   handleIntervalUnitChange = async (intervalUnit: string) => {
     this.setState({ intervalUnit }, this.handleQuery);
   };
-  handleDataIdChage = async (dataId: string) => {
-    this.setState({ dataId, dimension: [], condition: [{}] as any }, this.handleQuery);
+  handleDataIdChange = async (metricId: string) => {
+    const metricItem = this.state.dataList.find(item => item.id === metricId);
+    this.setState({ metricId, currentMetricItem: metricItem, dimension: [], condition: [{}] as any }, this.handleQuery);
   };
   handleDimensionChange = async (dimension: string[]) => {
     this.setState({ dimension }, this.handleQuery);
@@ -235,23 +303,51 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
   getDimensionValue = async (v: string): Promise<Record<string, ICommonItem[]>> => {
     let list = [];
     if (!v) return {};
-    const { metric, dataId, typeId, method } = this.state;
+    const { typeId, method, currentMetricItem } = this.state;
     const [data_source_label, data_type_label] = typeId.split('|');
     list = await this.props.datasource.getNewDimensionValue({
-      resultTableId: dataId,
-      metricField: method === 'COUNT' ? '_index' : metric,
+      resultTableId: currentMetricItem?.result_table_id,
+      metricField: method === 'COUNT' ? '_index' : currentMetricItem?.metric_field,
       dataSourceLabel: data_source_label,
       dataTypeLabel: data_type_label,
       field: v,
     });
     return { [v]: list || [] };
   };
+  handleSearch = async (value: string) => {
+    if (this.state.timer) clearTimeout(this.state.timer);
+    const timer = setTimeout(async () => {
+      this.setState({ loading: true, keyword: value, page: 1 });
+      const dataList = await this.getMetricList(1, value);
+      this.setState({ loading: false, timer: null, dataList });
+    }, 300);
+    this.setState({ timer });
+  };
+  handlePopupScroll = async e => {
+    if (this.state.loading) return;
+    const target = e.target;
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight) {
+      this.setState({ loading: true, page: +this.state.page + 1 }, async () => {
+        const dataList = await this.getMetricList(this.state.page, this.state.keyword);
+        this.setState({ loading: false, dataList });
+      });
+    }
+  };
+  handleDropdownVisibleChange = (open: boolean) => {
+    if (!open) {
+      this.setState({
+        keyword: '',
+        page: 1,
+        total: 0,
+        loading: false,
+      });
+    }
+  };
   render(): JSX.Element {
     const {
       language,
-      metric,
       typeId,
-      dataId,
+      metricId,
       dataList,
       inited,
       loading,
@@ -263,8 +359,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       alias,
       queryString,
     } = this.state;
-    const dimensionList = this.curData.dimensions;
-    const metricList = this.curData.metrics;
+    const dimensionList = this.state.currentMetricItem?.dimensions || [];
     return (
       <div className='monitor-event-grafana'>
         <Spin
@@ -277,22 +372,36 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 <EditorForm title={t('类型', language)}>
                   <TypeInput
                     value={typeId}
-                    onChange={this.handeTypeIdChange}
+                    onChange={this.handelTypeIdChange}
                   />
                 </EditorForm>
                 <EditorForm
                   labelStyle={{ minWidth: '108px' }}
                   title={t('数据名称', language)}
                 >
-                  <DataInput
-                    list={dataList}
-                    showId={true}
-                    value={dataId}
-                    onChange={this.handleDataIdChage}
+                  <Select
+                    className='type-input'
+                    value={this.state.metricId}
+                    virtual={true}
+                    onSelect={v => {
+                      this.setState({
+                        metricId: v,
+                        currentMetricItem: dataList.find(item => item.id === v),
+                      });
+                    }}
+                    popupClassName='type-input-popup'
+                    showSearch
+                    filterOption={false}
+                    loading={this.state.loading}
+                    fieldNames={{ label: 'name', value: 'id' }}
+                    options={this.state.dataList}
+                    onSearch={this.handleSearch}
+                    onPopupScroll={this.handlePopupScroll}
+                    onDropdownVisibleChange={this.handleDropdownVisibleChange}
                   />
                 </EditorForm>
               </div>
-              {dataId ? (
+              {metricId ? (
                 <div className='query-editor'>
                   <EditorForm
                     style={{ width: '100%' }}
@@ -308,7 +417,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                   </EditorForm>
                 </div>
               ) : undefined}
-              {dataId ? (
+              {metricId ? (
                 <div className='query-editor'>
                   <EditorForm
                     labelStyle={{ minWidth: '100px' }}
@@ -321,18 +430,6 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       onMethodChange={this.handleMethodChange}
                     />
                   </EditorForm>
-                  {method !== 'COUNT' && false ? (
-                    <EditorForm
-                      tips='metric'
-                      title={t('指标', language)}
-                    >
-                      <DataInput
-                        list={metricList}
-                        value={metric}
-                        onChange={this.handleDataIdChage}
-                      />
-                    </EditorForm>
-                  ) : undefined}
                   <EditorForm
                     tips='interval'
                     title={t('周期', language)}

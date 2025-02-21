@@ -35,12 +35,14 @@ export interface IQueryConfig {
   interval: number;
   interval_unit: string;
   metric_field: string;
+  metric_id: string;
   method: string;
   alias: string;
   result_table_id: string;
   time_field: string;
   query_string: string;
   where: IConditionItem[];
+  event_name?: string;
 }
 export interface QueryData extends DataQuery {
   expression: string;

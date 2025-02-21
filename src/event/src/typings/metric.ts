@@ -195,4 +195,9 @@ export interface IDataItem extends ICommonItem {
   dimensions: ICommonItem[];
   metrics: ICommonItem[];
   time_field: string;
+  metric_field: string;
+  metric_field_name: string;
+  result_table_id: string;
+  metric_id: string;
+  extend_fields: Record<string, any>;
 }

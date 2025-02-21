@@ -25,34 +25,82 @@
  */
 import Select from 'antd/es/select';
 import React from 'react';
-import type { ICommonItem } from 'typings/metric';
-const { Option } = Select;
+import type { ICommonItem } from '../typings/metric';
 export interface IDataInputProps {
-  onChange?: (v: string) => void;
+  onChange: (v: string) => void;
   value: string;
   showId?: boolean;
   list: ICommonItem[];
+  getMetricList: (keyword: string, page: number) => Promise<void>;
 }
-export default class DataInput extends React.PureComponent<IDataInputProps> {
+export default class DataInput extends React.PureComponent<
+  IDataInputProps,
+  {
+    loading: boolean;
+    timer: any;
+    keyword: string;
+    page: number;
+  }
+> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: false,
+      timer: null,
+      keyword: '',
+      page: 1,
+    };
+  }
+  // componentDidUpdate(prevProps: Readonly<IDataInputProps>): void {
+  //   if (prevProps.typeId !== this.props.typeId) {
+  //     this.setState({ loading: true, page: 1 }, async () => {
+  //       await this.props.getMetricList();
+  //       this.setState({ loading: false });
+  //     });
+  //   }
+  // }
+  handleSearch = async (value: string) => {
+    if (this.state.timer) clearTimeout(this.state.timer);
+    const timer = setTimeout(async () => {
+      this.setState({ loading: true, keyword: value, page: 1 });
+      await this.props.getMetricList(value, 1);
+      this.setState({ loading: false, timer: null });
+    }, 300);
+    this.setState({ timer });
+  };
+  handlePopupScroll = async e => {
+    if (this.state.loading) return;
+    const target = e.target;
+    if (target.scrollTop + target.clientHeight >= target.scrollHeight) {
+      this.setState({ loading: true, page: +this.state.page + 1 }, async () => {
+        await this.props.getMetricList(this.state.keyword, this.state.page);
+        this.setState({ loading: false });
+      });
+    }
+  };
   render(): JSX.Element {
     return (
       <div>
         <Select
           className='type-input'
-          dropdownClassName={'monitor-data-input-dropdown'}
           value={this.props.value}
-          onChange={this.props.onChange}
-        >
-          {this.props.list.map(item => (
-            <Option
-              key={item.id}
-              value={item.id}
-            >
-              {item.name}
-              {this.props.showId && <span className='mark-text'>（#{item.bk_data_id}）</span>}
-            </Option>
-          ))}
-        </Select>
+          virtual={true}
+          onSelect={v => {
+            this.setState({
+              keyword: '',
+              page: 1,
+            });
+            this.props.onChange(v);
+          }}
+          popupClassName='type-input-popup'
+          showSearch
+          filterOption={false}
+          loading={this.state.loading}
+          fieldNames={{ label: 'name', value: 'id' }}
+          options={this.props.list}
+          onSearch={this.handleSearch}
+          onPopupScroll={this.handlePopupScroll}
+        />
       </div>
     );
   }

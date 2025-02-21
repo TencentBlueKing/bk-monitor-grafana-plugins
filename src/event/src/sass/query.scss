@@ -12,4 +12,12 @@
   .query-editor {
     flex-wrap: wrap;
   }
+
+  .type-input {
+    width: 360px;
+  }
+}
+
+.type-input-popup {
+  min-width: 600px !important;
 }

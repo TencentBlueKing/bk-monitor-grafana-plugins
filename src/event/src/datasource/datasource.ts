@@ -78,13 +78,14 @@ export enum QueryUrl {
   queryMonitorTarget = 'topo_tree/',
   queryVariableField = 'get_variable_field/',
   queryVariableValue = 'get_variable_value/',
+  get_metric_list = 'get_metric_list/',
   testAndSaveUrl = '',
 }
 export default class DashboardDatasource extends DataSourceApi<QueryData, QueryOption> {
   public baseUrl: string;
   public bizId: number | string;
   public configData: QueryOption;
-  public url: string;
+  public url?: string;
   public useToken: boolean;
   constructor(instanceSettings: DataSourceInstanceSettings<QueryOption>) {
     super(instanceSettings);
@@ -122,9 +123,9 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           const matchList = tag.match(/(_[a-zA-Z])/g);
           let newKey = tag;
           if (matchList) {
-            matchList.forEach(set => {
+            for (const set of matchList) {
               newKey = newKey.replace(set, set.replace('_', '').toLocaleUpperCase());
-            });
+            }
           }
           return typeof metric?.[newKey] === 'undefined' ? match : metric[newKey];
         }
@@ -141,7 +142,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     config?: IQueryConfig,
   ) {
     const hasVariateAlias = String(alias).match(/\$/im);
-    let metric: IMetric;
+    let metric: IMetric | undefined;
     let aliasData: IAliasData = {};
     // 兼容老版本变量设置
     if (hasVariateAlias && !!config) {
@@ -155,13 +156,13 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         metric_type: metric?.result_table_name || '',
       };
     }
-    return series.map(serie => {
-      if (!serie.unit || serie.unit === 'none') delete serie.unit;
+    return series.map(s => {
+      if (!s.unit || s.unit === 'none') delete s.unit;
       return {
-        ...serie,
+        ...s,
         target: hasVariateAlias
-          ? this.buildAlaisVariables(alias, scopedVars, metric, aliasData, serie.dimensions)
-          : alias || serie.target,
+          ? this.buildAlaisVariables(alias, scopedVars, metric!, aliasData, s.dimensions)
+          : alias || s.target,
       };
     });
   }
@@ -192,6 +193,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public buildWhereVariables(values: string | string[], scopedVars: ScopedVars) {
     const valList = [];
     Array.isArray(values) &&
+      // biome-ignore lint/complexity/noForEach: <explanation>
       values.forEach(val => {
         if (String(val).match(/^\$/)) {
           getTemplateSrv().replace(val, scopedVars, v => {
@@ -335,6 +337,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       query_string: getTemplateSrv().replace(config.query_string),
       table: config.result_table_id,
       time_field: config.time_field || 'time',
+      filter_dict: config.event_name ? { event_name: config.event_name } : undefined,
       where:
         config.where
           ?.filter?.(item => item.key && item.value?.length)
@@ -363,9 +366,11 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     }
     const promiseList = [];
     const isTableQuery = options.panelType === 'table';
+    // biome-ignore lint/complexity/noForEach: <explanation>
     targetList.forEach((item: QueryData) => {
       const configList = [];
       // 指标数据请求
+      // biome-ignore lint/complexity/noForEach: <explanation>
       item?.query_configs?.forEach(config => {
         const queryConfig = this.handleGetQueryConfig(config, options.scopedVars);
         let params = null;
@@ -428,6 +433,14 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       data: data.data?.map(({ unit, ...props }) => (needUnit ? { unit, ...props } : props)),
     };
     return list;
+  }
+  // 获取公共指标函数列表
+  async getMetricList(data: Record<string, any>) {
+    return await this.request({
+      data,
+      method: 'POST',
+      url: QueryUrl.get_metric_list,
+    }).catch(() => []);
   }
   request({
     data = {},

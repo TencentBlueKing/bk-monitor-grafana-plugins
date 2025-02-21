@@ -50,7 +50,7 @@ export const getCookie = (name: string): null | string => {
   if (data) {
     return unescape(data[2]);
   }
-  return null;
+  return '';
 };
 export const language = getCookie('blueking_language') || 'zh-cn';
 /**
