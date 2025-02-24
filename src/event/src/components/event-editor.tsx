@@ -282,8 +282,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       condition,
       alias,
       queryString,
+      event_name,
     } = this.state;
-    const dimensionList = this.curData.dimensions;
+    const dimensionList = !event_name
+      ? [{ id: 'event_name', name: 'event_name' }].concat(this.curData.dimensions)
+      : this.curData.dimensions;
     const metricList = this.curData.metrics;
     return (
       <div className='monitor-event-grafana'>

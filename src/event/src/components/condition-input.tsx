@@ -174,6 +174,17 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
     }
     this.props.onChange(list);
   };
+  handleConditionKeyDown = (e: any, index: number) => {
+    if (
+      e.key === 'Enter' &&
+      e.target.value &&
+      !this.props.dimensionList.some(item => item.id === e.target.value || item.name === e.target.value)
+    ) {
+      const dimension = e.target.value;
+      this.props.dimensionList.push({ id: dimension, is_dimension: true, name: dimension });
+      this.handleKeyChange(e.target.value, index);
+    }
+  };
   render(): JSX.Element {
     const { dimensionValueMap } = this.state;
     const { dimensionList, condition } = this.props;
@@ -230,6 +241,7 @@ export default class ConditionInput extends React.PureComponent<IProps, IState> 
                   showArrow={false}
                   showSearch
                   onChange={(v: string) => this.handleKeyChange(v, index)}
+                  onInputKeyDown={v => this.handleConditionKeyDown(v, index)}
                   onDropdownVisibleChange={v => this.handleKeyVisibleChange(v, index)}
                 >
                   {dimensionList?.map(dim => (
