@@ -88,5 +88,6 @@
   "服务": "Service",
   "接口": "Span Name",
   "应用": "App Name",
-  "查询方式": "Query Mode"
+  "查询方式": "Query Mode",
+  "事件": "Event"
 }

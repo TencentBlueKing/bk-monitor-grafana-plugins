@@ -43,11 +43,22 @@ export default class DataInput extends React.PureComponent<IDataInputProps> {
           value={this.props.value}
           onChange={this.props.onChange}
           showSearch
+          filterOption={(input, option) => {
+            if (!option || !input) return true;
+            console.info(option);
+            return (
+              (option?.label as string)?.toLowerCase?.().indexOf(input.toLowerCase()) >= 0 ||
+              (option?.value as string)?.toLowerCase?.().indexOf(input.toLowerCase()) >= 0 ||
+              (option?.dataId as string)?.toLowerCase?.().indexOf(input.toLowerCase()) >= 0
+            );
+          }}
         >
           {this.props.list.map(item => (
             <Option
               key={item.id}
               value={item.id}
+              label={item.name}
+              dataId={item.bk_data_id}
             >
               {item.name}
               {this.props.showId && <span className='mark-text'>（#{item.bk_data_id}）</span>}

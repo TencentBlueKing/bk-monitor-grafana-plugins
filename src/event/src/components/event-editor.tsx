@@ -317,6 +317,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 {typeId === 'custom|event' ? (
                   <EditorForm title={t('事件', language)}>
                     <Select
+                      optionFilterProp='children'
                       style={{ minWidth: '300px' }}
                       dropdownStyle={{ minWidth: '500px !important' }}
                       options={[{ id: '', name: ' 全部 ' }].concat(...this.curData.metrics)}
@@ -324,6 +325,13 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                       value={this.state.event_name}
                       showSearch={true}
                       onSelect={this.handleEventNameChange}
+                      filterOption={(input, option) => {
+                        if (!input || !option) return true;
+                        return (
+                          option.id.toLowerCase().indexOf(input.toLowerCase()) >= 0 ||
+                          option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        );
+                      }}
                     />
                   </EditorForm>
                 ) : undefined}
@@ -334,7 +342,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                     style={{ width: '100%' }}
                     labelStyle={{ minWidth: '115px' }}
                     tips='meta'
-                    title={t('Query String', language)}
+                    title={'Query String'}
                   >
                     <AliasInput
                       style={{ minWidth: '100%', flex: 1 }}
