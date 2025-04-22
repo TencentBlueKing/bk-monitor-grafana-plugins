@@ -680,41 +680,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     return data;
   }
   /**
-   * @description: promql 转换 ui查询参数
-   * @param {string} promql
-   * @param {EditMode} mode
-   * @return {*}
-   */
-  public async promqlToqueryConfig(promql: string, mode: EditMode = 'code') {
-    return await this.request({
-      url: QueryUrl.promql_to_query_config,
-      data: {
-        promql,
-      },
-      method: 'post',
-    }).then(data => ({
-      ...data,
-      query_configs:
-        data?.query_configs?.map(item => ({
-          where: item.agg_condition,
-          method: item.agg_method,
-          interval: item.agg_interval,
-          group_by: item.agg_dimension,
-          refId: item.alias,
-          alias: '',
-          data_source_label: item.data_source_label,
-          data_type_label: item.data_type_label,
-          interval_unit: 's',
-          functions: item.functions,
-          metric_field: item.metric_field,
-          result_table_id: item.result_table_id,
-          data_label: item.data_label,
-          display: true,
-          mode,
-        })) || [],
-    }));
-  }
-  /**
    * @description: panel query api
    * @param {DataQueryRequest} options
    * @return {*}

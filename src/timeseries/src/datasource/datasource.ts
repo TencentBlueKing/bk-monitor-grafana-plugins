@@ -50,6 +50,15 @@ import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/me
 import { type K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
 import { random } from 'common/utils/utils';
+
+/*
+ * This regex matches 3 types of variable reference with an optional format specifier
+ * There are 6 capture groups that replace will return
+ * \$(\w+)                                    $var1
+ * \[\[(\w+?)(?::(\w+))?\]\]                  [[var2]] or [[var2:fmt2]]
+ * \${(\w+)(?:\.([^:^\}]+))?(?::([^\}]+))?}   ${var3} or ${var3.fieldPath} or ${var3:fmt3} (or ${var3.fieldPath:fmt3} but that is not a separate capture group)
+ */
+export const variableRegex = /\$(\w+)|\[\[(\w+?)(?::(\w+))?\]\]|\${(\w+)(?:\.([^:^\}]+))?(?::([^\}]+))?}/g;
 interface QueryFetchData {
   metrics: IMetric[];
   series: Array<{
@@ -192,51 +201,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     aliasData: IAliasData,
     sere: Record<string, any>,
   ) {
-    // const regex = /\$([\w]+)|\[\[([\s\S]+?)\]\]/g;
-    // const tagRegex = /(\$(tag_|dim_)\$[\w._]+)/gm;
-    // let aliasNew = alias;
     const { dimensions, dimensions_translation } = sere || { dimensions: {}, dimensions_translation: {} };
-    // aliasNew = alias.replace(tagRegex, (match: any, g1: any, g2: any) => {
-    //   const group = g1 || g2;
-    //   let tag = group.replace('$tag_', '').replace('$dim_', '');
-    //   if (regex.test(tag)) {
-    //     tag = getTemplateSrv().replace(tag, scopedVars);
-    //     return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
-    //   }
-    //   return match;
-    // });
-    // const aliasName = aliasNew.replace(regex, (match: any, g1: any, g2: any) => {
-    //   const group = g1 || g2;
-    //   if (aliasData) {
-    //     if (Object.keys(aliasData).includes(group)) {
-    //       return aliasData[group] || match;
-    //     }
-    //     if (/^(tag_|dim_)/im.test(group)) {
-    //       const tag = group.replace('tag_', '').replace('dim_', '');
-    //       return typeof dimensions[tag] === 'undefined' ? match : dimensions[tag];
-    //     }
-    //     if (/^(trans_)/im.test(group)) {
-    //       const tag = group.replace('trans_', '');
-    //       return typeof dimensions_translation[tag] === 'undefined' ? match : dimensions_translation[tag];
-    //     }
-    //     if (/^(metric_)/im.test(group)) {
-    //       const tag = group.replace('metric_', '');
-    //       const matchList = tag.match(/(_[a-zA-Z])/g);
-    //       let newKey = tag;
-    //       if (matchList) {
-    //         matchList.forEach(set => {
-    //           newKey = newKey.replace(set, set.replace('_', '').toLocaleUpperCase());
-    //         });
-    //       }
-    //       if (typeof metric?.[newKey] === 'undefined') {
-    //         return metric?.[tag] || match;
-    //       }
-    //       return metric?.[newKey] || match;
-    //     }
-    //   }
-    //   const variables = this.buildWhereVariables([match], undefined);
-    //   return variables.length ? (variables.length === 1 ? variables.join('') : `(${variables.join(',')})`) : match;
-    // });
     const monitorScopedVars: { [key: string]: ScopedVar | undefined } = {
       ...this.createScopedVariables({
         ...metric,
@@ -248,7 +213,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       ...this.createScopedVariables(dimensions_translation || {}, 'dimensions_translation', 'trans_'),
       ...this.createScopedVariables(metric || {}, 'metric', 'metric_'),
     };
-    return getTemplateSrv().replace(alias, monitorScopedVars);
+    const str = getTemplateSrv().replace(alias, monitorScopedVars);
+    if (variableRegex.test(str)) {
+      variableRegex.lastIndex = 0;
+      return getTemplateSrv().replace(str, monitorScopedVars);
+    }
+    return str;
   }
   buildFetchSeries(
     { metrics = [], series = [] }: QueryFetchData,
@@ -258,7 +228,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     query?: QueryData,
     isExpression?: boolean,
   ) {
-    const hasVariateAlias = String(alias).match(/\$/im);
+    const hasVariateAlias = String(alias).match(variableRegex);
     let metric: IMetric | undefined = undefined;
     let aliasData: IAliasData = {};
     // 兼容老版本变量设置
@@ -366,7 +336,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       values.forEach(val => {
         if (val === DIM_NULL_ID) {
           valList.push('');
-        } else if (String(val).match(/^\$/)) {
+        } else if (String(val).match(variableRegex)) {
           let isArrayVal = false;
           const list: string[] = [];
           getTemplateSrv().replace(val, scopedVars, (v: string | string[]) => {
@@ -556,6 +526,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         length: newSeries.datapoints.length,
         refId,
       };
+      console.info(data, '+++++=');
       return data;
     });
   }
@@ -790,7 +761,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
    * @param {EditMode} mode
    * @return {*}
    */
-  public async promqlToqueryConfig(promql: string, mode: EditMode = 'code') {
+  public async promqlToQueryConfig(promql: string, mode: EditMode = 'code') {
     return await this.request({
       data: {
         promql,
@@ -995,6 +966,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           }
         : {},
     );
+    console.info(list, 'xxxxxxxxxxxxxxxxxxxx');
     if (list.data?.length > 1) {
       const tableRefId = options.targets.filter(item => item.format === 'table').map(item => item.refId);
       const tableFrames = list.data.filter(item => tableRefId.includes(item.refId));

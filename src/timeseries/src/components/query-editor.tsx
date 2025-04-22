@@ -427,7 +427,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         // code => ui
         let data: any = {};
         if (source) {
-          data = await this.props.datasource.promqlToqueryConfig(source, 'code').catch(() => {
+          data = await this.props.datasource.promqlToQueryConfig(source, 'code').catch(() => {
             hasError = true;
             return {};
           });
@@ -604,7 +604,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         if (item.metricMetaId && v.length) {
           this.handleCommonSetMetric(metricIndex, 'loading', true, false);
           if (!hasError) {
-            const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
               this.handleCommonSetMetric(metricIndex, 'status', 'error', false);
               return {};
             });
@@ -709,7 +709,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               },
             );
           } else {
-            const data = await this.props.datasource.promqlToqueryConfig(v, 'code').catch(() => {
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
               this.setState({ editorStatus: 'error' });
               return {};
             });
@@ -778,7 +778,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.setState({ loading: true });
-        const data = await this.props.datasource.promqlToqueryConfig(this.state.source, 'ui').catch(() => {
+        const data = await this.props.datasource.promqlToQueryConfig(this.state.source, 'ui').catch(() => {
           hasError = true;
           return {};
         });
@@ -844,7 +844,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.handleCommonSetMetric(metricIndex, 'loading', true, false);
-        const data = await this.props.datasource.promqlToqueryConfig(curMetric.source, 'ui').catch(() => {
+        const data = await this.props.datasource.promqlToQueryConfig(curMetric.source, 'ui').catch(() => {
           hasError = true;
           return {};
         });
