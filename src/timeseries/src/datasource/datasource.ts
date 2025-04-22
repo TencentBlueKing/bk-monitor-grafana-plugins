@@ -526,7 +526,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         length: newSeries.datapoints.length,
         refId,
       };
-      console.info(data, '+++++=');
       return data;
     });
   }
@@ -966,7 +965,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           }
         : {},
     );
-    console.info(list, 'xxxxxxxxxxxxxxxxxxxx');
     if (list.data?.length > 1) {
       const tableRefId = options.targets.filter(item => item.format === 'table').map(item => item.refId);
       const tableFrames = list.data.filter(item => tableRefId.includes(item.refId));
