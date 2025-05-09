@@ -44,7 +44,7 @@ import type { IMetric, MetricDetail } from '../typings/metric';
 import { LanguageContext } from '../utils/context';
 import { createMetricTitleTooltips, t, random } from 'common/utils/utils';
 
-import type DashboardDatasource from 'datasource/datasource';
+import type DashboardDatasource from '../datasource/datasource';
 let interval: any = null;
 const { TabPane } = Tabs;
 export enum MetricInputMode {
@@ -124,7 +124,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       total: 0,
     };
   }
-  displayRender = (): JSX.Element => {
+  displayRender = () => {
     const { data_label, metric_field, metric_field_name, result_table_id, result_table_label_name, result_table_name } =
       this.props.metric!;
     const labels = [result_table_label_name, result_table_name, metric_field_name];
@@ -488,7 +488,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
       <Tooltip
         key={i}
         title={
-          !!metric?.metric_field ? (
+          metric?.metric_field ? (
             <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(metric) }} />
           ) : undefined
         }
@@ -743,7 +743,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
     const needPlaceholder = !this.props.metric?.metric_field;
     return (
       <LanguageContext.Consumer>
-        {({}) => (
+        {() => (
           <div className={`mitric-input ${this.props.mode === MetricInputMode.COPY ? 'copy-mode' : ''}`}>
             <Popover
               content={this.contentRender()}
@@ -766,8 +766,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                 >
                   <Tooltip
                     title={
-                      !!this.props.metric?.metric_field ? (
-                        <div dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(this.props.metric) }} />
+                      this.props.metric?.metric_field ? (
+                        <div
+                          onClick={event => event.stopPropagation()}
+                          dangerouslySetInnerHTML={{ __html: createMetricTitleTooltips(this.props.metric) }}
+                        />
                       ) : undefined
                     }
                     placement='right'
@@ -777,6 +780,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                       {this.props.metric?.metric_field
                         ? [
                             <svg
+                              key='copy'
                               width='16'
                               height='16'
                               className='copy-metric'
@@ -788,6 +792,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryProps,
                               <path d='M732.8 256H163.2C144 256 128 272 128 291.2v569.6c0 19.2 16 35.2 35.2 35.2h569.6c19.2 0 35.2-16 35.2-35.2V291.2c0-19.2-16-35.2-35.2-35.2z m-28.8 64v512H192V320h512z m160-192c19.2 0 32 12.8 32 32v608h-64V192H256V128h608z m-256 512H288v64h320v-64z m0-192H288v64h320v-64z' />
                             </svg>,
                             <span
+                              key='name'
                               id={this.props.metric.metric_id}
                               style={{ fontSize: 0, opacity: 0 }}
                               tabIndex={-1}
