@@ -874,17 +874,18 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         (item.expressionList?.some(item => item.expression && item.active) && configList.length > 0)
       ) {
         if (item.mode === 'code' || item.only_promql) {
+          const replaceScopedVars = {
+            ...options.scopedVars,
+            ...this.getRangeScopedVars(options.range),
+          };
           const params = {
             data: {
               down_sample_range: item.enableDownSampling === true ? down_sample_range : undefined, // promql 原来默认是不开启的
               end_time: options.range.to.unix(),
               format: item.format,
-              promql: this.buildPromqlVariables(item.source!, {
-                ...options.scopedVars,
-                ...this.getRangeScopedVars(options.range),
-              }),
+              promql: this.buildPromqlVariables(item.source!, replaceScopedVars),
               start_time: options.range.from.unix(),
-              step: getTemplateSrv().replace(item.step) || 'auto',
+              step: getTemplateSrv().replace(item.step, replaceScopedVars) || 'auto',
               type: item.type,
             },
             method: 'POST',
