@@ -181,6 +181,12 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         text,
         value,
       };
+      if (key?.includes?.('.')) {
+        monitorScopedVars[`${keyPrefix}${key}`.replace(/\./g, '_')] = {
+          text,
+          value,
+        };
+      }
     }
     if (rawKey && !(rawKey in monitorScopedVars)) {
       monitorScopedVars[rawKey] = {
