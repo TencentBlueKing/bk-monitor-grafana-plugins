@@ -26,10 +26,12 @@
  * IN THE SOFTWARE.
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
+import ExclamationCircleOutlined from '@ant-design/icons/ExclamationCircleOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Message from 'antd/es/message';
+import Alert from 'antd/es/alert';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
@@ -95,6 +97,8 @@ interface IQueryEditorState {
   step: string;
   type: string;
   enableDownSampling: boolean;
+  showErrorAlert: boolean;
+  errorAlertMessage: string;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
   constructor(props, context) {
@@ -156,6 +160,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       step,
       enableDownSampling,
       type: query.type ?? 'range',
+      showErrorAlert: false,
+      errorAlertMessage: '',
     };
     this.initState(query);
   }
@@ -401,6 +407,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               message: e.message || t('转换失败', this.state.language),
             });
             hasError = true;
+            const message = e.data?.message || '';
+            message && this.setErrorAlert(true, message);
             return '';
           });
           source &&
@@ -409,6 +417,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 mode: 'code',
                 promqlAlias: promqlAlias || params.promqlAlias,
                 source,
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -419,6 +429,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 mode: 'code',
                 promqlAlias: '',
                 source,
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -427,8 +439,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         // code => ui
         let data: any = {};
         if (source) {
-          data = await this.props.datasource.promqlToQueryConfig(source, 'code').catch(() => {
+          data = await this.props.datasource.promqlToQueryConfig(source, 'code').catch((err) => {
             hasError = true;
+            const message = err.data?.message || '';
+            message && this.setErrorAlert(true, message);
             return {};
           });
         }
@@ -447,6 +461,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 : [],
               metricList: list,
               mode: 'ui',
+              errorAlertMessage: '',
+              showErrorAlert: false
             },
             this.handleQuery,
           );
@@ -457,6 +473,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 expressionList: [],
                 metricList: [{ refId: 'a' } as any],
                 mode: 'ui',
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -604,7 +622,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         if (item.metricMetaId && v.length) {
           this.handleCommonSetMetric(metricIndex, 'loading', true, false);
           if (!hasError) {
-            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch((err) => {
+              const message = err.data?.message || '';
+              message && this.setErrorAlert(true, message);
               this.handleCommonSetMetric(metricIndex, 'status', 'error', false);
               return {};
             });
@@ -709,7 +729,9 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               },
             );
           } else {
-            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch((err) => {
+              const message = err.data?.message || '';
+              message && this.setErrorAlert(true, message);
               this.setState({ editorStatus: 'error' });
               return {};
             });
@@ -758,8 +780,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         let source = '';
         this.setState({ loading: true });
         const params = this.handleGetQueryData(this.state.metricList);
-        source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
+        source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch((err) => {
           hasError = true;
+          const message = err.data?.message || '';
+          message && this.setErrorAlert(true, message);
           return '';
         });
         this.setState({ source });
@@ -778,8 +802,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.setState({ loading: true });
-        const data = await this.props.datasource.promqlToQueryConfig(this.state.source, 'ui').catch(() => {
+        const data = await this.props.datasource.promqlToQueryConfig(this.state.source, 'ui').catch((err) => {
           hasError = true;
+          const message = err.data?.message || '';
+          message && this.setErrorAlert(true, message);
           return {};
         });
         if (data?.query_configs?.length) {
@@ -824,8 +850,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         if (curMetric.metricMetaId) {
           this.handleCommonSetMetric(metricIndex, 'loading', true, false);
           const params = this.handleGetQueryData([curMetric]);
-          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
+          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch((err) => {
             hasError = true;
+            const message = err.data?.message || '';
+            message && this.setErrorAlert(true, message);
             return '';
           });
           this.handleCommonSetMetric(metricIndex, 'source', source, false);
@@ -844,8 +872,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.handleCommonSetMetric(metricIndex, 'loading', true, false);
-        const data = await this.props.datasource.promqlToQueryConfig(curMetric.source, 'ui').catch(() => {
+        const data = await this.props.datasource.promqlToQueryConfig(curMetric.source, 'ui').catch((err) => {
           hasError = true;
+          const message = err.data?.message || '';
+          message && this.setErrorAlert(true, message);
           return {};
         });
         if (data?.query_configs?.length && data.query_configs.length === 1) {
@@ -917,6 +947,18 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       </div>
     );
   };
+
+  transfromErrorComp = () => {
+    return this.state.showErrorAlert ? <Alert
+      className="transform-error"
+      message={this.state.errorAlertMessage}
+      type="warning"
+      afterClose={() => this.setErrorAlert(false, '')}
+      showIcon
+      icon={<ExclamationCircleOutlined style={{ color: '#FF9C01', fontSize: '16px' }} />}
+      closable
+    ></Alert> : undefined;
+  }
 
   handleCommonSetMetric<T extends MetricDetail, K extends keyof MetricDetail>(
     metricIndex: number,
@@ -1145,6 +1187,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       metricList,
     });
   }
+
+  /**
+   * @description 切换ui/promql时报错信息
+   * @param show 
+   * @param message 
+   */
+  setErrorAlert(show = false, message = '') {
+    this.setState({
+      showErrorAlert: show,
+      errorAlertMessage: message
+    })
+  }
+
   render(): JSX.Element {
     const {
       cluster,
@@ -1175,6 +1230,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             {inited ? (
               <>
                 {this.transfromModeComp(data?.state)}
+                {this.transfromErrorComp()}
                 {mode !== 'code' ? (
                   <>
                     {metricList.map((item, index) => (
