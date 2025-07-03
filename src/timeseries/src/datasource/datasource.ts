@@ -849,6 +849,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 data: {
                   display: config.display,
                   down_sample_range: item.enableDownSampling !== false ? down_sample_range : undefined,
+                  time_alignment: item.showLastPoint === true ? false : undefined,
                   end_time: options.range.to.unix(),
                   expression: config.refId || '',
                   format: item.format,
@@ -887,6 +888,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
           const params = {
             data: {
               down_sample_range: item.enableDownSampling === true ? down_sample_range : undefined, // promql 原来默认是不开启的
+              time_alignment: item.showLastPoint === true ? false : undefined,
               end_time: options.range.to.unix(),
               format: item.format,
               promql: this.buildPromqlVariables(item.source!, replaceScopedVars),
@@ -915,7 +917,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               }),
           );
         } else {
-          const { cluster, expressionList, host, module, enableDownSampling } = item;
+          const { cluster, expressionList, host, module, enableDownSampling, showLastPoint } = item;
           // biome-ignore lint/complexity/noForEach: <explanation>
           expressionList?.forEach(exp => {
             if (exp.expression && exp.active) {
@@ -923,6 +925,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                 data: {
                   display: exp.active,
                   down_sample_range: enableDownSampling !== false ? down_sample_range : undefined,
+                  time_alignment: showLastPoint === true ? false : undefined,
                   end_time: options.range.to.unix(),
                   expression: exp.expression,
                   format: item.format,

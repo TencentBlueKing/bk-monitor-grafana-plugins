@@ -31,7 +31,7 @@ import type { EditMode } from '../typings/metric';
 import { t } from 'common/utils/utils';
 import AliasInput from './alias-input';
 import EditorForm from './editor-form';
-export type AddvanceSettingKey = 'enableDownSampling' | 'format' | 'promqlAlias' | 'step' | 'type';
+export type AddvanceSettingKey = 'enableDownSampling' | 'format' | 'promqlAlias' | 'step' | 'type' | 'showLastPoint';
 export interface IAddvanceSettingProps {
   format: string;
   mode: EditMode;
@@ -44,6 +44,7 @@ export interface IAddvanceSettingProps {
   step: string;
   type: string;
   enableDownSampling: boolean;
+  showLastPoint: boolean;
 }
 
 interface IAddvanceState {
@@ -89,7 +90,7 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
 
   render(): JSX.Element {
     const { showContent } = this.state;
-    const { format, mode, onChange, promqlAlias, step, type, enableDownSampling } = this.props;
+    const { format, mode, onChange, promqlAlias, step, type, enableDownSampling, showLastPoint } = this.props;
     const getHeaderContent = () => (
       <div className='header-content'>
         {mode === 'code' && <span className='header-content-item'>Min Step: {step || 'auto'}</span>}
@@ -106,6 +107,9 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
         </span>
         <span className='header-content-item'>
           {t('降采样')}: {enableDownSampling ? t('开启') : t('关闭')}
+        </span>
+        <span className='header-content-item'>
+          {t('最新数据点')}: {showLastPoint ? t('开启') : t('关闭')}
         </span>
       </div>
     );
@@ -149,6 +153,17 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
                 size='small'
                 unCheckedChildren={t('关闭')}
                 onChange={v => onChange('enableDownSampling', v)}
+              />
+            </div>
+          </EditorForm>
+          <EditorForm title={t('最新数据点')}>
+            <div className='down-sample-wrapper'>
+              <Switch
+                checked={showLastPoint}
+                checkedChildren={t('开启')}
+                size='small'
+                unCheckedChildren={t('关闭')}
+                onChange={v => onChange('showLastPoint', v)}
               />
             </div>
           </EditorForm>
@@ -226,6 +241,17 @@ export default class AddvanceSetting extends React.PureComponent<IAddvanceSettin
                     size='small'
                     unCheckedChildren={t('关闭')}
                     onChange={v => onChange('enableDownSampling', v)}
+                  />
+                </div>
+              </EditorForm>
+              <EditorForm title={t('最新数据点')}>
+                <div className='down-sample-wrapper'>
+                  <Switch
+                    checked={showLastPoint}
+                    checkedChildren={t('开启')}
+                    size='small'
+                    unCheckedChildren={t('关闭')}
+                    onChange={v => onChange('showLastPoint', v)}
                   />
                 </div>
               </EditorForm>

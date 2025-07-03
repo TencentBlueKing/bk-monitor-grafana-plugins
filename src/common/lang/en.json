@@ -76,6 +76,7 @@
   "开启": "on",
   "关闭": "off",
   "降采样": "Down Sampling",
+  "最新数据点": "Latest data points",
   "方法": "Formula",
   "数据名称": "Data name",
   "数据类型": "Data types",
