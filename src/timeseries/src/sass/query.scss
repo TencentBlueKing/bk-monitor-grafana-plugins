@@ -13,7 +13,7 @@
     display: flex;
     align-items: center;
     width: 100%;
-    margin: 12px 0;
+    margin: 8px 0;
     color: #3a84ff;
 
     .search-play {
@@ -70,6 +70,18 @@
         color: #c4c6cc;
         cursor: not-allowed;
       }
+    }
+  }
+  .transform-error {
+    margin-bottom: 8px;
+    padding: 6px 8px;
+   .ant-alert-message, .ant-alert-close-icon {
+      color: #63656E;
+    }
+    &.ant-alert-warning {
+      border: 1px solid #FFDFAC;
+      border-radius: 2px;
+      background: #FFF4E2;
     }
   }
 }
