@@ -75,8 +75,13 @@
   .transform-error {
     margin-bottom: 8px;
     padding: 6px 8px;
-    .ant-alert-message, .ant-alert-close-icon {
+   .ant-alert-message, .ant-alert-close-icon {
       color: #63656E;
+    }
+    &.ant-alert-warning {
+      border: 1px solid #FFDFAC;
+      border-radius: 2px;
+      background: #FFF4E2;
     }
   }
 }
