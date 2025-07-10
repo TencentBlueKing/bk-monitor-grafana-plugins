@@ -411,8 +411,6 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               message: e.message || t('转换失败', this.state.language),
             });
             hasError = true;
-            const message = e.data?.message || '';
-            message && this.setErrorAlert(true, message);
             return '';
           });
           source &&
@@ -626,9 +624,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         if (item.metricMetaId && v.length) {
           this.handleCommonSetMetric(metricIndex, 'loading', true, false);
           if (!hasError) {
-            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch((err) => {
-              const message = err.data?.message || '';
-              message && this.setErrorAlert(true, message);
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
               this.handleCommonSetMetric(metricIndex, 'status', 'error', false);
               return {};
             });
@@ -733,9 +729,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
               },
             );
           } else {
-            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch((err) => {
-              const message = err.data?.message || '';
-              message && this.setErrorAlert(true, message);
+            const data = await this.props.datasource.promqlToQueryConfig(v, 'code').catch(() => {
               this.setState({ editorStatus: 'error' });
               return {};
             });
@@ -784,10 +778,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         let source = '';
         this.setState({ loading: true });
         const params = this.handleGetQueryData(this.state.metricList);
-        source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch((err) => {
+        source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
           hasError = true;
-          const message = err.data?.message || '';
-          message && this.setErrorAlert(true, message);
           return '';
         });
         this.setState({ source });
@@ -806,10 +798,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.setState({ loading: true });
-        const data = await this.props.datasource.promqlToQueryConfig(this.state.source, 'ui').catch((err) => {
+        const data = await this.props.datasource.promqlToQueryConfig(this.state.source, 'ui').catch(() => {
           hasError = true;
-          const message = err.data?.message || '';
-          message && this.setErrorAlert(true, message);
           return {};
         });
         if (data?.query_configs?.length) {
@@ -854,10 +844,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         if (curMetric.metricMetaId) {
           this.handleCommonSetMetric(metricIndex, 'loading', true, false);
           const params = this.handleGetQueryData([curMetric]);
-          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch((err) => {
+          source = await this.props.datasource.queryConfigToPromql(params as QueryData).catch(() => {
             hasError = true;
-            const message = err.data?.message || '';
-            message && this.setErrorAlert(true, message);
             return '';
           });
           this.handleCommonSetMetric(metricIndex, 'source', source, false);
@@ -876,10 +864,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
           return;
         }
         this.handleCommonSetMetric(metricIndex, 'loading', true, false);
-        const data = await this.props.datasource.promqlToQueryConfig(curMetric.source, 'ui').catch((err) => {
+        const data = await this.props.datasource.promqlToQueryConfig(curMetric.source, 'ui').catch(() => {
           hasError = true;
-          const message = err.data?.message || '';
-          message && this.setErrorAlert(true, message);
           return {};
         });
         if (data?.query_configs?.length && data.query_configs.length === 1) {
