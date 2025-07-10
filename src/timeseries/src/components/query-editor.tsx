@@ -26,10 +26,12 @@
  * IN THE SOFTWARE.
  */
 import LoadingOutlined from '@ant-design/icons/LoadingOutlined';
+import ExclamationCircleOutlined from '@ant-design/icons/ExclamationCircleOutlined';
 import PlusOutlined from '@ant-design/icons/PlusOutlined';
 import { LoadingState, type QueryEditorProps } from '@grafana/data';
 import Button from 'antd/es/button';
 import Message from 'antd/es/message';
+import Alert from 'antd/es/alert';
 import Spin from 'antd/es/spin';
 import React from 'react';
 
@@ -95,6 +97,8 @@ interface IQueryEditorState {
   step: string;
   type: string;
   enableDownSampling: boolean;
+  showErrorAlert: boolean;
+  errorAlertMessage: string;
   showLastPoint: boolean;
 }
 export default class MonitorQueryEditor extends React.PureComponent<IQueryEditorProps, IQueryEditorState> {
@@ -160,6 +164,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       enableDownSampling,
       showLastPoint,
       type: query.type ?? 'range',
+      showErrorAlert: false,
+      errorAlertMessage: '',
     };
     this.initState(query);
   }
@@ -413,6 +419,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 mode: 'code',
                 promqlAlias: promqlAlias || params.promqlAlias,
                 source,
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -423,6 +431,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 mode: 'code',
                 promqlAlias: '',
                 source,
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -431,8 +441,10 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
         // code => ui
         let data: any = {};
         if (source) {
-          data = await this.props.datasource.promqlToQueryConfig(source, 'code').catch(() => {
+          data = await this.props.datasource.promqlToQueryConfig(source, 'code').catch((err) => {
             hasError = true;
+            const message = err.data?.message || '';
+            message && this.setErrorAlert(true, message);
             return {};
           });
         }
@@ -451,6 +463,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 : [],
               metricList: list,
               mode: 'ui',
+              errorAlertMessage: '',
+              showErrorAlert: false
             },
             this.handleQuery,
           );
@@ -461,6 +475,8 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
                 expressionList: [],
                 metricList: [{ refId: 'a' } as any],
                 mode: 'ui',
+                errorAlertMessage: '',
+                showErrorAlert: false
               },
               this.handleQuery,
             );
@@ -922,6 +938,18 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     );
   };
 
+  transfromErrorComp = () => {
+    return this.state.showErrorAlert ? <Alert
+      className="transform-error"
+      message={this.state.errorAlertMessage}
+      type="warning"
+      afterClose={() => this.setErrorAlert(false, '')}
+      showIcon
+      icon={<ExclamationCircleOutlined style={{ color: '#FF9C01', fontSize: '16px' }} />}
+      closable
+    ></Alert> : undefined;
+  }
+
   handleCommonSetMetric<T extends MetricDetail, K extends keyof MetricDetail>(
     metricIndex: number,
     name: K,
@@ -1150,6 +1178,19 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       metricList,
     });
   }
+
+  /**
+   * @description 切换ui/promql时报错信息
+   * @param show 
+   * @param message 
+   */
+  setErrorAlert(show = false, message = '') {
+    this.setState({
+      showErrorAlert: show,
+      errorAlertMessage: message
+    })
+  }
+
   render(): JSX.Element {
     const {
       cluster,
@@ -1180,6 +1221,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
             {inited ? (
               <>
                 {this.transfromModeComp(data?.state)}
+                {this.transfromErrorComp()}
                 {mode !== 'code' ? (
                   <>
                     {metricList.map((item, index) => (
