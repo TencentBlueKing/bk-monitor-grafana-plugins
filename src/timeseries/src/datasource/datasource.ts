@@ -893,7 +893,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
               format: item.format,
               promql: this.buildPromqlVariables(item.source!, replaceScopedVars),
               start_time: options.range.from.unix(),
-              step: getTemplateSrv().replace(item.step, replaceScopedVars) || 'auto',
+              step: item.step ? getTemplateSrv().replace(item.step.toString(), replaceScopedVars) : 'auto',
               type: item.type,
             },
             method: 'POST',
