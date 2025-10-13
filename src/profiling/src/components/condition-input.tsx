@@ -299,7 +299,7 @@ const ConditionInput: React.FC<IProps> = ({ datasource, filterList, keyList, onC
                 dropdownMatchSelectWidth={true}
                 placeholder={t('请输入')}
                 showArrow={false}
-                tokenSeparators={[',', '|', '\n', ' ', '\r\n', '\r']}
+                tokenSeparators={['\n', ' ', '\r\n', '\r']}
                 onChange={v => handleValueChange(v, index)}
                 onInputKeyDown={v => handleValueConditionKeyDown(v, index, dimensionValueMap[item.key!] || [])}
                 showSearch={true}
