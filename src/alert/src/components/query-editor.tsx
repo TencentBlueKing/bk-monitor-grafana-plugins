@@ -70,6 +70,11 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
     const { query } = props;
     const { alias, group_by, interval, interval_unit, method, where } =
       (query.query_configs?.[0] as IQueryConfig) || {};
+
+    const condition = where?.length ? where : ([{}] as any);
+    if (condition[condition.length - 1]?.key) {
+      condition.push({} as any);
+    }
     this.state = {
       agg_method: method || 'COUNT',
       alias: alias || '',
@@ -81,7 +86,7 @@ export default class MonitorQueryEditor extends React.PureComponent<IQueryEditor
       language: getCookie('blueking_language') || 'zh-cn',
       loading: true,
       searchState: SearcState.deafult,
-      where: where?.length ? where : [{} as any],
+      where: condition,
     };
     this.initState();
   }
