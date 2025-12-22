@@ -806,7 +806,6 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
     if (!targetList?.length) {
       return Promise.resolve({ data: [] });
     }
-
     // 兼容老版本query数据
     const queryList: QueryData[] = (targetList as any).map(item => {
       if (item?.data?.metric && item?.data?.monitorObject) {
@@ -819,7 +818,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             {
               active: item.display,
               alias: item.alias || '',
-              expression: item.expression || '',
+              expression: getTemplateSrv().replace(item.expression || '', item.scopedVars) || '',
               functions: [],
             },
           ],
@@ -851,7 +850,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                   down_sample_range: item.enableDownSampling !== false ? down_sample_range : undefined,
                   time_alignment: item.showLastPoint === true ? false : undefined,
                   end_time: options.range.to.unix(),
-                  expression: config.refId || '',
+                  expression: getTemplateSrv().replace(config.refId || '', options.scopedVars) || '',
                   format: item.format,
                   query_configs: [queryConfig],
                   start_time: options.range.from.unix(),
@@ -927,7 +926,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
                   down_sample_range: enableDownSampling !== false ? down_sample_range : undefined,
                   time_alignment: showLastPoint === true ? false : undefined,
                   end_time: options.range.to.unix(),
-                  expression: exp.expression,
+                  expression: getTemplateSrv().replace(exp.expression || '', options.scopedVars) || '',
                   format: item.format,
                   functions: exp.functions?.filter?.(item => item.id),
                   query_configs: configList,
@@ -1019,8 +1018,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
   public async queryConfigToPromql(targets: QueryData) {
     const params = {
       expression: targets.expressionList?.length
-        ? targets.expressionList[0]?.expression || 'a'
-        : targets.query_configs?.[0]?.refId || 'a',
+        ? getTemplateSrv().replace(targets.expressionList[0]?.expression || 'a', undefined) || 'a'
+        : getTemplateSrv().replace(targets.query_configs?.[0]?.refId || 'a', undefined) || 'a',
       query_configs: targets.query_configs.map(item => this.handleGetPromqlConfig(item)),
     };
     return await this.request({
