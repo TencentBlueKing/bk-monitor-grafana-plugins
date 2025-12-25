@@ -26,10 +26,10 @@
     "@grafana/runtime": "10.4.2",
     "@grafana/schema": "10.4.2",
     "@grafana/ui": "10.4.2",
-    "logfmt": "^1.4.0",
-    "postcss-scss": "^4.0.9",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "logfmt": "~1.4.0",
+    "postcss-scss": "~4.0.9",
+    "react": "~17.0.1",
+    "react-dom": "~17.0.1"
   },
   "devDependencies": {
     "common": "workspace:*"

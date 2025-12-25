@@ -104,7 +104,7 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           }
         }
         const appName = query.app_name || data[0].app_name;
-        const serviceName = query.service_name || appList?.[0].children?.[0].value || '';
+        const serviceName = query.service_name || appList?.[0].children?.[0]?.value || '';
         onChange({
           ...query,
           app_name: appName,
