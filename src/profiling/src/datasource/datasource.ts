@@ -40,13 +40,13 @@ import {
   getBackendSrv,
   getTemplateSrv,
 } from '@grafana/runtime';
+import { random } from 'common/utils/utils';
 import { catchError, lastValueFrom, map, merge, Observable, of } from 'rxjs';
 
 import type { QueryOption } from '../typings/config';
 import type { ProfilingQuery } from '../typings/datasource';
 import type { ICommonItem } from '../typings/metric';
 import type { IApplication } from '../typings/profile';
-import { random } from 'common/utils/utils';
 export enum QueryUrl {
   get_profile_application_service = 'get_profile_application_service/',
   get_profile_labels = 'get_profile_label/',
@@ -127,13 +127,21 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       // filterLabel[item.key] = Array.from(new Set(values));
       filterLabel[item.key] = item.value;
     }
+    const resolvedProfileType = getTemplateSrv().replace(target.profile_type, options.scopedVars);
+    const dataType =
+      typeof resolvedProfileType === 'string'
+        ? resolvedProfileType
+        : Array.isArray(resolvedProfileType)
+          ? resolvedProfileType[0]
+          : String(resolvedProfileType);
+
     return await lastValueFrom(
       this.request<BackendDataSourceResponse>(QueryUrl.query_graph_profile, {
         data: {
           bk_biz_id: this.bizId,
           app_name: getTemplateSrv().replace(target.app_name),
           service_name: getTemplateSrv().replace(target.service_name),
-          data_type: target.profile_type,
+          data_type: dataType,
           profile_id: target.profile_id,
           offset: target.offset,
           filter_labels: filterLabel,
@@ -144,7 +152,7 @@ export default class DashboardDatasource extends DataSourceApi<ProfilingQuery, Q
       }),
     );
   }
-  getTimeRange(type: 's' | 'ns' = 's'): Partial<{ start_time: number; end_time: number; start: number; end: number }> {
+  getTimeRange(type: 'ns' | 's' = 's'): Partial<{ start_time: number; end_time: number; start: number; end: number }> {
     const range = (getTemplateSrv() as any).timeRange;
     if (type === 'ns') {
       return { start: range.from.valueOf() * 1000, end: range.to.valueOf() * 1000 };

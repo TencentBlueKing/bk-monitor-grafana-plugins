@@ -23,13 +23,13 @@
  * CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-import type { BaseOptionType } from 'antd/es/cascader';
+import { getTemplateSrv } from '@grafana/runtime';
 import Select from 'antd/es/select';
 import Tooltip from 'antd/es/tooltip';
+import { t, language } from 'common/utils/utils';
 import React, { useEffect, useState } from 'react';
 
 import { LanguageContext } from '../utils/context';
-import { t, language } from 'common/utils/utils';
 import ConditionInput from './condition-input';
 import EditorForm from './editor-form';
 
@@ -37,7 +37,7 @@ import type ProfilingDatasource from '../datasource/datasource';
 import type { ProfilingQuery } from '../typings/datasource';
 import type { ICommonItem } from '../typings/metric';
 import type { QueryEditorProps } from '@grafana/data';
-import { getTemplateSrv } from '@grafana/runtime';
+import type { BaseOptionType } from 'antd/es/cascader';
 
 type Props = QueryEditorProps<ProfilingDatasource, ProfilingQuery>;
 
@@ -141,8 +141,13 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       })
       .subscribe({
         next: data => {
-          setProfileTypeList(data);
-          if (data.length) {
+          const pt = query.profile_type;
+          let list = [...data];
+          if (pt && !list.some(item => item.value === pt)) {
+            list = [{ value: pt, label: pt }, ...list];
+          }
+          setProfileTypeList(list);
+          if (data.length && !pt) {
             onChange({ ...query, profile_type: data[0].value });
             onRunQuery();
           }
@@ -169,6 +174,12 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
         },
       });
   }, [query.app_name, query.service_name, datasource]);
+
+  useEffect(() => {
+    if (!query.profile_type) return;
+    onRunQuery();
+  }, [query.profile_type, onRunQuery]);
+
   const onAppChange = (value: string) => {
     const app = appList.find(item => item.value === value);
     setServiceList(app?.children || []);
@@ -202,6 +213,16 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
       const serviceName = e.target.value;
       serviceList.push({ value: serviceName, label: serviceName, children: [] });
       onChange({ ...query, service_name: serviceName });
+    }
+  };
+  const onProfileTypeKeyDown = e => {
+    if (e.key === 'Enter' && e.target.value && !profileTypeList.some(item => item.value === e.target.value)) {
+      const profileType = e.target.value;
+      setProfileTypeList(prev => {
+        if (prev.some(item => item.value === profileType)) return prev;
+        return [{ value: profileType, label: profileType }, ...prev];
+      });
+      onChange({ ...query, profile_type: profileType });
     }
   };
   return (
@@ -258,8 +279,8 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
           <EditorForm title={t('服务')}>
             <Select
               style={{ width: '100%', minWidth: '160px' }}
-              options={serviceList}
               loading={isLoading.app}
+              options={serviceList}
               showSearch={true}
               value={query.service_name}
               onChange={v => {
@@ -274,11 +295,13 @@ export function QueryEditor({ datasource, query, onChange, onRunQuery }: Props) 
               disabled={isLoading.types}
               loading={isLoading.types}
               placeholder={isLoading.types ? t('加载中') : t('请选择')}
+              showSearch={true}
               value={query.profile_type || undefined}
               onChange={v => {
                 onChange({ ...query, profile_type: v });
                 onRunQuery();
               }}
+              onInputKeyDown={onProfileTypeKeyDown}
             >
               {profileTypeList.map(item => (
                 <Select.Option
