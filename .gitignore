@@ -37,3 +37,5 @@ e2e-results/
 .vscode
 .DS_Store
 pre-*-bkcodeai
+skills-lock.json
+.agents/*

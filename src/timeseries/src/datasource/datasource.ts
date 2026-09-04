@@ -43,13 +43,14 @@ import {
 } from '@grafana/data';
 import { type BackendSrvRequest, getBackendSrv, getTemplateSrv } from '@grafana/runtime';
 import apiCacheInstance from 'common/utils/api-cache';
+import { random } from 'common/utils/utils';
 
-import type { QueryOption } from '../typings/config';
 import { DIM_NULL_ID, type IQueryConfig, type QueryData } from '../typings/datasource';
-import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
 import { type K8sVariableQueryType, ScenarioType, type VariableQuery, VariableQueryType } from '../typings/variable';
 import { handleTransformOldQuery, handleTransformOldVariableQuery } from '../utils/common';
-import { random } from 'common/utils/utils';
+
+import type { QueryOption } from '../typings/config';
+import type { EditMode, IMetric, ITargetData, IntervalType } from '../typings/metric';
 
 /*
  * This regex matches 3 types of variable reference with an optional format specifier
@@ -469,10 +470,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
         ValueField.values.add(v[0]);
         // biome-ignore lint/complexity/noForEach: <explanation>
         dimensionFields?.forEach(dimensionFiled => {
-          const dimValue = newSere.dimensions[dimensionFiled.name];
-          if (typeof dimValue !== 'undefined') {
-            dimensionFiled.values.add(newSere.dimensions[dimensionFiled.name]);
-          }
+          const dimValue = newSere.dimensions[dimensionFiled.name] ?? null;
+          dimensionFiled.values.add(dimValue);
         });
       });
     });
