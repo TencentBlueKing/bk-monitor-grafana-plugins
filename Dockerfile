@@ -4,6 +4,9 @@ ARG NODE_PLATFORM=linux/amd64
 
 FROM --platform=${NODE_PLATFORM} ${NODE_IMAGE} as nodejs
 
+# ARG before FROM is only available in FROM; re-declare so pnpm version is actually used
+ARG PNPM_VERSION
+
 WORKDIR /code
 
 RUN npm i -g pnpm@${PNPM_VERSION}

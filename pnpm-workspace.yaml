@@ -3,3 +3,10 @@ packages:
   # - 'bkmonitor-event-datasource/'
   # - 'bkmonitor-timeseries-datasource/'
   - 'src/*'
+
+allowBuilds:
+  '@biomejs/biome': true
+  '@swc/core': true
+  core-js: true
+  protobufjs: true
+  simple-git-hooks: true
