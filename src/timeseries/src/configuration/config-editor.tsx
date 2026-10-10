@@ -183,6 +183,21 @@ export default class ConfigEditor extends React.PureComponent<
               </div>
             </>
           )}
+          <div className='gf-form'>
+            <FormField
+              inputEl={
+                <Input
+                  style={{ width: '500px' }}
+                  defaultValue={options.jsonData.timeInterval || '15s'}
+                  spellCheck={false}
+                  onBlur={e => this.handleChange('timeInterval', e)}
+                />
+              }
+              label={t('采集周期')}
+              labelWidth={10}
+              tooltip={t('采集周期，用于计算 $__rate_interval；默认 15s，查询的 Min Step 优先于此配置')}
+            />
+          </div>
         </div>
       </>
     );

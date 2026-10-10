@@ -90,5 +90,7 @@
   "接口": "Span Name",
   "应用": "App Name",
   "查询方式": "Query Mode",
-  "事件": "Event"
+  "事件": "Event",
+  "采集周期": "Scrape interval",
+  "采集周期，用于计算 $__rate_interval；默认 15s，查询的 Min Step 优先于此配置": "Scrape interval used to calculate $__rate_interval. Defaults to 15s; the query's Min Step overrides this setting."
 }

@@ -16,6 +16,24 @@ Install the latest plugin using Grafana CLI:
 $ grafana-cli plugins install bkmonitor-timeseries-datasource
 ```
 
+# PromQL rate interval
+
+PromQL queries support `$__rate_interval` (also `${__rate_interval}` and
+`[[__rate_interval]]`), for example:
+
+```promql
+rate(http_requests_total[$__rate_interval])
+```
+
+The window is calculated per query as
+`max($__interval + scrape_interval, 4 * scrape_interval)`.
+Set **Scrape interval** in the data source configuration to the actual collection
+period. It defaults to `15s` for existing data sources. In provisioned data sources,
+use `jsonData.timeInterval`. A query's **Min Step**, including template variables,
+overrides this setting; an empty or `auto` Min Step uses the data source setting.
+For metrics collected every minute, configure `1m` to ensure a window of at least
+`4m`. `$__interval` and the backend query step retain their existing behavior.
+
 # Contact Us
 
 If you have any questions using this app, you are welcome to [create an issue](https://github.com/TencentBlueKing/bk-monitor-grafana-plugins/issues/new).

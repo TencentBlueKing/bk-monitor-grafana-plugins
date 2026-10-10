@@ -35,6 +35,7 @@ import {
   type DataSourceInstanceSettings,
   type Field,
   FieldType,
+  rangeUtil,
   type ScopedVar,
   type ScopedVars,
   TIME_SERIES_TIME_FIELD_NAME,
@@ -605,6 +606,21 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       __range_s: { text: sRange, value: sRange },
     };
   }
+  getRateIntervalScopedVars(intervalMs: number, minStep: string): ScopedVars {
+    const parseInterval = (value?: string) => {
+      try {
+        const ms = rangeUtil.intervalToMs(value || '');
+        return Number.isFinite(ms) && ms > 0 ? ms : 0;
+      } catch {
+        return 0;
+      }
+    };
+    // Min Step overrides the datasource scrape interval, as in Grafana's Prometheus datasource.
+    const scrapeIntervalMs = parseInterval(minStep) || parseInterval(this.configData.timeInterval) || 15000;
+    const rateIntervalMs = Math.max(intervalMs + scrapeIntervalMs, 4 * scrapeIntervalMs);
+    const rateInterval = rateIntervalMs % 1000 === 0 ? `${rateIntervalMs / 1000}s` : `${rateIntervalMs}ms`;
+    return { __rate_interval: { text: rateInterval, value: rateInterval } };
+  }
   getValueText(responseLength: number, refId = '') {
     return responseLength > 1 ? `Value #${refId}` : 'Value';
   }
@@ -883,6 +899,8 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
             ...options.scopedVars,
             ...this.getRangeScopedVars(options.range),
           };
+          const minStep = getTemplateSrv().replace(item.step?.toString() || '', replaceScopedVars);
+          Object.assign(replaceScopedVars, this.getRateIntervalScopedVars(options.intervalMs, minStep));
           const params = {
             data: {
               down_sample_range: item.enableDownSampling === true ? down_sample_range : undefined, // promql 原来默认是不开启的
