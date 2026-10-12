@@ -74,6 +74,12 @@ describe('PromQL $__rate_interval', () => {
     expect(request.mock.calls[0][0].data.promql).toBe('rate(counter[240s])');
   });
 
+  it.each([undefined, null])('falls back safely when jsonData is %s', async jsonData => {
+    datasource.configData = jsonData as unknown as QueryOption;
+    await runQuery([{}, { refId: 'B', source: 'up' }]);
+    expect(request.mock.calls.map(([params]) => params.data.promql)).toEqual(['rate(counter[60s])', 'up']);
+  });
+
   it('expands the window with the panel interval when zooming out', async () => {
     datasource.configData.timeInterval = '1m';
     await runQuery([{}], 300000);

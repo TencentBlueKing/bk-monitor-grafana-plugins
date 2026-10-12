@@ -616,7 +616,7 @@ export default class DashboardDatasource extends DataSourceApi<QueryData, QueryO
       }
     };
     // Min Step overrides the datasource scrape interval, as in Grafana's Prometheus datasource.
-    const scrapeIntervalMs = parseInterval(minStep) || parseInterval(this.configData.timeInterval) || 15000;
+    const scrapeIntervalMs = parseInterval(minStep) || parseInterval(this.configData?.timeInterval) || 15000;
     const rateIntervalMs = Math.max(intervalMs + scrapeIntervalMs, 4 * scrapeIntervalMs);
     const rateInterval = rateIntervalMs % 1000 === 0 ? `${rateIntervalMs / 1000}s` : `${rateIntervalMs}ms`;
     return { __rate_interval: { text: rateInterval, value: rateInterval } };
