@@ -30,6 +30,7 @@ export interface QueryOption extends DataSourceJsonData {
   baseUrl: string; // api base url
   bizId: string;
   keepCookies?: string[];
+  timeInterval?: string; // PromQL rate/increase 计算使用的采集周期，默认 15s
   useToken: boolean;
 }
 
